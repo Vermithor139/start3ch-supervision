@@ -1,0 +1,415 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VERUM | ECN Institutional Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #030508; color: #f8fafc; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #030508; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+        @keyframes bounceSlow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+        @keyframes spinSlow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulseGlow { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.15); opacity: 0.8; } }
+        @keyframes wiggle { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
+        .anim-chart { display: inline-block; animation: bounceSlow 2s ease-in-out infinite; }
+        .anim-users { display: inline-block; animation: pulseGlow 2.5s ease-in-out infinite; }
+        .anim-log { display: inline-block; animation: wiggle 2s ease-in-out infinite; }
+        .anim-analytics { display: inline-block; animation: bounceSlow 1.5s ease-in-out infinite; }
+        .anim-settings { display: inline-block; animation: spinSlow 8s linear infinite; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden antialiased select-none">
+    
+    <!-- Sidebar -->
+    <aside class="w-72 bg-[#060a12] border-r border-[#131d2e] flex flex-col justify-between z-30 shadow-2xl">
+        <div>
+            <div class="p-5 flex items-center justify-between border-b border-[#131d2e] bg-[#04070d]">
+                <div class="flex items-center gap-3">
+                    <div class="bg-gradient-to-tr from-blue-600 to-indigo-600 p-2.5 rounded-xl text-white shadow-lg shadow-blue-600/30 font-extrabold text-xs tracking-wider font-mono">VT</div>
+                    <div>
+                        <span class="font-black text-sm tracking-widest text-white block">VERUM <span class="text-[10px] font-mono text-blue-400">ECN</span></span>
+                        <span class="text-[9px] text-slate-400 font-mono uppercase tracking-widest">Global Terminal</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-lg">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-[10px] font-mono text-emerald-400 font-bold">12ms</span>
+                </div>
+            </div>
+
+            <!-- Navigation Hub -->
+            <nav class="p-3.5 space-y-1.5">
+                <p class="px-3 py-2 text-[10px] font-mono font-extrabold text-slate-500 uppercase tracking-widest">Navigation Hub</p>
+                
+                <button onclick="switchTab('dashboard')" id="nav-btn-dashboard" class="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition-all">
+                    <span class="text-base anim-chart">📈</span>
+                    <span>Market Overview</span>
+                </button>
+
+                <button onclick="switchTab('clients')" id="nav-btn-clients" class="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:bg-[#101827] hover:text-white transition-all">
+                    <span class="text-base anim-users">👥</span>
+                    <span>Client Accounts</span>
+                </button>
+
+                <button onclick="switchTab('transactions')" id="nav-btn-transactions" class="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:bg-[#101827] hover:text-white transition-all">
+                    <span class="text-base anim-log">📜</span>
+                    <span>Order Execution Log</span>
+                </button>
+
+                <button onclick="switchTab('analytics')" id="nav-btn-analytics" class="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:bg-[#101827] hover:text-white transition-all">
+                    <span class="text-base anim-analytics">📊</span>
+                    <span>Advanced Analytics</span>
+                </button>
+
+                <button onclick="switchTab('settings')" id="nav-btn-settings" class="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:bg-[#101827] hover:text-white transition-all">
+                    <span class="text-base anim-settings">⚙️</span>
+                    <span>Terminal Settings</span>
+                </button>
+            </nav>
+        </div>
+
+        <div class="p-4 border-t border-[#131d2e] bg-[#04070d] flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 flex items-center justify-center font-bold text-white text-xs shadow">JS</div>
+                <div>
+                    <p class="text-xs font-bold text-white leading-tight">Julian Sterling</p>
+                    <p class="text-[10px] font-mono text-emerald-400 font-semibold mt-0.5">MT5 #849201-LIVE</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 flex flex-col overflow-y-auto bg-[#030508]">
+        <header class="h-20 bg-[#060a12]/90 border-b border-[#131d2e] px-8 flex items-center justify-between sticky top-0 z-20 shadow-xl">
+            <div>
+                <h1 id="page-title" class="text-lg font-black text-white tracking-wider font-mono uppercase">MARKET OVERVIEW</h1>
+                <p id="page-subtitle" class="text-xs text-slate-400 font-medium mt-0.5">Real-time institutional liquidity streams, margin levels & execution feeds.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="exportCSV()" class="flex items-center gap-2 bg-[#0c121e] hover:bg-[#131d2e] text-slate-200 px-4 py-2.5 rounded-xl text-xs font-semibold border border-[#1b2a42]">
+                    <i data-lucide="download" class="w-3.5 h-3.5 text-blue-400"></i> Export CSV
+                </button>
+                <button onclick="openModal()" class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-blue-600/30">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i> New Position
+                </button>
+            </div>
+        </header>
+
+        <div class="p-8 flex-1 space-y-6">
+            <!-- DASHBOARD VIEW -->
+            <div id="view-dashboard" class="tab-content space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-[#080d16] border border-[#131d2e] p-6 rounded-2xl shadow-2xl">
+                        <p class="text-[11px] font-mono font-extrabold text-slate-400 uppercase tracking-widest">Active Institutional Traders</p>
+                        <div class="flex items-baseline gap-3 mt-3">
+                            <h3 class="text-4xl font-black text-white font-mono">3</h3>
+                            <span class="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">+1 this month</span>
+                        </div>
+                        <div class="mt-5 pt-4 border-t border-[#131d2e] flex items-center justify-between text-xs text-slate-400 font-mono">
+                            <span>Gateway Status:</span>
+                            <span class="text-emerald-400 font-bold">STP-ECN Connected</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#080d16] border border-[#131d2e] p-6 rounded-2xl shadow-2xl">
+                        <p class="text-[11px] font-mono font-extrabold text-slate-400 uppercase tracking-widest">Monthly Revenue Flow</p>
+                        <div class="flex items-baseline gap-3 mt-3">
+                            <h3 class="text-4xl font-black text-white font-mono">$24,500.00</h3>
+                            <span class="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">+12.5%</span>
+                        </div>
+                        <div class="mt-5 pt-4 border-t border-[#131d2e] flex items-center justify-between text-xs text-slate-400 font-mono">
+                            <span>Net Equity Balance:</span>
+                            <span class="text-blue-400 font-bold font-mono">$184,290.00</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#080d16] border border-[#131d2e] p-6 rounded-2xl shadow-2xl">
+                        <p class="text-[11px] font-mono font-extrabold text-slate-400 uppercase tracking-widest">Pending Margin Invoices</p>
+                        <div class="flex items-baseline gap-3 mt-3">
+                            <h3 class="text-4xl font-black text-white font-mono">$12,500.00</h3>
+                            <span class="text-[11px] font-mono font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">2 Outstanding</span>
+                        </div>
+                        <div class="mt-5 pt-4 border-t border-[#131d2e] flex items-center justify-between text-xs text-slate-400 font-mono">
+                            <span>Margin Call Level:</span>
+                            <span class="text-emerald-400 font-bold font-mono">820% (Safe)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ticker Bar -->
+                <div class="bg-[#080d16] border border-[#131d2e] rounded-2xl p-4 flex items-center justify-between overflow-x-auto gap-8 shadow-xl font-mono text-xs">
+                    <div class="flex items-center gap-3 min-w-max"><span class="text-slate-400">EUR/USD</span><span class="text-emerald-400 font-bold">1.08425</span><span class="text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded text-[10px]">+0.14%</span></div>
+                    <div class="flex items-center gap-3 min-w-max"><span class="text-slate-400">GBP/USD</span><span class="text-rose-400 font-bold">1.30110</span><span class="text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded text-[10px]">-0.08%</span></div>
+                    <div class="flex items-center gap-3 min-w-max"><span class="text-slate-400">USD/JPY</span><span class="text-emerald-400 font-bold">151.840</span><span class="text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded text-[10px]">+0.42%</span></div>
+                    <div class="flex items-center gap-3 min-w-max"><span class="text-slate-400">XAU/USD (Gold)</span><span class="text-emerald-400 font-bold">$2,734.50</span><span class="text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded text-[10px]">+1.15%</span></div>
+                    <div class="flex items-center gap-3 min-w-max"><span class="text-slate-400">BTC/USD</span><span class="text-emerald-400 font-bold">$68,450.00</span><span class="text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded text-[10px]">+2.84%</span></div>
+                </div>
+
+                <!-- Execution Feed -->
+                <div class="bg-[#080d16] border border-[#131d2e] rounded-2xl p-6 shadow-2xl">
+                    <div class="flex items-center justify-between mb-5">
+                        <h3 class="text-sm font-bold text-white uppercase font-mono tracking-wider">Live Execution Feed</h3>
+                        <button onclick="switchTab('transactions')" class="text-xs font-mono font-bold text-blue-400 hover:text-blue-300">View Full Ledger &rarr;</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse font-mono text-xs">
+                            <thead>
+                                <tr class="border-b border-[#131d2e] text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                    <th class="py-3 px-4">Client / Account</th>
+                                    <th class="py-3 px-4">Amount</th>
+                                    <th class="py-3 px-4">Status</th>
+                                    <th class="py-3 px-4">Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transaction-table-body" class="divide-y divide-[#131d2e]/50"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CLIENTS VIEW -->
+            <div id="view-clients" class="tab-content hidden space-y-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-base font-bold text-white tracking-tight font-mono">CLIENT DIRECTORY & ACCOUNTS</h2>
+                        <p class="text-xs text-slate-400">Manage institutional investor accounts and tier allocations.</p>
+                    </div>
+                    <input type="text" id="client-search" placeholder="Filter account ID or name..." class="bg-[#080d16] border border-[#131d2e] px-4 py-2.5 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-blue-500 w-72">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="client-cards"></div>
+            </div>
+
+            <!-- TRANSACTIONS VIEW -->
+            <div id="view-transactions" class="tab-content hidden space-y-6">
+                <div class="bg-[#080d16] border border-[#131d2e] rounded-2xl p-6 shadow-2xl">
+                    <h3 class="text-sm font-bold text-white mb-1 uppercase font-mono tracking-wider">Complete Order Execution Ledger</h3>
+                    <p class="text-xs text-slate-400 mb-6 font-mono">Immutable audit trail of all deposits, withdrawals, and trade settlements.</p>
+                    <table class="w-full text-left border-collapse font-mono text-xs">
+                        <thead>
+                            <tr class="border-b border-[#131d2e] text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                <th class="py-3 px-4">Client</th>
+                                <th class="py-3 px-4">Amount</th>
+                                <th class="py-3 px-4">Status</th>
+                                <th class="py-3 px-4">Date</th>
+                                <th class="py-3 px-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="full-transaction-table" class="divide-y divide-[#131d2e]/50"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ANALYTICS VIEW -->
+            <div id="view-analytics" class="tab-content hidden space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-[#080d16] border border-[#131d2e] p-6 rounded-2xl shadow-2xl">
+                        <h3 class="text-sm font-bold text-white font-mono tracking-wider uppercase">Capital Inflow Trajectory</h3>
+                        <p class="text-xs text-slate-400 mt-0.5 mb-6 font-mono">Monthly recurring deposits vs liquidity targets</p>
+                        <div class="h-64 flex items-end gap-6 justify-around pt-6 border-b border-[#131d2e] px-4">
+                            <div class="w-16 bg-gradient-to-t from-blue-950 to-blue-600 rounded-xl h-3/5 relative flex items-center justify-center"><span class="absolute -top-7 text-xs font-mono font-bold text-slate-300">$15,000</span></div>
+                            <div class="w-16 bg-gradient-to-t from-blue-950 to-blue-600 rounded-xl h-4/5 relative flex items-center justify-center"><span class="absolute -top-7 text-xs font-mono font-bold text-slate-300">$20,000</span></div>
+                            <div class="w-16 bg-gradient-to-t from-blue-600 to-indigo-500 rounded-xl h-full relative flex items-center justify-center shadow-lg shadow-blue-500/20"><span class="absolute -top-7 text-xs font-mono font-bold text-white">$24,500</span></div>
+                        </div>
+                    </div>
+                    <div class="bg-[#080d16] border border-[#131d2e] p-6 rounded-2xl shadow-2xl">
+                        <h3 class="text-sm font-bold text-white font-mono tracking-wider uppercase">Conversion Funnel Efficiency</h3>
+                        <p class="text-xs text-slate-400 mt-0.5 mb-6 font-mono">Lead acquisition through active margin funding</p>
+                        <div class="space-y-5 pt-2">
+                            <div>
+                                <div class="flex justify-between text-xs font-mono mb-2 text-slate-300"><span>New Lead Inquiries</span><span class="text-white font-bold">68%</span></div>
+                                <div class="w-full bg-[#131d2e] h-2 rounded-full overflow-hidden"><div class="bg-blue-600 h-full rounded-full" style="width: 68%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs font-mono mb-2 text-slate-300"><span>Contacted & Pitch Deck</span><span class="text-white font-bold">45%</span></div>
+                                <div class="w-full bg-[#131d2e] h-2 rounded-full overflow-hidden"><div class="bg-indigo-600 h-full rounded-full" style="width: 45%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs font-mono mb-2 text-slate-300"><span>Funded Depositors</span><span class="text-white font-bold">24%</span></div>
+                                <div class="w-full bg-[#131d2e] h-2 rounded-full overflow-hidden"><div class="bg-emerald-500 h-full rounded-full" style="width: 24%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SETTINGS VIEW -->
+            <div id="view-settings" class="tab-content hidden space-y-6">
+                <div class="bg-[#080d16] border border-[#131d2e] rounded-2xl p-8 max-w-2xl space-y-6 shadow-2xl">
+                    <div>
+                        <h3 class="text-sm font-bold text-white font-mono tracking-wider uppercase">MT5 Terminal Parameters</h3>
+                        <p class="text-xs text-slate-400 mt-0.5 font-mono">Configure gateway bridging and execution latency rules.</p>
+                    </div>
+                    <div class="space-y-4 pt-2">
+                        <div>
+                            <label class="block text-[11px] font-mono font-bold text-slate-300 mb-1.5 uppercase tracking-wider">Broker Gateway ID</label>
+                            <input type="text" value="VERUM-STP-ECN-01" class="w-full bg-[#030508] border border-[#131d2e] rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-mono font-bold text-slate-300 mb-1.5 uppercase tracking-wider">Liquidity Provider Webhook</label>
+                            <input type="text" value="https://feed.verum.financial/v1/mt5-bridge" class="w-full bg-[#030508] border border-[#131d2e] rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-blue-500">
+                        </div>
+                        <button onclick="alert('MT5 Terminal parameters saved successfully.')" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-xl text-xs font-mono font-bold shadow-lg shadow-blue-600/30">Save Terminal Config</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="tx-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-[#080d16] border border-[#131d2e] p-6 rounded-2xl w-full max-w-md space-y-5 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-[#131d2e] pb-4">
+                <h3 class="text-sm font-bold text-white font-mono uppercase tracking-wider">New Position / Transaction</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white text-lg">&times;</button>
+            </div>
+            <div class="space-y-4 font-mono text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1.5 uppercase">Client / Account Name</label>
+                    <input type="text" id="modal-client" class="w-full bg-[#030508] border border-[#131d2e] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-blue-500" placeholder="e.g. Acme Corp">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1.5 uppercase">Amount ($ USD)</label>
+                    <input type="number" id="modal-amount" class="w-full bg-[#030508] border border-[#131d2e] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-blue-500" placeholder="5000">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1.5 uppercase">Execution Status</label>
+                    <select id="modal-status" class="w-full bg-[#030508] border border-[#131d2e] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-blue-500">
+                        <option value="Paid">Paid / Settled</option>
+                        <option value="Pending">Pending Margin</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 pt-2 font-mono">
+                <button onclick="closeModal()" class="bg-[#0c121e] text-slate-300 px-4 py-2.5 rounded-xl text-xs hover:bg-[#131d2e]">Cancel</button>
+                <button onclick="submitTransaction()" class="bg-blue-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-500 shadow-lg shadow-blue-600/30">Execute Order</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        let transactions = [
+            { client: 'Acme Corp', amount: 8200, status: 'Paid', date: '2026-10-18' },
+            { client: 'Apex Industries', amount: 12500, status: 'Pending', date: '2026-10-19' },
+            { client: 'Global Logistics', amount: 3800, status: 'Paid', date: '2026-10-20' }
+        ];
+
+        let clients = [
+            { name: 'Acme Corp', tier: 'Enterprise Tier', volume: '$45,200.00', status: 'Active' },
+            { name: 'Apex Industries', tier: 'VIP Trader', volume: '$89,100.00', status: 'Pending' },
+            { name: 'Global Logistics', tier: 'Standard Account', volume: '$12,400.00', status: 'Active' }
+        ];
+
+        function renderAll() {
+            const tbody1 = document.getElementById('transaction-table-body');
+            const tbody2 = document.getElementById('full-transaction-table');
+            const html = transactions.map(t => `
+                <tr class="hover:bg-[#101827] transition-colors">
+                    <td class="py-3 px-4 font-bold text-white">${t.client}</td>
+                    <td class="py-3 px-4 text-slate-300 font-mono">$${Number(t.amount).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                    <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${t.status === 'Paid' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}">${t.status}</span></td>
+                    <td class="py-3 px-4 text-slate-400 text-xs">${t.date}</td>
+                    <td class="py-3 px-4 text-right"><button onclick="deleteTx('${t.client}')" class="text-rose-400 hover:text-rose-300 text-xs font-bold">Delete</button></td>
+                </tr>
+            `).join('');
+            tbody1.innerHTML = html;
+            tbody2.innerHTML = html;
+
+            const clientContainer = document.getElementById('client-cards');
+            clientContainer.innerHTML = clients.map(c => `
+                <div class="bg-[#080d16] border border-[#131d2e] p-6 rounded-2xl space-y-4 shadow-2xl">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-white text-sm font-mono">${c.name}</h4>
+                            <p class="text-[11px] text-blue-400 mt-0.5 font-mono font-semibold">${c.tier}</p>
+                        </div>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${c.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}">${c.status}</span>
+                    </div>
+                    <div class="flex justify-between text-xs pt-3 border-t border-[#131d2e] items-center font-mono">
+                        <span class="text-slate-400">Total Volume:</span>
+                        <span class="font-bold text-white">${c.volume}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        function switchTab(tabId) {
+            const tabs = ['dashboard', 'clients', 'transactions', 'analytics', 'settings'];
+            tabs.forEach(id => {
+                const view = document.getElementById('view-' + id);
+                const btn = document.getElementById('nav-btn-' + id);
+                if (view) view.classList.add('hidden');
+                if (btn) btn.className = "w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:bg-[#101827] hover:text-white transition-all";
+            });
+
+            const activeView = document.getElementById('view-' + tabId);
+            const activeBtn = document.getElementById('nav-btn-' + tabId);
+            if (activeView) activeView.classList.remove('hidden');
+            if (activeBtn) activeBtn.className = "w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-bold bg-blue-600 text-white transition-all shadow-lg shadow-blue-600/30";
+
+            const titles = {
+                dashboard: ['MARKET OVERVIEW', 'Real-time institutional liquidity streams, margin levels & execution feeds.'],
+                clients: ['CLIENT DIRECTORY & ACCOUNTS', 'Manage institutional investor accounts and tier allocations.'],
+                transactions: ['ORDER EXECUTION LEDGER', 'Immutable audit trail of all deposits, withdrawals, and trade settlements.'],
+                analytics: ['ADVANCED ANALYTICS', 'Deep dive into capital inflow trajectory and conversion efficiency.'],
+                settings: ['TERMINAL SETTINGS', 'Configure broker gateway bridging and execution latency rules.']
+            };
+            
+            document.getElementById('page-title').innerText = titles[tabId][0];
+            document.getElementById('page-subtitle').innerText = titles[tabId][1];
+        }
+
+        function openModal() { document.getElementById('tx-modal').classList.remove('hidden'); document.getElementById('tx-modal').classList.add('flex'); }
+        function closeModal() { document.getElementById('tx-modal').classList.add('hidden'); document.getElementById('tx-modal').classList.remove('flex'); }
+
+        function submitTransaction() {
+            const client = document.getElementById('modal-client').value;
+            const amount = parseFloat(document.getElementById('modal-amount').value);
+            const status = document.getElementById('modal-status').value;
+            if(!client || isNaN(amount)) { alert('Please enter valid details.'); return; }
+            transactions.unshift({ client, amount, status, date: new Date().toISOString().slice(0,10) });
+            closeModal();
+            renderAll();
+        }
+
+        function deleteTx(clientName) {
+            transactions = transactions.filter(t => t.client !== clientName);
+            renderAll();
+        }
+
+        function exportCSV() {
+            let csv = 'Client,Amount,Status,Date\n' + transactions.map(t => `"${t.client}",${t.amount},"${t.status}","${t.date}"`).join('\n');
+            let blob = new Blob([csv], { type: 'text/csv' });
+            let url = window.URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'verum_mt5_ledger_export.csv');
+            a.click();
+        }
+
+        renderAll();
+    </script>
+</body>
+</html>
