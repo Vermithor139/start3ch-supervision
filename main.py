@@ -41,7 +41,7 @@ HTML_CONTENT = """
 
         .nav-category { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; padding: 0 12px 8px; margin-top: 8px; }
         .nav-list { list-style: none; display: flex; flex-direction: column; gap: 4px; margin-bottom: 24px; }
-        .nav-item a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; color: var(--text-muted); text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s ease; }
+        .nav-item a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; color: var(--text-muted); text-decoration: none; border-radius: 8px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s ease; cursor: pointer; }
         .nav-item.active a, .nav-item a:hover { background: var(--bg-hover); color: var(--text-main); }
 
         .user-profile { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; }
@@ -89,11 +89,11 @@ HTML_CONTENT = """
             
             <div class="nav-category">Navigation Hub</div>
             <ul class="nav-list">
-                <li class="nav-item"><a href="#">📊 Market Overview</a></li>
-                <li class="nav-item"><a href="#">👥 Client Accounts</a></li>
-                <li class="nav-item"><a href="#">📜 Order Execution Log</a></li>
-                <li class="nav-item"><a href="#">📈 Advanced Analytics</a></li>
-                <li class="nav-item active"><a href="#">⚙️ Terminal Settings</a></li>
+                <li class="nav-item"><a>📊 Market Overview</a></li>
+                <li class="nav-item"><a>👥 Client Accounts</a></li>
+                <li class="nav-item"><a>📜 Order Execution Log</a></li>
+                <li class="nav-item"><a>📈 Advanced Analytics</a></li>
+                <li class="nav-item active"><a>⚙️ Terminal Settings</a></li>
             </ul>
         </div>
 
@@ -109,7 +109,7 @@ HTML_CONTENT = """
     <!-- Main Content Area -->
     <div class="main-content">
         <div class="header">
-            <div class="header-title">
+            <div class="header-title" id="pageTitleArea">
                 <h1>TERMINAL SETTINGS</h1>
                 <p>Configure broker gateway bridging and execution latency rules.</p>
             </div>
@@ -119,38 +119,125 @@ HTML_CONTENT = """
             </div>
         </div>
 
-        <!-- Terminal Parameters Card -->
-        <div class="terminal-card">
-            <h2>MT5 TERMINAL PARAMETERS</h2>
-            <p>Configure gateway bridging and execution latency rules.</p>
-            
-            <div class="form-group">
-                <label class="form-label">Broker Gateway ID</label>
-                <input type="text" class="form-input" id="gatewayId" value="VERUM-STP-ECN-01">
-            </div>
+        <!-- Dynamic Content Container -->
+        <div id="dynamicContent">
+            <div class="terminal-card">
+                <h2>MT5 TERMINAL PARAMETERS</h2>
+                <p>Configure broker gateway bridging and execution latency rules.</p>
+                
+                <div class="form-group">
+                    <label class="form-label">Broker Gateway ID</label>
+                    <input type="text" class="form-input" id="gatewayId" value="VERUM-STP-ECN-01">
+                </div>
 
-            <div class="form-group">
-                <label class="form-label">Liquidity Provider Webhook</label>
-                <input type="text" class="form-input" id="webhookUrl" value="https://feed.verum.financial/v1/mt5-bridge">
-            </div>
+                <div class="form-group">
+                    <label class="form-label">Liquidity Provider Webhook</label>
+                    <input type="text" class="form-input" id="webhookUrl" value="https://feed.verum.financial/v1/mt5-bridge">
+                </div>
 
-            <button class="btn" onclick="saveConfig()">Save Terminal Config</button>
-            <div id="successToast" class="toast">✓ Configuration successfully updated and synced across ECN nodes.</div>
+                <button class="btn" onclick="saveConfig()">Save Terminal Config</button>
+                <div id="successToast" class="toast">✓ Configuration successfully updated and synced across ECN nodes.</div>
+            </div>
         </div>
     </div>
 
     <script>
+        const views = {
+            'Market Overview': {
+                title: 'MARKET OVERVIEW',
+                desc: 'Real-time liquidity pools, spreads, and asset pricing feeds.',
+                content: `
+                    <div class="terminal-card">
+                        <h2>ACTIVE ECN PAIRS</h2>
+                        <p style="margin-bottom:12px;">EUR/USD, GBP/USD, USD/JPY streaming live feeds.</p>
+                    </div>
+                `
+            },
+            'Client Accounts': {
+                title: 'CLIENT ACCOUNTS',
+                desc: 'Manage high-frequency trading accounts and risk thresholds.',
+                content: `
+                    <div class="terminal-card">
+                        <h2>ACCOUNT DIRECTORY</h2>
+                        <p style="margin-bottom:12px;">Total Managed Accounts: 14 active terminals.</p>
+                    </div>
+                `
+            },
+            'Order Execution Log': {
+                title: 'ORDER EXECUTION LOG',
+                desc: 'Monitor live bridge fills, execution latency, and slippage reports.',
+                content: `
+                    <div class="terminal-card">
+                        <h2>RECENT FILLS</h2>
+                        <p style="margin-bottom:12px;">No slippage detected in the last 10,000 orders.</p>
+                    </div>
+                `
+            },
+            'Advanced Analytics': {
+                title: 'ADVANCED ANALYTICS',
+                desc: 'Deep-dive volume profiling and broker spread analytics.',
+                content: `
+                    <div class="terminal-card">
+                        <h2>THROUGHPUT METRICS</h2>
+                        <p style="margin-bottom:12px;">Average execution time: 12ms.</p>
+                    </div>
+                `
+            },
+            'Terminal Settings': {
+                title: 'TERMINAL SETTINGS',
+                desc: 'Configure broker gateway bridging and execution latency rules.',
+                content: `
+                    <div class="terminal-card">
+                        <h2>MT5 TERMINAL PARAMETERS</h2>
+                        <p>Configure broker gateway bridging and execution latency rules.</p>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Broker Gateway ID</label>
+                            <input type="text" class="form-input" id="gatewayId" value="VERUM-STP-ECN-01">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Liquidity Provider Webhook</label>
+                            <input type="text" class="form-input" id="webhookUrl" value="https://feed.verum.financial/v1/mt5-bridge">
+                        </div>
+
+                        <button class="btn" onclick="saveConfig()">Save Terminal Config</button>
+                        <div id="successToast" class="toast">✓ Configuration successfully updated and synced across ECN nodes.</div>
+                    </div>
+                `
+            }
+        };
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+
+                const text = this.textContent.trim().replace(/^[^\w\s]+/, '').trim();
+                if (views[text]) {
+                    document.getElementById('pageTitleArea').innerHTML = `
+                        <h1>${views[text].title}</h1>
+                        <p>${views[text].desc}</p>
+                    `;
+                    document.getElementById('dynamicContent').innerHTML = views[text].content;
+                }
+            });
+        });
+
         function saveConfig() {
             const btn = document.querySelector('.terminal-card .btn');
             const toast = document.getElementById('successToast');
-            btn.textContent = 'Saving...';
-            setTimeout(() => {
-                btn.textContent = 'Save Terminal Config';
-                toast.style.display = 'flex';
+            if (btn) {
+                btn.textContent = 'Saving...';
                 setTimeout(() => {
-                    toast.style.display = 'none';
-                }, 4000);
-            }, 600);
+                    btn.textContent = 'Save Terminal Config';
+                    if(toast) {
+                        toast.style.display = 'flex';
+                        setTimeout(() => { toast.style.display = 'none'; }, 4000);
+                    }
+                }, 600);
+            }
         }
     </script>
 </body>
