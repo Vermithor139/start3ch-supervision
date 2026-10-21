@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bit Trady | Client Portal</title>
+    <title>Verum Trady | Client Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Lightweight TradingView Chart Embed -->
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
         :root {
@@ -26,8 +25,10 @@
         /* Top Navbar */
         .navbar { height: 60px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
         .logo { font-weight: 700; font-size: 1.15rem; color: var(--blue); display: flex; align-items: center; gap: 8px; }
+        .logo span { font-size: 0.75rem; background: rgba(37, 99, 235, 0.1); padding: 2px 6px; border-radius: 4px; }
         .nav-right { display: flex; align-items: center; gap: 16px; }
         .btn-deposit { background: #0f172a; color: white; padding: 8px 18px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; border: none; cursor: pointer; }
+        .profile-select { background: #f1f5f9; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-size: 0.8rem; font-weight: 500; color: var(--text); cursor: pointer; }
 
         /* Balance Bar */
         .balance-bar { display: flex; gap: 32px; background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 12px 24px; font-size: 0.825rem; }
@@ -53,10 +54,16 @@
 
     <!-- Header Navbar -->
     <div class="navbar">
-        <div class="logo">⚡ Bit Trady <span>(Client Portal)</span></div>
+        <div class="logo">⚡ Verum Trady <span>Client Portal</span></div>
         <div class="nav-right">
+            <!-- Profile Switcher to address employee/supervisor view feedback -->
+            <select class="profile-select" onchange="handleProfileSwitch(this.value)">
+                <option value="client">👤 Viewing as: Client Account</option>
+                <option value="agent">👔 Viewing as: Closer / Sales Agent</option>
+                <option value="supervisor">⭐ Viewing as: Julian Sterling (Supervisor)</option>
+            </select>
             <button class="btn-deposit">DEPOSITAR</button>
-            <a href="/" style="font-size:0.8rem; color:var(--text-muted); text-decoration:none;">Supervisor View ➔</a>
+            <a href="/" style="font-size:0.8rem; color:var(--text-muted); text-decoration:none;">Supervisor Terminal ➔</a>
         </div>
     </div>
 
@@ -127,6 +134,12 @@
             "locale": "en",
             "container_id": "tv_chart_container"
         });
+
+        function handleProfileSwitch(role) {
+            if (role === 'supervisor' || role === 'agent') {
+                window.location.href = '/';
+            }
+        }
     </script>
 </body>
 </html>
