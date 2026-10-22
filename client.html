@@ -61,6 +61,18 @@
         .btn-deposit-green { background: var(--green); color: #000; border: none; padding: 14px; border-radius: 24px; font-weight: 700; width: 100%; cursor: pointer; text-align: center; font-size: 0.95rem; }
         .btn-deposit-green:hover { opacity: 0.9; }
 
+        /* Live Support Chat Drawer Widget */
+        .chat-drawer { position: fixed; top: 0; right: -360px; width: 340px; height: 100%; background: var(--bg-drawer); border-left: 1px solid var(--border); z-index: 1000; transition: right 0.3s ease-in-out; display: flex; flex-direction: column; }
+        .chat-drawer.active { right: 0; }
+        .chat-header { padding: 16px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+        .chat-body { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .chat-msg { max-width: 80%; padding: 10px 14px; border-radius: 10px; font-size: 0.85rem; }
+        .chat-msg.client { background: var(--blue); color: #fff; align-self: flex-end; }
+        .chat-msg.advisor { background: var(--bg-card); color: #fff; align-self: flex-start; border: 1px solid var(--border); }
+        .chat-footer { padding: 16px; background: var(--bg-card); border-top: 1px solid var(--border); display: flex; gap: 8px; }
+        .chat-input { flex: 1; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; color: #fff; font-size: 0.85rem; }
+        .chat-send { background: var(--blue); color: #fff; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+
         /* Main View Layout */
         .content-area { height: calc(100vh - 105px); display: grid; grid-template-columns: 1fr 320px; }
         .chart-pane { border-right: 1px solid var(--border); }
@@ -76,7 +88,7 @@
             <div class="brand">⚡ Verum Trady</div>
         </div>
         <div style="display:flex; align-items:center; gap:16px;">
-            <select class="profile-select" onchange="handleProfileSwitch(this.value)">
+            <select class="profile-select" id="roleSelector" onchange="handleProfileSwitch(this.value)">
                 <option value="client">👤 Viewing as: Client Account</option>
                 <option value="agent">👔 Viewing as: Closer / Sales Agent</option>
                 <option value="supervisor">⭐ Viewing as: Julian Sterling (Supervisor)</option>
@@ -108,6 +120,7 @@
             <h3 style="margin-bottom:16px;">Quick Trade</h3>
             <button style="width:100%; background:var(--green); color:#000; border:none; padding:12px; font-weight:700; border-radius:6px; margin-bottom:8px; cursor:pointer;" onclick="alert('Buy order sent to CRM!')">Comprar</button>
             <button style="width:100%; background:#2a2e39; color:#fff; border:1px solid var(--border); padding:12px; font-weight:700; border-radius:6px; cursor:pointer;" onclick="alert('Sell order sent to CRM!')">Vender</button>
+            <button style="width:100%; background:var(--blue); color:#fff; border:none; padding:12px; font-weight:700; border-radius:6px; margin-top:16px; cursor:pointer;" onclick="toggleChat()">💬 Open Support Chat</button>
         </div>
     </div>
 
@@ -130,23 +143,38 @@
 
             <!-- Quick Cards Grid -->
             <div class="tools-grid">
-                <a class="tool-card">📅 Calendario económico</a>
-                <a class="tool-card">👥 CopyTrader</a>
+                <a class="tool-card" onclick="alert('Economic Calendar opened')">📅 Calendario económico</a>
+                <a class="tool-card" onclick="alert('CopyTrader module active')">👥 CopyTrader</a>
                 <a class="tool-card" onclick="alert('Withdrawal request logged to advisor')">🏦 Retirar</a>
-                <a class="tool-card">📖 Academia</a>
+                <a class="tool-card" onclick="alert('Academy modules loaded')">📖 Academia</a>
             </div>
 
             <!-- Menu List -->
             <ul class="drawer-links">
-                <li><a href="#">⚙️ Configuración</a></li>
-                <li><a href="#">📱 App Store</a></li>
-                <li><a href="#">🌟 Smart Portfolios</a></li>
-                <li><a onclick="alert('Support alert dispatched to advisor!')">💬 Support & Help</a></li>
+                <li><a onclick="alert('Settings panel opened')">⚙️ Configuración</a></li>
+                <li><a onclick="alert('App Store links loaded')">📱 App Store</a></li>
+                <li><a onclick="alert('Smart Portfolios loaded')">🌟 Smart Portfolios</a></li>
+                <li><a onclick="toggleDrawer(); toggleChat();">💬 Support Chat & Help</a></li>
             </ul>
         </div>
 
         <div>
-            <button class="btn-deposit-green" onclick="alert('Deposit workflow opened')">Añadir fondos</button>
+            <button class="btn-deposit-green" onclick="alert('Deposit workflow opened. Funds routing to CRM.')">Añadir fondos</button>
+        </div>
+    </div>
+
+    <!-- Live Support Chat Drawer -->
+    <div class="chat-drawer" id="chatDrawer">
+        <div class="chat-header">
+            <span>Advisor Support Chat</span>
+            <button onclick="toggleChat()" style="background:none; border:none; color:#fff; font-size:1.1rem; cursor:pointer;">✕</button>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="chat-msg advisor">Hello! I'm your assigned Verum Trady advisor. How can I assist with your account today?</div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput" class="chat-input" placeholder="Type message to advisor..." onkeypress="handleChatKey(event)">
+            <button class="chat-send" onclick="sendChatMessage()">Send</button>
         </div>
     </div>
 
@@ -156,6 +184,43 @@
             const overlay = document.getElementById('drawerOverlay');
             drawer.classList.toggle('active');
             overlay.classList.toggle('active');
+        }
+
+        function toggleChat() {
+            const chat = document.getElementById('chatDrawer');
+            chat.classList.toggle('active');
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const chatBody = document.getElementById('chatBody');
+            
+            // Append client message
+            const msg = document.createElement('div');
+            msg.className = 'chat-msg client';
+            msg.textContent = text;
+            chatBody.appendChild(msg);
+
+            input.value = '';
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            // Simulate CRM notification & automated advisor response
+            setTimeout(() => {
+                const reply = document.createElement('div');
+                reply.className = 'chat-msg advisor';
+                reply.textContent = "Message received in CRM supervisor queue. An advisor will review shortly.";
+                chatBody.appendChild(reply);
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }, 1000);
+        }
+
+        function handleChatKey(e) {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
         }
 
         function handleProfileSwitch(role) {
