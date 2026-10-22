@@ -26,7 +26,7 @@
         /* Top Navbar */
         .navbar { height: 60px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 150; position: relative; }
         .nav-left { display: flex; align-items: center; gap: 16px; }
-        .menu-btn { background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+        .menu-btn { background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: background 0.2s; }
         .menu-btn:hover { background: rgba(255,255,255,0.1); }
         .brand { font-weight: 700; font-size: 1.1rem; color: var(--blue); }
 
@@ -37,10 +37,10 @@
         .balance-item span { color: var(--text-muted); font-size: 0.7rem; display: block; }
 
         /* Side Drawer Navigation (eToro Style) */
-        .drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 998; }
+        .drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(2px); z-index: 998; }
         .drawer-overlay.active { display: block; }
 
-        .drawer { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: var(--bg-drawer); border-right: 1px solid var(--border); z-index: 999; transition: left 0.3s ease-in-out; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; overflow-y: auto; }
+        .drawer { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: var(--bg-drawer); border-right: 1px solid var(--border); z-index: 999; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px; display: flex; flex-direction: column; justify-content: space-between; overflow-y: auto; }
         .drawer.active { left: 0; }
 
         .profile-card { background: var(--bg-card); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
@@ -51,26 +51,26 @@
 
         /* Quick Tools Grid */
         .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .tool-card { background: var(--bg-card); padding: 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; text-decoration: none; color: #fff; display: flex; flex-direction: column; gap: 6px; cursor: pointer; border: 1px solid transparent; transition: border 0.2s; }
-        .tool-card:hover { border-color: var(--blue); }
+        .tool-card { background: var(--bg-card); padding: 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; text-decoration: none; color: #fff; display: flex; flex-direction: column; gap: 6px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+        .tool-card:hover { border-color: var(--blue); transform: translateY(-1px); }
 
-        .drawer-links { list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem; }
-        .drawer-links a { color: var(--text-muted); text-decoration: none; display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 6px 0; }
-        .drawer-links a:hover { color: #fff; }
+        .drawer-links { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; }
+        .drawer-links a { color: var(--text-muted); text-decoration: none; display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px; border-radius: 6px; transition: all 0.2s; }
+        .drawer-links a:hover { color: #fff; background: rgba(255,255,255,0.05); }
 
-        .btn-deposit-green { background: var(--green); color: #000; border: none; padding: 14px; border-radius: 24px; font-weight: 700; width: 100%; cursor: pointer; text-align: center; font-size: 0.95rem; }
+        .btn-deposit-green { background: var(--green); color: #000; border: none; padding: 14px; border-radius: 24px; font-weight: 700; width: 100%; cursor: pointer; text-align: center; font-size: 0.95rem; transition: opacity 0.2s; }
         .btn-deposit-green:hover { opacity: 0.9; }
 
         /* Live Support Chat Drawer Widget */
-        .chat-drawer { position: fixed; top: 0; right: -360px; width: 340px; height: 100%; background: var(--bg-drawer); border-left: 1px solid var(--border); z-index: 1000; transition: right 0.3s ease-in-out; display: flex; flex-direction: column; }
+        .chat-drawer { position: fixed; top: 0; right: -360px; width: 340px; height: 100%; background: var(--bg-drawer); border-left: 1px solid var(--border); z-index: 1000; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
         .chat-drawer.active { right: 0; }
         .chat-header { padding: 16px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
         .chat-body { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .chat-msg { max-width: 80%; padding: 10px 14px; border-radius: 10px; font-size: 0.85rem; }
+        .chat-msg { max-width: 80%; padding: 10px 14px; border-radius: 10px; font-size: 0.85rem; line-height: 1.4; }
         .chat-msg.client { background: var(--blue); color: #fff; align-self: flex-end; }
         .chat-msg.advisor { background: var(--bg-card); color: #fff; align-self: flex-start; border: 1px solid var(--border); }
         .chat-footer { padding: 16px; background: var(--bg-card); border-top: 1px solid var(--border); display: flex; gap: 8px; }
-        .chat-input { flex: 1; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; color: #fff; font-size: 0.85rem; }
+        .chat-input { flex: 1; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; color: #fff; font-size: 0.85rem; outline: none; }
         .chat-send { background: var(--blue); color: #fff; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; }
 
         /* Main View Layout */
@@ -89,7 +89,7 @@
         </div>
         <div style="display:flex; align-items:center; gap:16px;">
             <select class="profile-select" id="roleSelector" onchange="handleProfileSwitch(this.value)">
-                <option value="client">👤 Viewing as: Client Account</option>
+                <option value="client" selected>👤 Viewing as: Client Account</option>
                 <option value="agent">👔 Viewing as: Closer / Sales Agent</option>
                 <option value="supervisor">⭐ Viewing as: Julian Sterling (Supervisor)</option>
             </select>
@@ -113,14 +113,14 @@
         </div>
     </div>
 
-    <!-- Content Area -->
+    <!-- Main View Layout -->
     <div class="content-area">
         <div class="chart-pane" id="tv_chart"></div>
         <div class="order-pane">
             <h3 style="margin-bottom:16px;">Quick Trade</h3>
             <button style="width:100%; background:var(--green); color:#000; border:none; padding:12px; font-weight:700; border-radius:6px; margin-bottom:8px; cursor:pointer;" onclick="alert('Buy order sent to CRM!')">Comprar</button>
             <button style="width:100%; background:#2a2e39; color:#fff; border:1px solid var(--border); padding:12px; font-weight:700; border-radius:6px; cursor:pointer;" onclick="alert('Sell order sent to CRM!')">Vender</button>
-            <button style="width:100%; background:var(--blue); color:#fff; border:none; padding:12px; font-weight:700; border-radius:6px; margin-top:16px; cursor:pointer;" onclick="toggleChat()">💬 Open Support Chat</button>
+            <button style="width:100%; background:var(--blue); color:#fff; border:none; padding:12px; font-weight:700; border-radius:6px; margin-top:16px; cursor:pointer;" onclick="toggleChat()">💬 Support Chat</button>
         </div>
     </div>
 
@@ -198,7 +198,6 @@
 
             const chatBody = document.getElementById('chatBody');
             
-            // Append client message
             const msg = document.createElement('div');
             msg.className = 'chat-msg client';
             msg.textContent = text;
@@ -207,7 +206,6 @@
             input.value = '';
             chatBody.scrollTop = chatBody.scrollHeight;
 
-            // Simulate CRM notification & automated advisor response
             setTimeout(() => {
                 const reply = document.createElement('div');
                 reply.className = 'chat-msg advisor';
