@@ -1,20 +1,24 @@
 ﻿from fastapi import FastAPI
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import HTMLResponse
 from pathlib import Path
 
-app = FastAPI(title="Verum ECN Financial Terminal")
+app = FastAPI(title="Verum Trady Terminal & Portal")
 
 BASE_DIR = Path(__file__).resolve().parent
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 async def read_root():
-    """Serves the main Supervisor / Broker Terminal view."""
-    return FileResponse(BASE_DIR / "dashboard.html")
+    """Serves the Broker / Supervisor Terminal."""
+    html_content = Path(BASE_DIR / "dashboard.html").read_text(encoding="utf-8")
+    return HTMLResponse(content=html_content)
 
 @app.get("/client", response_class=HTMLResponse)
 async def read_client_portal():
-    """Serves the Client Trading Portal interface (matching Bit Trady / client spec)."""
-    client_html_path = BASE_DIR / "client.html"
-    if client_html_path.exists():
-        return FileResponse(client_html_path)
-    return FileResponse(BASE_DIR / "dashboard.html")
+    """Serves the Client Trading Portal (eToro UI)."""
+    client_path = BASE_DIR / "client.html"
+    if client_path.exists():
+        html_content = Path(client_path).read_text(encoding="utf-8")
+        return HTMLResponse(content=html_content)
+    # Fallback to dashboard if client.html doesn't exist
+    html_content = Path(BASE_DIR / "dashboard.html").read_text(encoding="utf-8")
+    return HTMLResponse(content=html_content)

@@ -9,137 +9,165 @@
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
         :root {
-            --bg-main: #f8fafc;
-            --bg-card: #ffffff;
-            --border: #e2e8f0;
-            --text: #0f172a;
-            --text-muted: #64748b;
-            --green: #10b981;
+            --bg-dark: #121418;
+            --bg-card: #1e222d;
+            --bg-drawer: #171a21;
+            --border: #2a2e39;
+            --text-main: #ffffff;
+            --text-muted: #848e9c;
+            --green: #22c55e;
             --red: #ef4444;
             --blue: #2563eb;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg-main); color: var(--text); }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-main); height: 100vh; overflow: hidden; }
 
         /* Top Navbar */
-        .navbar { height: 60px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
-        .logo { font-weight: 700; font-size: 1.15rem; color: var(--blue); display: flex; align-items: center; gap: 8px; }
-        .logo span { font-size: 0.75rem; background: rgba(37, 99, 235, 0.1); padding: 2px 6px; border-radius: 4px; }
-        .nav-right { display: flex; align-items: center; gap: 16px; }
-        .btn-deposit { background: #0f172a; color: white; padding: 8px 18px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; border: none; cursor: pointer; }
-        .profile-select { background: #f1f5f9; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-size: 0.8rem; font-weight: 500; color: var(--text); cursor: pointer; }
+        .navbar { height: 60px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
+        .nav-left { display: flex; align-items: center; gap: 16px; }
+        .menu-btn { background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; }
+        .brand { font-weight: 700; font-size: 1.1rem; color: var(--blue); }
+
+        .profile-select { background: #2a2e39; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-size: 0.8rem; font-weight: 500; color: #fff; cursor: pointer; }
 
         /* Balance Bar */
-        .balance-bar { display: flex; gap: 32px; background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 12px 24px; font-size: 0.825rem; }
-        .balance-item span { display: block; color: var(--text-muted); font-size: 0.725rem; text-transform: uppercase; font-weight: 600; }
-        .balance-item strong { font-size: 1rem; color: var(--text); }
+        .balance-strip { display: flex; gap: 24px; background: #171a21; padding: 10px 20px; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
+        .balance-item span { color: var(--text-muted); font-size: 0.7rem; display: block; }
 
-        /* Layout Grid */
-        .trading-container { display: grid; grid-template-columns: 1fr 340px; height: calc(100vh - 120px); }
-        .chart-section { padding: 16px; border-right: 1px solid var(--border); }
-        .order-panel { padding: 20px; background: var(--bg-card); }
+        /* Side Drawer Navigation (eToro Style) */
+        .drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; }
+        .drawer { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: var(--bg-drawer); border-right: 1px solid var(--border); z-index: 201; transition: left 0.3s ease; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; overflow-y: auto; }
+        .drawer.active { left: 0; }
 
-        /* Order Form */
-        .order-header { display: flex; gap: 8px; margin-bottom: 20px; }
-        .btn-buy { flex: 1; background: var(--green); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 700; cursor: pointer; }
-        .btn-sell { flex: 1; background: #f1f5f9; color: var(--text); border: 1px solid var(--border); padding: 12px; border-radius: 6px; font-weight: 700; cursor: pointer; }
+        .profile-card { background: var(--bg-card); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+        .profile-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 8px; }
+        .progress-fill { width: 20%; height: 100%; background: var(--green); }
 
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
-        .form-control { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; }
+        /* Quick Tools Grid */
+        .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .tool-card { background: var(--bg-card); padding: 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; text-decoration: none; color: #fff; display: flex; flex-direction: column; gap: 6px; cursor: pointer; }
+
+        .drawer-links { list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem; }
+        .drawer-links a { color: var(--text-muted); text-decoration: none; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .drawer-links a:hover { color: #fff; }
+
+        .btn-deposit-green { background: var(--green); color: #000; border: none; padding: 14px; border-radius: 24px; font-weight: 700; width: 100%; cursor: pointer; text-align: center; font-size: 0.95rem; }
+
+        /* Main View Layout */
+        .content-area { height: calc(100vh - 105px); display: grid; grid-template-columns: 1fr 320px; }
+        .chart-pane { border-right: 1px solid var(--border); }
+        .order-pane { padding: 20px; background: var(--bg-card); }
     </style>
 </head>
 <body>
 
-    <!-- Header Navbar -->
+    <!-- Top Navbar -->
     <div class="navbar">
-        <div class="logo">⚡ Verum Trady <span>Client Portal</span></div>
-        <div class="nav-right">
-            <!-- Profile Switcher to address employee/supervisor view feedback -->
+        <div class="nav-left">
+            <button class="menu-btn" onclick="toggleDrawer()">☰</button>
+            <div class="brand">⚡ Verum Trady</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px;">
             <select class="profile-select" onchange="handleProfileSwitch(this.value)">
                 <option value="client">👤 Viewing as: Client Account</option>
                 <option value="agent">👔 Viewing as: Closer / Sales Agent</option>
                 <option value="supervisor">⭐ Viewing as: Julian Sterling (Supervisor)</option>
             </select>
-            <button class="btn-deposit">DEPOSITAR</button>
-            <a href="/" style="font-size:0.8rem; color:var(--text-muted); text-decoration:none;">Supervisor Terminal ➔</a>
+            <a href="/" style="color:var(--text-muted); text-decoration:none; font-size:0.8rem;">Supervisor Terminal ➔</a>
         </div>
     </div>
 
-    <!-- Account Balance Meters -->
-    <div class="balance-bar">
+    <!-- Balance Strip -->
+    <div class="balance-strip">
         <div class="balance-item">
-            <span>Total Balance</span>
+            <span>Portfolio Balance</span>
             <strong>$254.36 USD</strong>
         </div>
         <div class="balance-item">
-            <span>Cuota</span>
-            <strong>$0.00</strong>
-        </div>
-        <div class="balance-item">
-            <span>Equity</span>
-            <strong>$254.36</strong>
-        </div>
-        <div class="balance-item">
-            <span>Margin</span>
-            <strong>$0.00</strong>
-        </div>
-        <div class="balance-item">
-            <span>Margin Free</span>
+            <span>Available Cash</span>
             <strong style="color:var(--green);">$254.36</strong>
         </div>
-    </div>
-
-    <!-- Trading Dashboard -->
-    <div class="trading-container">
-        <!-- Interactive Chart -->
-        <div class="chart-section" id="tv_chart_container"></div>
-
-        <!-- Order Execution Panel -->
-        <div class="order-panel">
-            <div style="font-weight:700; font-size:1.1rem; margin-bottom:16px;">Libre 254,36 USD</div>
-            <div class="order-header">
-                <button class="btn-buy" onclick="alert('Order executed successfully!')">Comprar</button>
-                <button class="btn-sell" onclick="alert('Sell order placed!')">Vender</button>
-            </div>
-
-            <div class="form-group">
-                <label>Volumen</label>
-                <input type="text" class="form-control" value="0.01">
-            </div>
-            <div class="form-group">
-                <label>Símbolo</label>
-                <select class="form-control">
-                    <option>BRENT</option>
-                    <option>EUR/USD</option>
-                    <option>XAU/USD (Gold)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Apalancamiento</label>
-                <input type="text" class="form-control" value="1:75" readonly>
-            </div>
+        <div class="balance-item">
+            <span>Active Trades</span>
+            <strong>0 Open Positions</strong>
         </div>
     </div>
 
-    <script type="text/javascript">
-        new TradingView.widget({
-            "autosize": true,
-            "symbol": "TVC:UKOIL",
-            "interval": "D",
-            "timezone": "Etc/UTC",
-            "theme": "light",
-            "style": "1",
-            "locale": "en",
-            "container_id": "tv_chart_container"
-        });
+    <!-- Content Area -->
+    <div class="content-area">
+        <div class="chart-pane" id="tv_chart"></div>
+        <div class="order-pane">
+            <h3 style="margin-bottom:16px;">Quick Trade</h3>
+            <button style="width:100%; background:var(--green); color:#000; border:none; padding:12px; font-weight:700; border-radius:6px; margin-bottom:8px; cursor:pointer;" onclick="alert('Buy order sent to CRM!')">Comprar</button>
+            <button style="width:100%; background:#2a2e39; color:#fff; border:1px solid var(--border); padding:12px; font-weight:700; border-radius:6px; cursor:pointer;" onclick="alert('Sell order sent to CRM!')">Vender</button>
+        </div>
+    </div>
+
+    <!-- eToro Side Drawer -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+    <div class="drawer" id="sideDrawer">
+        <div>
+            <!-- User Profile Header -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="avatar">JS</div>
+                    <div>
+                        <div style="font-weight:700; font-size:0.9rem;">Julián Sterling</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">20% completado</div>
+                    </div>
+                </div>
+                <div class="progress-bar"><div class="progress-fill"></div></div>
+                <div style="font-size:0.8rem; color:var(--green); margin-top:8px; font-weight:600;">🥉 Bronze Club</div>
+            </div>
+
+            <!-- Quick Cards Grid -->
+            <div class="tools-grid">
+                <a class="tool-card">📅 Calendario económico</a>
+                <a class="tool-card">👥 CopyTrader</a>
+                <a class="tool-card" onclick="alert('Withdrawal request logged to advisor')">🏦 Retirar</a>
+                <a class="tool-card">📖 Academia</a>
+            </div>
+
+            <!-- Menu List -->
+            <ul class="drawer-links">
+                <li><a href="#">⚙️ Configuración</a></li>
+                <li><a href="#">📱 App Store</a></li>
+                <li><a href="#">🌟 Smart Portfolios</a></li>
+                <li><a onclick="alert('Support alert dispatched to advisor!')">💬 Support & Help</a></li>
+            </ul>
+        </div>
+
+        <div>
+            <button class="btn-deposit-green" onclick="alert('Deposit workflow opened')">Añadir fondos</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('sideDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+            drawer.classList.toggle('active');
+            overlay.style.display = drawer.classList.contains('active') ? 'block' : 'none';
+        }
 
         function handleProfileSwitch(role) {
             if (role === 'supervisor' || role === 'agent') {
                 window.location.href = '/';
             }
         }
+
+        new TradingView.widget({
+            "autosize": true,
+            "symbol": "TVC:UKOIL",
+            "interval": "D",
+            "timezone": "Etc/UTC",
+            "theme": "dark",
+            "style": "1",
+            "container_id": "tv_chart"
+        });
     </script>
 </body>
 </html>
