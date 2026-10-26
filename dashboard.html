@@ -7,40 +7,26 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --hud-bg: #050508;
-            --hud-panel: #0a0f18;
-            --hud-card: #111827;
-            --hud-border: #1e293b;
-            --hud-glow: #00f0ff;
-            --hud-gold: #fbbf24;
-            --hud-text: #f8fafc;
-            --hud-muted: #64748b;
-            --hud-green: #10b981;
-            --hud-red: #ef4444;
-            --font-ui: 'Rajdhani', sans-serif;
-            --font-data: 'JetBrains Mono', monospace;
+            --hud-bg: #050508; --hud-panel: #0a0f18; --hud-card: #111827;
+            --hud-border: #1e293b; --hud-glow: #00f0ff; --hud-gold: #fbbf24;
+            --hud-text: #f8fafc; --hud-muted: #64748b; --hud-green: #10b981; --hud-red: #ef4444;
+            --font-ui: 'Rajdhani', sans-serif; --font-data: 'JetBrains Mono', monospace;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: var(--font-ui); background: var(--hud-bg); color: var(--hud-text); height: 100vh; overflow: hidden; display: flex; }
-        
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--hud-bg); }
         ::-webkit-scrollbar-thumb { background: var(--hud-border); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--hud-glow); }
 
-        /* Sidebar */
         .sidebar { width: 260px; background: var(--hud-panel); border-right: 1px solid var(--hud-border); display: flex; flex-direction: column; padding: 24px 0; z-index: 10; }
         .brand { font-family: var(--font-data); font-size: 1.2rem; font-weight: 700; color: var(--hud-glow); padding: 0 24px 24px; border-bottom: 1px solid var(--hud-border); letter-spacing: 2px; text-shadow: 0 0 10px rgba(0,240,255,0.3); }
         .nav-item { padding: 14px 24px; color: var(--hud-muted); cursor: pointer; font-size: 1rem; font-weight: 600; letter-spacing: 1px; transition: all 0.3s; display: flex; align-items: center; gap: 12px; border-left: 3px solid transparent; }
         .nav-item:hover { color: var(--hud-text); background: rgba(0,240,255,0.05); }
-        .nav-item.active { color: var(--hud-glow); background: rgba(0,240,255,0.1); border-left-color: var(--hud-glow); text-shadow: 0 0 8px rgba(0,240,255,0.4); }
+        .nav-item.active { color: var(--hud-glow); background: rgba(0,240,255,0.1); border-left-color: var(--hud-glow); }
         .user-card { margin: auto 24px 24px; padding: 16px; background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; }
         .user-name { font-weight: 700; font-size: 1.1rem; }
         .user-role { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-gold); margin-top: 4px; letter-spacing: 1px; }
 
-        /* Main Content */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .top-bar { height: 64px; background: var(--hud-panel); border-bottom: 1px solid var(--hud-border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
         .page-title { font-size: 1.2rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
@@ -51,7 +37,14 @@
 
         .content-area { flex: 1; overflow-y: auto; padding: 32px; }
 
-        /* Tables */
+        /* Dynamic Filter Tabs */
+        .filter-tabs { display: flex; gap: 12px; margin-bottom: 20px; align-items: center; }
+        .filter-tab { background: var(--hud-card); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 8px 16px; border-radius: 4px; font-family: var(--font-data); font-size: 0.8rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .filter-tab:hover { border-color: var(--hud-glow); }
+        .filter-tab.active { background: rgba(0,240,255,0.1); border-color: var(--hud-glow); color: var(--hud-glow); }
+        .filter-tab.add-btn { color: var(--hud-gold); border-color: var(--hud-gold); }
+        .filter-tab.add-btn:hover { background: rgba(251,191,36,0.1); }
+
         .data-table-container { background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         th { background: #0f172a; color: var(--hud-muted); font-family: var(--font-data); font-size: 0.75rem; text-transform: uppercase; padding: 16px; text-align: left; letter-spacing: 1px; border-bottom: 1px solid var(--hud-border); }
@@ -59,11 +52,11 @@
         tbody tr { cursor: pointer; }
         tbody tr:hover { background: rgba(0,240,255,0.03); }
         
-        .client-link { color: var(--hud-text); font-weight: 700; text-decoration: none; transition: color 0.2s; }
+        .client-link { color: var(--hud-text); font-weight: 700; text-decoration: none; }
         .client-link:hover { color: var(--hud-glow); }
         .client-id { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); margin-top: 4px; }
         .action-icons { display: flex; gap: 8px; margin-top: 6px; }
-        .action-icons span { cursor: pointer; font-size: 1rem; opacity: 0.6; transition: opacity 0.2s; }
+        .action-icons span { cursor: pointer; font-size: 1rem; opacity: 0.6; }
         .action-icons span:hover { opacity: 1; }
 
         .status-select { background: var(--hud-bg); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 6px 10px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; outline: none; cursor: pointer; }
@@ -106,7 +99,7 @@
         .tabs { display: flex; border-bottom: 1px solid var(--hud-border); margin-bottom: 24px; }
         .tab-btn { background: none; border: none; color: var(--hud-muted); padding: 12px 24px; font-family: var(--font-data); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s; }
         .tab-btn:hover { color: var(--hud-text); }
-        .tab-btn.active { color: var(--hud-glow); border-bottom-color: var(--hud-glow); text-shadow: 0 0 8px rgba(0,240,255,0.4); }
+        .tab-btn.active { color: var(--hud-glow); border-bottom-color: var(--hud-glow); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
@@ -116,33 +109,36 @@
 </head>
 <body>
 
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="brand">VERUM // CRM</div>
-        <div class="nav-item active" onclick="showView('leads', this)">📡 LEAD TELEMETRY</div>
-        <div class="nav-item" onclick="showView('analytics', this)">📊 ANALYTICS</div>
-        <div class="nav-item" onclick="showView('settings', this)">⚙️ SYSTEM CONFIG</div>
-        
+        <div class="nav-item active">📡 LEAD TELEMETRY</div>
+        <div class="nav-item">📊 ANALYTICS</div>
+        <div class="nav-item">️ SYSTEM CONFIG</div>
         <div class="user-card">
             <div class="user-name">Julian Sterling</div>
             <div class="user-role">[ROOT] SUPERVISOR</div>
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
         <div class="top-bar">
             <div class="page-title" id="pageTitle">LEAD <span>TELEMETRY</span> OVERVIEW</div>
             <div class="top-actions">
                 <button class="btn-hud">+ INJECT LEAD</button>
-                <a href="/client" class="btn-hud" style="text-decoration:none;">🌐 CLIENT PORTAL</a>
+                <a href="/client" class="btn-hud" style="text-decoration:none;"> CLIENT PORTAL</a>
             </div>
         </div>
 
         <div class="content-area">
-            
-            <!-- VIEW 1: LEAD LIST -->
             <div id="view-leads">
+                <!-- Dynamic Filter Tabs -->
+                <div class="filter-tabs">
+                    <div class="filter-tab add-btn" onclick="addFilter()">+ ADD AGENT</div>
+                    <div class="filter-tab active" onclick="filterTable('ALL', this)">ALL DATABASE</div>
+                    <div class="filter-tab" onclick="filterTable('LUIS', this)">LUIS</div>
+                    <div class="filter-tab" onclick="filterTable('MARIA', this)">MARIA</div>
+                </div>
+
                 <div class="data-table-container">
                     <table>
                         <thead>
@@ -156,6 +152,7 @@
                                 <th>DEPOSIT / PROFIT</th>
                                 <th>STATUS</th>
                                 <th>RETENTION</th>
+                                <th>SUB-STATUS (CLOSER ONLY)</th>
                                 <th>AGENT LOG</th>
                             </tr>
                         </thead>
@@ -164,9 +161,8 @@
                 </div>
             </div>
 
-            <!-- VIEW 2: CLIENT PROFILE -->
             <div id="view-profile" class="profile-view">
-                <button class="btn-hud" onclick="showView('leads', document.querySelector('.nav-item'))" style="margin-bottom: 24px;">← RETURN TO TELEMETRY</button>
+                <button class="btn-hud" onclick="showView('leads')" style="margin-bottom: 24px;">← RETURN TO TELEMETRY</button>
                 
                 <div class="profile-header">
                     <div class="profile-title">
@@ -194,10 +190,8 @@
                         <div class="card-title">Client Intelligence</div>
                         <div class="info-row"><div class="info-label">Email</div><div class="info-val">client@email.com</div></div>
                         <div class="info-row"><div class="info-label">Phone</div><div class="info-val highlight">+1 234 567 890</div></div>
-                        <div class="info-row"><div class="info-label">Country</div><div class="info-val">Argentina 🇷</div></div>
-                        <div class="info-row"><div class="info-label">Citizenship</div><div class="info-val">AR</div></div>
-                        <div class="info-row"><div class="info-label">Original Agent</div><div class="info-val">Katerine Sanchez</div></div>
-                        <div class="info-row"><div class="info-label">Source Funnel</div><div class="info-val">Robo 3000 App</div></div>
+                        <div class="info-row"><div class="info-label">Country</div><div class="info-val">Argentina 🇦🇷</div></div>
+                        <div class="info-row"><div class="info-label">Assigned Agent</div><div class="info-val" id="p-agent">Luis</div></div>
                     </div>
 
                     <div class="hud-card">
@@ -206,7 +200,6 @@
                             <li>191.101.34.178</li>
                             <li>193.29.251.184</li>
                             <li>186.157.56.220</li>
-                            <li>146.190.227.219</li>
                         </ul>
                     </div>
 
@@ -224,9 +217,7 @@
                     <div class="tabs">
                         <button class="tab-btn active" onclick="switchTab('activity', this)">Activity Timeline</button>
                         <button class="tab-btn" onclick="switchTab('kyc', this)">KYC / Opener Intel</button>
-                        <button class="tab-btn" onclick="switchTab('transactions', this)">Transaction Ledger</button>
                     </div>
-                    
                     <div id="tab-activity" class="tab-content active">
                         <table style="width: 100%;">
                             <thead><tr><th>Action</th><th>Operator</th><th>IP Address</th><th>Timestamp</th></tr></thead>
@@ -236,7 +227,6 @@
                             </tbody>
                         </table>
                     </div>
-
                     <div id="tab-kyc" class="tab-content">
                         <div class="kyc-text">
                             <p><strong>1. EDAD:</strong> 56 AÑOS</p>
@@ -263,65 +253,85 @@
                             <p><strong>22. CARACTERISTICAS:</strong> CL HABLADOR, INTERRUMPE A VECES, LE GUSTA HABLAR DE SI</p>
                         </div>
                     </div>
-
-                    <div id="tab-transactions" class="tab-content">
-                        <p style="color: var(--hud-muted); font-family: var(--font-data);">Ledger data synchronizing...</p>
-                    </div>
                 </div>
             </div>
-
         </div>
     </div>
 
     <script>
+        // Simulated Database with Unique IDs and Agent Assignment
         const clients = [
-            { id: "a8d23468", name: "Martha Herrera", country: "Argentina", flag: "🇷", lastLogin: "20.02.26 14:35", balance: "$0", withdrawn: "-$ 51,457", deposit: "$51,457", status: "DEPOSITOR", retention: "RECOVERY", comment: "CI se puso en contacto para d...", comments: [{agent: "Henry Rossi", time: "20.02.26 14:35", text: "CI se puso en contacto para discutir la recuperación de fondos."}] },
-            { id: "b82c47a3", name: "Orlando Amado Aguilar", country: "Argentina", flag: "🇦🇷", lastLogin: "06.02.26 16:50", balance: "$0", withdrawn: "-$ 65,288", deposit: "$65,288", status: "DEPOSITOR", retention: "REASSIGN", comment: "CI no da respuesta ni por 805...", comments: [{agent: "Henry Rossi", time: "06.02.26 16:50", text: "CI no da respuesta ni por 805. Reasignando a agente de recuperación."}] },
-            { id: "60a1d13f", name: "Victor Benito Paez Grance", country: "Paraguay", flag: "🇾", lastLogin: "06.02.26 16:39", balance: "$0", withdrawn: "-$ 50,914.14", deposit: "$50,914.14", status: "DEPOSITOR", retention: "ACTIVE", comment: "Directo buzón de voz, parece c...", comments: [{agent: "Henry Rossi", time: "06.02.26 16:39", text: "Directo buzón de voz, parece que está en el trabajo. Llamar mañana."}] },
-            { id: "e3a8cc3e", name: "Flora Paniagua", country: "Paraguay", flag: "🇵🇾", lastLogin: "06.02.26 16:25", balance: "$332.58", withdrawn: "$250.87", deposit: "$81.71", status: "DEPOSITOR", retention: "NEW", comment: "Se intentó retomar el contac...", comments: [{agent: "Henry Rossi", time: "06.02.26 16:25", text: "Se intentó retomar el contacto para ofrecer plan de inversión premium."}] }
+            { txId: "TX-8839201", agent: "LUIS", name: "Martha Herrera", country: "Argentina", flag: "🇦", lastLogin: "20.02.26 14:35", balance: "$0", withdrawn: "-$ 51,457", deposit: "$51,457", status: "DEPOSITOR", retention: "RECOVERY", subStatus: "NO POTENTIAL", comment: "CI se puso en contacto para d...", comments: [{agent: "Henry Rossi", time: "20.02.26 14:35", text: "CI se puso en contacto para discutir la recuperación de fondos."}] },
+            { txId: "TX-8839202", agent: "MARIA", name: "Orlando Amado Aguilar", country: "Argentina", flag: "🇦🇷", lastLogin: "06.02.26 16:50", balance: "$0", withdrawn: "-$ 65,288", deposit: "$65,288", status: "DEPOSITOR", retention: "REASSIGN", subStatus: "NO INTEREST", comment: "CI no da respuesta ni por 805...", comments: [{agent: "Henry Rossi", time: "06.02.26 16:50", text: "CI no da respuesta ni por 805. Reasignando a agente de recuperación."}] },
+            { txId: "TX-8839203", agent: "LUIS", name: "Victor Benito Paez Grance", country: "Paraguay", flag: "🇵🇾", lastLogin: "06.02.26 16:39", balance: "$0", withdrawn: "-$ 50,914.14", deposit: "$50,914.14", status: "DEPOSITOR", retention: "ACTIVE", subStatus: "POTENTIAL", comment: "Directo buzón de voz, parece c...", comments: [{agent: "Henry Rossi", time: "06.02.26 16:39", text: "Directo buzón de voz, parece que está en el trabajo. Llamar mañana."}] },
+            { txId: "TX-8839204", agent: "MARIA", name: "Flora Paniagua", country: "Paraguay", flag: "🇵🇾", lastLogin: "06.02.26 16:25", balance: "$332.58", withdrawn: "$250.87", deposit: "$81.71", status: "DEPOSITOR", retention: "NEW", subStatus: "UNDER AGE", comment: "Se intentó retomar el contac...", comments: [{agent: "Henry Rossi", time: "06.02.26 16:25", text: "Se intentó retomar el contacto para ofrecer plan de inversión premium."}] }
         ];
 
-        const tbody = document.getElementById('lead-table-body');
-        clients.forEach((c, i) => {
-            const tr = document.createElement('tr');
-            tr.onclick = () => openProfile(i);
-            tr.innerHTML = `
-                <td><input type="checkbox" onclick="event.stopPropagation()"></td>
-                <td>
-                    <a href="#" class="client-link" onclick="event.preventDefault(); openProfile(${i})">${c.name}</a>
-                    <div class="client-id">${c.id}-...</div>
-                    <div class="action-icons"><span title="Email">✉️</span><span title="Call">📞</span></div>
-                </td>
-                <td>${c.country} ${c.flag}</td>
-                <td style="font-family: var(--font-data); font-size: 0.8rem;">${c.lastLogin}</td>
-                <td style="font-weight: 700;">${c.balance}</td>
-                <td class="text-red">${c.withdrawn}</td>
-                <td style="font-weight: 700;">${c.deposit}</td>
-                <td><select class="status-select" onclick="event.stopPropagation()"><option selected>${c.status}</option><option>NEW LEAD</option></select></td>
-                <td><select class="status-select" onclick="event.stopPropagation()"><option>NEW</option><option selected>${c.retention}</option><option>REASSIGN</option><option>RECOVERY</option></select></td>
-                <td><div class="comment-preview">${c.comment}</div></td>
-            `;
-            tbody.appendChild(tr);
-        });
+        let currentFilter = 'ALL';
 
-        function showView(viewName, navEl) {
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            if(navEl) navEl.classList.add('active');
+        function renderTable() {
+            const tbody = document.getElementById('lead-table-body');
+            tbody.innerHTML = '';
             
-            document.getElementById('view-leads').style.display = viewName === 'leads' ? 'block' : 'none';
-            document.getElementById('view-profile').style.display = viewName === 'profile' ? 'block' : 'none';
-            
-            const titles = { 'leads': 'LEAD <span>TELEMETRY</span> OVERVIEW', 'profile': 'CLIENT <span>INTELLIGENCE</span> DOSSIER' };
-            document.getElementById('pageTitle').innerHTML = titles[viewName] || titles['leads'];
+            const filteredClients = currentFilter === 'ALL' ? clients : clients.filter(c => c.agent === currentFilter);
+
+            filteredClients.forEach((c) => {
+                const tr = document.createElement('tr');
+                tr.onclick = () => openProfile(c.txId);
+                tr.innerHTML = `
+                    <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                    <td>
+                        <a href="#" class="client-link" onclick="event.preventDefault(); openProfile('${c.txId}')">${c.name}</a>
+                        <div class="client-id">${c.txId}</div>
+                        <div class="action-icons"><span title="Email">✉️</span><span title="Call">📞</span></div>
+                    </td>
+                    <td>${c.country} ${c.flag}</td>
+                    <td style="font-family: var(--font-data); font-size: 0.8rem;">${c.lastLogin}</td>
+                    <td style="font-weight: 700;">${c.balance}</td>
+                    <td class="text-red">${c.withdrawn}</td>
+                    <td style="font-weight: 700;">${c.deposit}</td>
+                    <td><select class="status-select" onclick="event.stopPropagation()"><option selected>${c.status}</option><option>NEW LEAD</option></select></td>
+                    <td><select class="status-select" onclick="event.stopPropagation()"><option>NEW</option><option selected>${c.retention}</option><option>REASSIGN</option><option>RECOVERY</option></select></td>
+                    <td><select class="status-select" style="border-color: var(--hud-gold); color: var(--hud-gold);" onclick="event.stopPropagation()"><option selected>${c.subStatus}</option><option>NO POTENTIAL</option><option>UNDER AGE</option><option>POTENTIAL</option><option>NO INTEREST</option></select></td>
+                    <td><div class="comment-preview">${c.comment}</div></td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
-        function openProfile(index) {
-            const c = clients[index];
+        function filterTable(agent, el) {
+            currentFilter = agent;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            renderTable();
+        }
+
+        function addFilter() {
+            const name = prompt("Enter Agent Name (e.g., FERNANDO):").trim().toUpperCase();
+            if (name && !document.querySelector(`.filter-tab[onclick="filterTable('${name}', this)"]`)) {
+                const tab = document.createElement('div');
+                tab.className = 'filter-tab';
+                tab.textContent = name;
+                tab.onclick = function() { filterTable(name, this); };
+                document.querySelector('.filter-tabs').appendChild(tab);
+            }
+        }
+
+        function showView(viewName) {
+            document.getElementById('view-leads').style.display = viewName === 'leads' ? 'block' : 'none';
+            document.getElementById('view-profile').style.display = viewName === 'profile' ? 'block' : 'none';
+            document.getElementById('pageTitle').innerHTML = viewName === 'leads' ? 'LEAD <span>TELEMETRY</span> OVERVIEW' : 'CLIENT <span>INTELLIGENCE</span> DOSSIER';
+        }
+
+        function openProfile(txId) {
+            const c = clients.find(client => client.txId === txId);
+            if (!c) return;
             document.getElementById('p-name').textContent = c.name;
-            document.getElementById('p-id').textContent = c.id;
+            document.getElementById('p-id').textContent = c.txId;
             document.getElementById('p-balance').textContent = c.balance;
             document.getElementById('p-deposited').textContent = c.deposit;
             document.getElementById('p-retention').textContent = c.retention;
+            document.getElementById('p-agent').textContent = c.agent;
 
             const commentContainer = document.getElementById('p-comments');
             commentContainer.innerHTML = '';
@@ -338,13 +348,14 @@
 
         function addComment() {
             const input = document.getElementById('new-comment');
-            if(!input.value.trim()) return;
+            const text = input.value.trim();
+            if(!text) return;
             const container = document.getElementById('p-comments');
             const now = new Date().toLocaleString();
             container.innerHTML = `
                 <div class="comment-item">
                     <div class="comment-meta"><span>Julian Sterling (You)</span><span>${now}</span></div>
-                    <div class="comment-text">${input.value}</div>
+                    <div class="comment-text">${text}</div>
                 </div>
             ` + container.innerHTML;
             input.value = '';
@@ -356,6 +367,9 @@
             btn.classList.add('active');
             document.getElementById(`tab-${tabId}`).classList.add('active');
         }
+
+        // Initial render
+        renderTable();
     </script>
 </body>
 </html>
