@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verum Trady | Investment Terminal</title>
+    <title>Verum Invest | Client Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
         :root {
-            --bg-dark: #050508; --bg-panel: #0a0f18; --bg-card: #111827;
+            --bg-dark: #030712; --bg-panel: #0b1120; --bg-card: #111827;
             --border: #1e293b; --text-main: #f8fafc; --text-muted: #64748b;
-            --accent: #00f0ff; --accent-glow: rgba(0, 240, 255, 0.4);
+            --accent: #0ea5e9; --accent-glow: rgba(14, 165, 233, 0.3);
             --green: #10b981; --red: #ef4444; --gold: #fbbf24;
             --font-ui: 'Inter', sans-serif; --font-data: 'JetBrains Mono', monospace;
         }
@@ -21,17 +21,26 @@
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
         .sidebar { width: 240px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 0; }
-        .brand { font-family: var(--font-data); font-size: 1.2rem; font-weight: 700; color: var(--accent); padding: 0 24px 24px; border-bottom: 1px solid var(--border); letter-spacing: 2px; text-shadow: 0 0 10px var(--accent-glow); }
-        .nav-item { padding: 14px 24px; color: var(--text-muted); cursor: pointer; font-size: 0.95rem; font-weight: 500; transition: all 0.3s; display: flex; align-items: center; gap: 12px; border-left: 3px solid transparent; }
+        
+        /* Premium Verum Invest Logo */
+        .brand-container { padding: 0 24px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+        .brand-logo { width: 36px; height: 36px; }
+        .brand-text { display: flex; flex-direction: column; }
+        .brand-name { font-family: 'Inter', sans-serif; font-size: 1.2rem; font-weight: 700; color: #fff; letter-spacing: 2px; line-height: 1; }
+        .brand-sub { font-family: 'Inter', sans-serif; font-size: 0.65rem; font-weight: 600; color: var(--accent); letter-spacing: 3px; margin-top: 4px; }
+
+        .nav-item { padding: 14px 24px; color: var(--text-muted); cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.3s; display: flex; align-items: center; gap: 12px; border-left: 3px solid transparent; }
         .nav-item:hover { color: var(--text-main); background: rgba(255,255,255,0.03); }
-        .nav-item.active { color: var(--accent); background: rgba(0,240,255,0.08); border-left-color: var(--accent); }
+        .nav-item.active { color: var(--accent); background: rgba(14,165,233,0.08); border-left-color: var(--accent); }
+        .nav-icon { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        
         .sidebar-footer { margin-top: auto; padding: 24px; border-top: 1px solid var(--border); }
-        .btn-deposit { background: var(--green); color: #000; border: none; padding: 14px; border-radius: 6px; font-weight: 700; width: 100%; cursor: pointer; font-size: 1rem; transition: all 0.3s; box-shadow: 0 0 15px rgba(16,185,129,0.3); }
-        .btn-deposit:hover { box-shadow: 0 0 25px rgba(16,185,129,0.6); transform: translateY(-1px); }
+        .btn-deposit { background: var(--green); color: #000; border: none; padding: 14px; border-radius: 6px; font-weight: 700; width: 100%; cursor: pointer; font-size: 0.95rem; transition: all 0.3s; box-shadow: 0 0 15px rgba(16,185,129,0.2); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-deposit:hover { box-shadow: 0 0 25px rgba(16,185,129,0.4); transform: translateY(-1px); }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
         .top-header { height: 64px; background: var(--bg-panel); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; position: relative; z-index: 50; }
-        .menu-btn { background: none; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; margin-right: 20px; padding: 4px 8px; border-radius: 4px; transition: background 0.2s; }
+        .menu-btn { background: none; border: none; color: var(--text-main); cursor: pointer; margin-right: 20px; padding: 4px; border-radius: 4px; transition: background 0.2s; display: flex; align-items: center; }
         .menu-btn:hover { background: rgba(255,255,255,0.1); }
         .page-title { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.5px; }
         .user-info { display: flex; align-items: center; gap: 16px; }
@@ -40,10 +49,9 @@
         .user-id { font-family: var(--font-data); font-size: 0.7rem; color: var(--text-muted); }
         .avatar { width: 36px; height: 36px; background: var(--accent); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; box-shadow: 0 0 10px var(--accent-glow); }
 
-        /* Hamburger Dropdown Menu */
         .nav-dropdown {
             position: absolute; top: 64px; left: 0; width: 260px;
-            background: rgba(10, 15, 24, 0.95); backdrop-filter: blur(10px);
+            background: rgba(11, 17, 32, 0.98); backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border); border-right: 1px solid var(--border);
             display: none; flex-direction: column; padding: 16px 0; z-index: 40;
             box-shadow: 10px 10px 30px rgba(0,0,0,0.5);
@@ -53,7 +61,7 @@
             padding: 12px 32px; color: var(--text-muted); text-decoration: none;
             font-size: 0.9rem; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 12px;
         }
-        .nav-dropdown a:hover { color: var(--accent); background: rgba(0,240,255,0.05); }
+        .nav-dropdown a:hover { color: var(--accent); background: rgba(14,165,233,0.05); }
         .nav-dropdown .divider { height: 1px; background: var(--border); margin: 8px 0; }
         .nav-dropdown .logout { color: var(--red); }
         .nav-dropdown .logout:hover { background: rgba(239,68,68,0.1); color: var(--red); }
@@ -61,26 +69,25 @@
         .view-container { flex: 1; overflow-y: auto; padding: 32px; display: none; }
         .view-container.active { display: block; }
 
-        .welcome-banner { background: linear-gradient(135deg, rgba(0,240,255,0.1), rgba(16,185,129,0.1)); border: 1px solid var(--border); padding: 24px; border-radius: 12px; margin-bottom: 24px; position: relative; overflow: hidden; }
+        .welcome-banner { background: linear-gradient(135deg, rgba(14,165,233,0.1), rgba(16,185,129,0.05)); border: 1px solid var(--border); padding: 24px; border-radius: 12px; margin-bottom: 24px; position: relative; overflow: hidden; }
         .welcome-banner::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); }
-        .welcome-banner h1 { font-size: 1.5rem; margin-bottom: 8px; }
+        .welcome-banner h1 { font-size: 1.5rem; margin-bottom: 8px; font-weight: 600; }
         .welcome-banner p { color: var(--text-muted); font-size: 0.9rem; }
 
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 32px; }
         .metric-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; transition: all 0.3s; }
-        .metric-card:hover { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,240,255,0.1); }
+        .metric-card:hover { border-color: var(--accent); box-shadow: 0 0 20px rgba(14,165,233,0.1); }
         .metric-label { color: var(--text-muted); font-family: var(--font-data); font-size: 0.7rem; font-weight: 500; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
         .metric-value { font-size: 2rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
         .metric-sub { font-size: 0.8rem; color: var(--green); font-family: var(--font-data); }
 
-        /* Realistic News Feed */
         .news-section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
         .news-section-title::before { content: ''; width: 4px; height: 20px; background: var(--gold); border-radius: 2px; }
         .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 32px; }
         .news-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; transition: all 0.3s; cursor: pointer; }
         .news-card:hover { border-color: var(--gold); transform: translateY(-2px); }
         .news-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .news-ticker { font-family: var(--font-data); font-size: 0.75rem; font-weight: 700; color: var(--accent); background: rgba(0,240,255,0.1); padding: 4px 8px; border-radius: 4px; }
+        .news-ticker { font-family: var(--font-data); font-size: 0.75rem; font-weight: 700; color: var(--accent); background: rgba(14,165,233,0.1); padding: 4px 8px; border-radius: 4px; }
         .news-time { font-size: 0.75rem; color: var(--text-muted); }
         .news-title { font-size: 1rem; font-weight: 600; line-height: 1.4; margin-bottom: 12px; }
         .news-source { font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
@@ -97,20 +104,20 @@
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; color: var(--text-muted); font-size: 0.8rem; margin-bottom: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
         .form-input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 6px; padding: 12px; color: var(--text-main); font-size: 0.9rem; outline: none; font-family: var(--font-data); transition: border 0.3s; }
-        .form-input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(0,240,255,0.1); }
+        .form-input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(14,165,233,0.1); }
         .btn-save { background: var(--accent); color: #000; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.9rem; transition: all 0.3s; }
         .btn-save:hover { box-shadow: 0 0 15px var(--accent-glow); }
 
         .chart-container { height: 100%; width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
 
-        .chat-fab { position: fixed; bottom: 32px; right: 32px; width: 60px; height: 60px; background: var(--accent); color: #000; border: none; border-radius: 50%; font-size: 1.5rem; cursor: pointer; box-shadow: 0 0 20px var(--accent-glow); z-index: 1000; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
-        .chat-fab:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--accent-glow); }
+        .chat-fab { position: fixed; bottom: 32px; right: 32px; width: 56px; height: 56px; background: var(--accent); color: #000; border: none; border-radius: 50%; cursor: pointer; box-shadow: 0 0 20px var(--accent-glow); z-index: 1000; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
+        .chat-fab:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--accent-glow); }
         
         .chat-drawer { position: fixed; top: 0; right: -400px; width: 380px; height: 100%; background: var(--bg-panel); border-left: 1px solid var(--border); z-index: 1001; transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
         .chat-drawer.active { right: 0; }
         .chat-header { padding: 20px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .chat-header h3 { font-size: 1rem; font-weight: 600; letter-spacing: 1px; }
-        .chat-close { background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; }
+        .chat-header h3 { font-size: 1rem; font-weight: 600; letter-spacing: 0.5px; }
+        .chat-close { background: none; border: none; color: var(--text-muted); cursor: pointer; }
         .chat-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
         .chat-msg { max-width: 85%; padding: 12px 16px; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; }
         .chat-msg.client { background: var(--accent); color: #000; align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 500; }
@@ -124,33 +131,82 @@
 <body>
 
     <div class="sidebar">
-        <div class="brand">VERUM // PORTAL</div>
-        <div class="nav-item active" onclick="switchView('home', this)">🏠 Home Dashboard</div>
-        <div class="nav-item" onclick="switchView('markets', this)">📈 Live Markets</div>
-        <div class="nav-item" onclick="switchView('transactions', this)">📜 Transactions</div>
-        <div class="nav-item" onclick="switchView('settings', this)">⚙️ Account Settings</div>
+        <div class="brand-container">
+            <!-- Verum Invest Logo SVG -->
+            <svg class="brand-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 5 L15 25 L25 5 L20 5 L15 15 L10 5 Z" fill="#0ea5e9"/>
+                <path d="M12 5 L22 25 L32 5 L27 5 L22 15 L17 5 Z" fill="#38bdf8" opacity="0.8"/>
+            </svg>
+            <div class="brand-text">
+                <span class="brand-name">VERUM</span>
+                <span class="brand-sub">INVEST</span>
+            </div>
+        </div>
+        
+        <div class="nav-item active" onclick="switchView('home', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Home Dashboard
+        </div>
+        <div class="nav-item" onclick="switchView('markets', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            Live Markets
+        </div>
+        <div class="nav-item" onclick="switchView('transactions', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Transactions
+        </div>
+        <div class="nav-item" onclick="switchView('settings', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            Account Settings
+        </div>
+        
         <div class="sidebar-footer">
-            <button class="btn-deposit" onclick="alert('Initializing secure deposit gateway...')">⚡ ADD FUNDS</button>
+            <button class="btn-deposit" onclick="alert('Initializing secure deposit gateway...')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                ADD FUNDS
+            </button>
         </div>
     </div>
 
     <div class="main-content">
-        <!-- Hamburger Dropdown Menu -->
         <div class="nav-dropdown" id="mainMenu">
-            <a onclick="switchView('home'); toggleMenu()">🏠 Home Dashboard</a>
-            <a onclick="switchView('withdrawals'); toggleMenu()">💸 Withdrawals</a>
-            <a onclick="switchView('transactions'); toggleMenu()">📜 Transactions</a>
-            <a onclick="switchView('markets'); toggleMenu()"> Trading / Markets</a>
+            <a onclick="switchView('home'); toggleMenu()">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                Home Dashboard
+            </a>
+            <a onclick="switchView('withdrawals'); toggleMenu()">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+                Withdrawals
+            </a>
+            <a onclick="switchView('transactions'); toggleMenu()">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Transactions
+            </a>
+            <a onclick="switchView('markets'); toggleMenu()">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                Trading / Markets
+            </a>
             <div class="divider"></div>
-            <a onclick="switchView('settings'); toggleMenu()">️ Settings</a>
-            <a onclick="toggleChat(); toggleMenu()">💬 Technical Support</a>
+            <a onclick="switchView('settings'); toggleMenu()">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                Settings
+            </a>
+            <a onclick="toggleChat(); toggleMenu()">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Technical Support
+            </a>
             <div class="divider"></div>
-            <a class="logout" onclick="alert('Logging out securely...'); toggleMenu()"> Log Out</a>
+            <a class="logout" onclick="alert('Logging out securely...'); toggleMenu()">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Log Out
+            </a>
         </div>
 
         <div class="top-header">
             <div style="display: flex; align-items: center;">
-                <button class="menu-btn" onclick="toggleMenu()">☰</button>
+                <button class="menu-btn" onclick="toggleMenu()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
                 <div class="page-title" id="page-title">Account Overview</div>
             </div>
             <div class="user-info">
@@ -230,7 +286,7 @@
             <div class="details-card">
                 <h3>Account Intelligence</h3>
                 <div class="detail-row"><span class="detail-label">Full Name</span><span class="detail-value">Julián Sterling</span></div>
-                <div class="detail-row"><span class="detail-label">Email Address</span><span class="detail-value">j.sterling@verumtrady.com</span></div>
+                <div class="detail-row"><span class="detail-label">Email Address</span><span class="detail-value">j.sterling@verum.invest</span></div>
                 <div class="detail-row"><span class="detail-label">Account ID</span><span class="detail-value">VT-8839201</span></div>
                 <div class="detail-row"><span class="detail-label">Account Tier</span><span class="detail-value" style="color: var(--accent);">Standard ECN</span></div>
                 <div class="detail-row"><span class="detail-label">Verification Status</span><span class="detail-value" style="color: var(--green);">VERIFIED ✓</span></div>
@@ -274,7 +330,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Email Address</label>
-                        <input type="email" class="form-input" value="j.sterling@verumtrady.com">
+                        <input type="email" class="form-input" value="j.sterling@verum.invest">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Current Password</label>
@@ -290,14 +346,16 @@
         </div>
     </div>
 
-    <button class="chat-fab" onclick="toggleChat()">💬</button>
+    <button class="chat-fab" onclick="toggleChat()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    </button>
     <div class="chat-drawer" id="chatDrawer">
         <div class="chat-header">
             <h3>TACTICAL SUPPORT</h3>
             <button class="chat-close" onclick="toggleChat()">✕</button>
         </div>
         <div class="chat-body" id="chatBody">
-            <div class="chat-msg advisor">Welcome to Verum Trady. I am your assigned advisor. How can I assist your portfolio today?</div>
+            <div class="chat-msg advisor">Welcome to Verum Invest. I am your assigned advisor. How can I assist your portfolio today?</div>
         </div>
         <div class="chat-footer">
             <input type="text" id="chatInput" class="chat-input" placeholder="Transmit message..." onkeypress="handleChatKey(event)">
@@ -322,7 +380,7 @@
                     document.getElementById('tv_chart').innerHTML = '';
                     new TradingView.widget({
                         "autosize": true, "symbol": "TVC:UKOIL", "interval": "D", "timezone": "Etc/UTC",
-                        "theme": "dark", "style": "1", "locale": "en", "toolbar_bg": "#0a0f18",
+                        "theme": "dark", "style": "1", "locale": "en", "toolbar_bg": "#0b1120",
                         "enable_publishing": false, "hide_top_toolbar": false, "container_id": "tv_chart"
                     });
                 }, 100);
@@ -333,7 +391,6 @@
             document.getElementById('mainMenu').classList.toggle('active');
         }
 
-        // Close menu when clicking outside
         document.addEventListener('click', function(event) {
             const menu = document.getElementById('mainMenu');
             const btn = document.querySelector('.menu-btn');

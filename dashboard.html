@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verum Trady | Tactical CRM Mainframe</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Verum Invest | Tactical CRM</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --hud-bg: #050508; --hud-panel: #0a0f18; --hud-card: #111827;
-            --hud-border: #1e293b; --hud-glow: #00f0ff; --hud-gold: #fbbf24;
+            --hud-bg: #030712; --hud-panel: #0b1120; --hud-card: #111827;
+            --hud-border: #1e293b; --hud-glow: #0ea5e9; 
             --hud-text: #f8fafc; --hud-muted: #64748b; --hud-green: #10b981; --hud-red: #ef4444;
-            --font-ui: 'Rajdhani', sans-serif; --font-data: 'JetBrains Mono', monospace;
+            --status-orange: #f97316; --status-blue: #3b82f6; --status-green: #10b981;
+            --font-ui: 'Inter', sans-serif; --font-data: 'JetBrains Mono', monospace;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: var(--font-ui); background: var(--hud-bg); color: var(--hud-text); height: 100vh; overflow: hidden; display: flex; }
@@ -19,75 +20,92 @@
         ::-webkit-scrollbar-thumb { background: var(--hud-border); border-radius: 3px; }
 
         .sidebar { width: 260px; background: var(--hud-panel); border-right: 1px solid var(--hud-border); display: flex; flex-direction: column; padding: 24px 0; z-index: 10; }
-        .brand { font-family: var(--font-data); font-size: 1.2rem; font-weight: 700; color: var(--hud-glow); padding: 0 24px 24px; border-bottom: 1px solid var(--hud-border); letter-spacing: 2px; text-shadow: 0 0 10px rgba(0,240,255,0.3); }
-        .nav-item { padding: 14px 24px; color: var(--hud-muted); cursor: pointer; font-size: 1rem; font-weight: 600; letter-spacing: 1px; transition: all 0.3s; display: flex; align-items: center; gap: 12px; border-left: 3px solid transparent; }
-        .nav-item:hover { color: var(--hud-text); background: rgba(0,240,255,0.05); }
-        .nav-item.active { color: var(--hud-glow); background: rgba(0,240,255,0.1); border-left-color: var(--hud-glow); }
+        
+        /* Premium Verum Invest Logo */
+        .brand-container { padding: 0 24px 24px; border-bottom: 1px solid var(--hud-border); display: flex; align-items: center; gap: 12px; }
+        .brand-logo { width: 36px; height: 36px; }
+        .brand-text { display: flex; flex-direction: column; }
+        .brand-name { font-family: 'Inter', sans-serif; font-size: 1.2rem; font-weight: 700; color: #fff; letter-spacing: 2px; line-height: 1; }
+        .brand-sub { font-family: 'Inter', sans-serif; font-size: 0.65rem; font-weight: 600; color: var(--hud-glow); letter-spacing: 3px; margin-top: 4px; }
+
+        .nav-item { padding: 14px 24px; color: var(--hud-muted); cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.3s; display: flex; align-items: center; gap: 12px; border-left: 3px solid transparent; }
+        .nav-item:hover { color: var(--hud-text); background: rgba(255,255,255,0.03); }
+        .nav-item.active { color: var(--hud-glow); background: rgba(14,165,233,0.05); border-left-color: var(--hud-glow); }
+        .nav-icon { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        
         .user-card { margin: auto 24px 24px; padding: 16px; background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; }
-        .user-name { font-weight: 700; font-size: 1.1rem; }
-        .user-role { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-gold); margin-top: 4px; letter-spacing: 1px; }
+        .user-name { font-weight: 600; font-size: 0.95rem; }
+        .user-role { font-family: var(--font-data); font-size: 0.7rem; color: var(--status-orange); margin-top: 4px; letter-spacing: 1px; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .top-bar { height: 64px; background: var(--hud-panel); border-bottom: 1px solid var(--hud-border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
-        .page-title { font-size: 1.2rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-        .page-title span { color: var(--hud-glow); }
+        .page-title { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.5px; }
+        .page-title span { color: var(--hud-glow); font-family: var(--font-data); }
         .top-actions { display: flex; gap: 12px; }
-        .btn-hud { background: rgba(0,240,255,0.1); border: 1px solid var(--hud-glow); color: var(--hud-glow); padding: 8px 16px; border-radius: 4px; font-family: var(--font-data); font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.3s; letter-spacing: 1px; }
-        .btn-hud:hover { background: var(--hud-glow); color: #000; box-shadow: 0 0 15px rgba(0,240,255,0.5); }
+        .btn-hud { background: rgba(14,165,233,0.1); border: 1px solid var(--hud-glow); color: var(--hud-glow); padding: 8px 16px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.3s; letter-spacing: 0.5px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-hud:hover { background: var(--hud-glow); color: #000; box-shadow: 0 0 15px rgba(14,165,233,0.3); }
 
         .content-area { flex: 1; overflow-y: auto; padding: 32px; }
 
-        /* Filter Tabs */
         .filter-tabs { display: flex; gap: 12px; margin-bottom: 20px; align-items: center; }
-        .filter-tab { background: var(--hud-card); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 8px 16px; border-radius: 4px; font-family: var(--font-data); font-size: 0.8rem; cursor: pointer; transition: all 0.3s; }
+        .filter-tab { background: var(--hud-card); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 8px 16px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; cursor: pointer; transition: all 0.3s; }
         .filter-tab:hover { border-color: var(--hud-glow); }
-        .filter-tab.active { background: rgba(0,240,255,0.1); border-color: var(--hud-glow); color: var(--hud-glow); }
-        .filter-tab.add-btn { color: var(--hud-gold); border-color: var(--hud-gold); }
+        .filter-tab.active { background: rgba(14,165,233,0.1); border-color: var(--hud-glow); color: var(--hud-glow); }
+        .filter-tab.add-btn { color: var(--status-orange); border-color: var(--status-orange); }
 
-        .data-table-container { background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        th { background: #0f172a; color: var(--hud-muted); font-family: var(--font-data); font-size: 0.75rem; text-transform: uppercase; padding: 16px; text-align: left; letter-spacing: 1px; border-bottom: 1px solid var(--hud-border); }
+        .data-table-container { background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { background: #0f172a; color: var(--hud-muted); font-family: var(--font-data); font-size: 0.7rem; text-transform: uppercase; padding: 16px; text-align: left; letter-spacing: 0.5px; border-bottom: 1px solid var(--hud-border); }
         td { padding: 16px; border-bottom: 1px solid var(--hud-border); vertical-align: middle; }
         tbody tr { cursor: pointer; }
-        tbody tr:hover { background: rgba(0,240,255,0.03); }
+        tbody tr:hover { background: rgba(14,165,233,0.02); }
         
-        .client-link { color: var(--hud-text); font-weight: 700; text-decoration: none; }
+        .client-link { color: var(--hud-text); font-weight: 600; text-decoration: none; }
         .client-link:hover { color: var(--hud-glow); }
         .client-id { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); margin-top: 4px; }
-        .status-select { background: var(--hud-bg); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 6px 10px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; outline: none; cursor: pointer; }
+        
+        /* Color Coded Status Selects */
+        .status-select { background: var(--hud-bg); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 6px 10px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; outline: none; cursor: pointer; font-weight: 600; }
         .status-select:focus { border-color: var(--hud-glow); }
+        .status-depositor { border-color: var(--status-orange) !important; color: var(--status-orange) !important; }
+        .status-retention { border-color: var(--status-blue) !important; color: var(--status-blue) !important; }
+        .status-sub { border-color: var(--status-green) !important; color: var(--status-green) !important; }
+        
         .text-green { color: var(--hud-green); font-weight: 700; }
         .text-red { color: var(--hud-red); font-weight: 700; }
-        .text-gold { color: var(--hud-gold); font-weight: 700; }
         .comment-preview { font-size: 0.8rem; color: var(--hud-muted); max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         /* Profile View */
         .profile-view { display: none; }
         .profile-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--hud-border); }
-        .profile-title h1 { font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
+        .profile-title h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
         .profile-title p { font-family: var(--font-data); color: var(--hud-muted); font-size: 0.85rem; }
         .profile-metrics { display: flex; gap: 32px; }
         .metric-box { text-align: right; }
         .metric-label { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); text-transform: uppercase; letter-spacing: 1px; }
         .metric-val { font-size: 1.5rem; font-weight: 700; margin-top: 4px; }
 
-        /* 2-Column Grid for Profile */
         .profile-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
         .hud-card { background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; padding: 24px; }
-        .card-title { font-family: var(--font-data); font-size: 0.8rem; color: var(--hud-glow); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid var(--hud-border); padding-bottom: 10px; }
+        .card-title { font-family: var(--font-data); font-size: 0.75rem; color: var(--hud-glow); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid var(--hud-border); padding-bottom: 10px; }
         
         .info-row { display: flex; margin-bottom: 12px; font-size: 0.9rem; }
         .info-label { width: 140px; color: var(--hud-muted); font-weight: 500; }
         .info-val { flex: 1; font-weight: 600; }
-        .info-val.highlight { background: rgba(0,240,255,0.1); color: var(--hud-glow); padding: 2px 8px; border-radius: 4px; font-family: var(--font-data); font-size: 0.85rem; }
+        .info-val.highlight { background: rgba(14,165,233,0.1); color: var(--hud-glow); padding: 2px 8px; border-radius: 4px; font-family: var(--font-data); font-size: 0.85rem; }
 
-        /* Status Controls in Profile */
         .status-control-group { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--hud-border); }
         .status-control-row { display: flex; gap: 16px; margin-bottom: 12px; align-items: center; }
-        .status-control-label { width: 120px; font-family: var(--font-data); font-size: 0.75rem; color: var(--hud-gold); text-transform: uppercase; }
-        .status-control-select { flex: 1; background: var(--hud-bg); border: 1px solid var(--hud-gold); color: var(--hud-gold); padding: 8px 12px; border-radius: 4px; font-family: var(--font-data); font-size: 0.85rem; font-weight: 700; outline: none; cursor: pointer; }
+        .status-control-label { width: 130px; font-family: var(--font-data); font-size: 0.7rem; text-transform: uppercase; font-weight: 600; }
+        .status-control-label.orange { color: var(--status-orange); }
+        .status-control-label.blue { color: var(--status-blue); }
+        .status-control-label.green { color: var(--status-green); }
+        
+        .status-control-select { flex: 1; background: var(--hud-bg); padding: 10px 12px; border-radius: 4px; font-family: var(--font-data); font-size: 0.85rem; font-weight: 700; outline: none; cursor: pointer; }
+        .status-control-select.orange { border: 1px solid var(--status-orange); color: var(--status-orange); }
+        .status-control-select.blue { border: 1px solid var(--status-blue); color: var(--status-blue); }
+        .status-control-select.green { border: 1px solid var(--status-green); color: var(--status-green); }
 
-        /* Expanded Comment Stream */
         .comment-stream-container { display: flex; flex-direction: column; height: 100%; min-height: 400px; }
         .comment-list { flex: 1; overflow-y: auto; margin-bottom: 16px; padding-right: 8px; }
         .comment-input-area { display: flex; gap: 12px; margin-top: auto; }
@@ -96,29 +114,50 @@
         
         .comment-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .comment-meta { display: flex; justify-content: space-between; font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); margin-bottom: 6px; }
-        .comment-text { font-size: 0.9rem; line-height: 1.5; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px; border-left: 2px solid var(--hud-gold); }
+        .comment-text { font-size: 0.9rem; line-height: 1.5; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px; border-left: 2px solid var(--status-orange); }
 
         .tabs { display: flex; border-bottom: 1px solid var(--hud-border); margin-bottom: 24px; }
-        .tab-btn { background: none; border: none; color: var(--hud-muted); padding: 12px 24px; font-family: var(--font-data); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s; }
+        .tab-btn { background: none; border: none; color: var(--hud-muted); padding: 12px 24px; font-family: var(--font-data); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s; }
         .tab-btn:hover { color: var(--hud-text); }
         .tab-btn.active { color: var(--hud-glow); border-bottom-color: var(--hud-glow); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
         .kyc-text { font-size: 0.9rem; line-height: 1.8; color: var(--hud-text); }
-        .kyc-text strong { color: var(--hud-gold); font-family: var(--font-data); font-size: 0.8rem; margin-right: 8px; }
+        .kyc-text strong { color: var(--status-orange); font-family: var(--font-data); font-size: 0.8rem; margin-right: 8px; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div class="brand">VERUM // CRM</div>
-        <div class="nav-item active">📡 LEAD TELEMETRY</div>
-        <div class="nav-item"> ANALYTICS</div>
-        <div class="nav-item">⚙️ SYSTEM CONFIG</div>
+        <div class="brand-container">
+            <!-- Verum Invest Logo SVG -->
+            <svg class="brand-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 5 L15 25 L25 5 L20 5 L15 15 L10 5 Z" fill="#0ea5e9"/>
+                <path d="M12 5 L22 25 L32 5 L27 5 L22 15 L17 5 Z" fill="#38bdf8" opacity="0.8"/>
+            </svg>
+            <div class="brand-text">
+                <span class="brand-name">VERUM</span>
+                <span class="brand-sub">INVEST</span>
+            </div>
+        </div>
+        
+        <div class="nav-item active">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+            LEAD TELEMETRY
+        </div>
+        <div class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            ANALYTICS
+        </div>
+        <div class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            SYSTEM CONFIG
+        </div>
+        
         <div class="user-card">
-            <div class="user-name">Julian Sterling</div>
-            <div class="user-role">[ROOT] SUPERVISOR</div>
+            <div class="user-name">Roberto Palomino</div>
+            <div class="user-role">[ROOT] MANAGER</div>
         </div>
     </div>
 
@@ -127,7 +166,10 @@
             <div class="page-title" id="pageTitle">LEAD <span>TELEMETRY</span> OVERVIEW</div>
             <div class="top-actions">
                 <button class="btn-hud">+ INJECT LEAD</button>
-                <a href="/client" class="btn-hud" style="text-decoration:none;">🌐 CLIENT PORTAL</a>
+                <a href="/client" class="btn-hud">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    CLIENT PORTAL
+                </a>
             </div>
         </div>
 
@@ -182,27 +224,26 @@
                     </div>
                 </div>
 
-                <!-- 2-Column Layout: Intelligence + Status Controls | Expanded Comment Stream -->
                 <div class="profile-grid-2">
                     <div class="hud-card">
                         <div class="card-title">Client Intelligence & Status Control</div>
                         <div class="info-row"><div class="info-label">Email</div><div class="info-val">client@email.com</div></div>
                         <div class="info-row"><div class="info-label">Phone</div><div class="info-val highlight">+1 234 567 890</div></div>
-                        <div class="info-row"><div class="info-label">Country</div><div class="info-val">Argentina 🇷</div></div>
+                        <div class="info-row"><div class="info-label">Country</div><div class="info-val">Argentina 🇦🇷</div></div>
                         <div class="info-row"><div class="info-label">Assigned Agent</div><div class="info-val" id="p-agent">Luis</div></div>
 
                         <div class="status-control-group">
                             <div class="status-control-row">
-                                <div class="status-control-label">Depositor Status</div>
-                                <select class="status-control-select" id="p-status-depositor">
+                                <div class="status-control-label orange">Depositor Status</div>
+                                <select class="status-control-select orange" id="p-status-depositor">
                                     <option>DEPOSITOR</option>
                                     <option>NEW LEAD</option>
                                     <option>QUALIFIED</option>
                                 </select>
                             </div>
                             <div class="status-control-row">
-                                <div class="status-control-label">Retention Phase</div>
-                                <select class="status-control-select" id="p-status-retention">
+                                <div class="status-control-label blue">Retention Phase</div>
+                                <select class="status-control-select blue" id="p-status-retention">
                                     <option>NEW</option>
                                     <option>ACTIVE</option>
                                     <option>REASSIGN</option>
@@ -210,20 +251,20 @@
                                 </select>
                             </div>
                             <div class="status-control-row">
-                                <div class="status-control-label">Closer Sub-Status</div>
-                                <select class="status-control-select" id="p-status-sub" style="border-color: var(--hud-gold); color: var(--hud-gold);">
+                                <div class="status-control-label green">Closer Sub-Status</div>
+                                <select class="status-control-select green" id="p-status-sub">
                                     <option>NO POTENTIAL</option>
                                     <option>UNDER AGE</option>
                                     <option>POTENTIAL</option>
                                     <option>NO INTEREST</option>
                                 </select>
                             </div>
-                            <button class="btn-hud" style="width: 100%; margin-top: 12px;" onclick="alert('Statuses updated in central database.')">TRANSMIT STATUS UPDATE</button>
+                            <button class="btn-hud" style="width: 100%; margin-top: 16px; justify-content: center;" onclick="alert('Statuses updated in central database.')">TRANSMIT STATUS UPDATE</button>
                         </div>
                     </div>
 
                     <div class="hud-card" style="display: flex; flex-direction: column;">
-                        <div class="card-title">Agent Comment Stream (Expanded)</div>
+                        <div class="card-title">Agent Comment Stream</div>
                         <div class="comment-stream-container">
                             <div class="comment-list" id="p-comments"></div>
                             <div class="comment-input-area">
@@ -242,10 +283,10 @@
                     </div>
                     
                     <div id="tab-activity" class="tab-content active">
-                        <h4 style="color: var(--hud-gold); font-family: var(--font-data); font-size: 0.8rem; margin-bottom: 16px; text-transform: uppercase;">Recent Agent Comments</h4>
+                        <h4 style="color: var(--status-orange); font-family: var(--font-data); font-size: 0.75rem; margin-bottom: 16px; text-transform: uppercase;">Recent Agent Comments</h4>
                         <div id="tab-activity-comments" style="margin-bottom: 24px;"></div>
                         
-                        <h4 style="color: var(--hud-gold); font-family: var(--font-data); font-size: 0.8rem; margin-bottom: 16px; text-transform: uppercase;">System Activity Log</h4>
+                        <h4 style="color: var(--status-orange); font-family: var(--font-data); font-size: 0.75rem; margin-bottom: 16px; text-transform: uppercase;">System Activity Log</h4>
                         <table style="width: 100%;">
                             <thead><tr><th>Action</th><th>Operator</th><th>IP Address</th><th>Timestamp</th></tr></thead>
                             <tbody>
@@ -292,7 +333,7 @@
 
     <script>
         const clients = [
-            { txId: "TX-8839201", agent: "LUIS", name: "Martha Herrera", country: "Argentina", flag: "🇦", lastLogin: "20.02.26 14:35", balance: "$0", withdrawn: "-$ 51,457", deposit: "$51,457", status: "DEPOSITOR", retention: "RECOVERY", subStatus: "NO POTENTIAL", comment: "CI se puso en contacto para d...", comments: [{agent: "Henry Rossi", time: "20.02.26 14:35", text: "CI se puso en contacto para discutir la recuperación de fondos."}, {agent: "Julian Sterling", time: "21.02.26 09:00", text: "Reviewed account. Approved for recovery protocol."}] },
+            { txId: "TX-8839201", agent: "LUIS", name: "Martha Herrera", country: "Argentina", flag: "🇦🇷", lastLogin: "20.02.26 14:35", balance: "$0", withdrawn: "-$ 51,457", deposit: "$51,457", status: "DEPOSITOR", retention: "RECOVERY", subStatus: "NO POTENTIAL", comment: "CI se puso en contacto para d...", comments: [{agent: "Henry Rossi", time: "20.02.26 14:35", text: "CI se puso en contacto para discutir la recuperación de fondos."}, {agent: "Julian Sterling", time: "21.02.26 09:00", text: "Reviewed account. Approved for recovery protocol."}] },
             { txId: "TX-8839202", agent: "MARIA", name: "Orlando Amado Aguilar", country: "Argentina", flag: "🇦🇷", lastLogin: "06.02.26 16:50", balance: "$0", withdrawn: "-$ 65,288", deposit: "$65,288", status: "DEPOSITOR", retention: "REASSIGN", subStatus: "NO INTEREST", comment: "CI no da respuesta ni por 805...", comments: [{agent: "Henry Rossi", time: "06.02.26 16:50", text: "CI no da respuesta ni por 805. Reasignando a agente de recuperación."}] },
             { txId: "TX-8839203", agent: "LUIS", name: "Victor Benito Paez Grance", country: "Paraguay", flag: "🇵🇾", lastLogin: "06.02.26 16:39", balance: "$0", withdrawn: "-$ 50,914.14", deposit: "$50,914.14", status: "DEPOSITOR", retention: "ACTIVE", subStatus: "POTENTIAL", comment: "Directo buzón de voz, parece c...", comments: [{agent: "Henry Rossi", time: "06.02.26 16:39", text: "Directo buzón de voz, parece que está en el trabajo. Llamar mañana."}] },
             { txId: "TX-8839204", agent: "MARIA", name: "Flora Paniagua", country: "Paraguay", flag: "🇵🇾", lastLogin: "06.02.26 16:25", balance: "$332.58", withdrawn: "$250.87", deposit: "$81.71", status: "DEPOSITOR", retention: "NEW", subStatus: "UNDER AGE", comment: "Se intentó retomar el contac...", comments: [{agent: "Henry Rossi", time: "06.02.26 16:25", text: "Se intentó retomar el contacto para ofrecer plan de inversión premium."}] }
@@ -319,9 +360,9 @@
                     <td style="font-weight: 700;">${c.balance}</td>
                     <td class="text-red">${c.withdrawn}</td>
                     <td style="font-weight: 700;">${c.deposit}</td>
-                    <td><select class="status-select" onclick="event.stopPropagation()"><option selected>${c.status}</option><option>NEW LEAD</option></select></td>
-                    <td><select class="status-select" onclick="event.stopPropagation()"><option>NEW</option><option selected>${c.retention}</option><option>REASSIGN</option><option>RECOVERY</option></select></td>
-                    <td><select class="status-select" style="border-color: var(--hud-gold); color: var(--hud-gold);" onclick="event.stopPropagation()"><option selected>${c.subStatus}</option><option>NO POTENTIAL</option><option>UNDER AGE</option><option>POTENTIAL</option><option>NO INTEREST</option></select></td>
+                    <td><select class="status-select status-depositor" onclick="event.stopPropagation()"><option selected>${c.status}</option><option>NEW LEAD</option></select></td>
+                    <td><select class="status-select status-retention" onclick="event.stopPropagation()"><option>NEW</option><option selected>${c.retention}</option><option>REASSIGN</option><option>RECOVERY</option></select></td>
+                    <td><select class="status-select status-sub" onclick="event.stopPropagation()"><option selected>${c.subStatus}</option><option>NO POTENTIAL</option><option>UNDER AGE</option><option>POTENTIAL</option><option>NO INTEREST</option></select></td>
                     <td><div class="comment-preview">${c.comment}</div></td>
                 `;
                 tbody.appendChild(tr);
@@ -361,12 +402,10 @@
             document.getElementById('p-deposited').textContent = c.deposit;
             document.getElementById('p-agent').textContent = c.agent;
             
-            // Set dropdowns
             document.getElementById('p-status-depositor').value = c.status;
             document.getElementById('p-status-retention').value = c.retention;
             document.getElementById('p-status-sub').value = c.subStatus;
 
-            // Render Main Comments
             const commentContainer = document.getElementById('p-comments');
             commentContainer.innerHTML = '';
             c.comments.forEach(comm => {
@@ -378,10 +417,9 @@
                 `;
             });
 
-            // Render Comments inside Activity Tab
             const activityCommentContainer = document.getElementById('tab-activity-comments');
             activityCommentContainer.innerHTML = '';
-            c.comments.slice(0, 2).forEach(comm => { // Show last 2
+            c.comments.slice(0, 2).forEach(comm => {
                 activityCommentContainer.innerHTML += `
                     <div class="comment-item" style="border-bottom: 1px solid var(--hud-border); padding-bottom: 12px; margin-bottom: 12px;">
                         <div class="comment-meta"><span>${comm.agent}</span><span>${comm.time}</span></div>
@@ -401,7 +439,7 @@
             const now = new Date().toLocaleString();
             container.innerHTML = `
                 <div class="comment-item">
-                    <div class="comment-meta"><span>Julian Sterling (You)</span><span>${now}</span></div>
+                    <div class="comment-meta"><span>Roberto Palomino (You)</span><span>${now}</span></div>
                     <div class="comment-text">${text}</div>
                 </div>
             ` + container.innerHTML;
