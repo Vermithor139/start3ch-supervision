@@ -21,10 +21,9 @@
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
         .sidebar { width: 240px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 0; }
-        
-        /* Premium Verum Invest Logo */
+
         .brand-container { padding: 0 24px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
-        .brand-logo { width: 36px; height: 36px; }
+        .brand-logo { width: 40px; height: 40px; }
         .brand-text { display: flex; flex-direction: column; }
         .brand-name { font-family: 'Inter', sans-serif; font-size: 1.2rem; font-weight: 700; color: #fff; letter-spacing: 2px; line-height: 1; }
         .brand-sub { font-family: 'Inter', sans-serif; font-size: 0.65rem; font-weight: 600; color: var(--accent); letter-spacing: 3px; margin-top: 4px; }
@@ -33,7 +32,7 @@
         .nav-item:hover { color: var(--text-main); background: rgba(255,255,255,0.03); }
         .nav-item.active { color: var(--accent); background: rgba(14,165,233,0.08); border-left-color: var(--accent); }
         .nav-icon { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-        
+
         .sidebar-footer { margin-top: auto; padding: 24px; border-top: 1px solid var(--border); }
         .btn-deposit { background: var(--green); color: #000; border: none; padding: 14px; border-radius: 6px; font-weight: 700; width: 100%; cursor: pointer; font-size: 0.95rem; transition: all 0.3s; box-shadow: 0 0 15px rgba(16,185,129,0.2); display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-deposit:hover { box-shadow: 0 0 25px rgba(16,185,129,0.4); transform: translateY(-1px); }
@@ -59,7 +58,7 @@
         .nav-dropdown.active { display: flex; }
         .nav-dropdown a {
             padding: 12px 32px; color: var(--text-muted); text-decoration: none;
-            font-size: 0.9rem; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 12px;
+            font-size: 0.9rem; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 12px; cursor: pointer;
         }
         .nav-dropdown a:hover { color: var(--accent); background: rgba(14,165,233,0.05); }
         .nav-dropdown .divider { height: 1px; background: var(--border); margin: 8px 0; }
@@ -100,11 +99,23 @@
         .detail-label { color: var(--text-muted); }
         .detail-value { font-weight: 600; font-family: var(--font-data); }
 
-        .settings-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 32px; max-width: 500px; }
+        /* Withdrawal Methods */
+        .withdrawal-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        .method-card { background: var(--bg-card); border: 2px solid var(--border); border-radius: 8px; padding: 20px; cursor: pointer; transition: all 0.3s; text-align: center; }
+        .method-card:hover { border-color: var(--accent); }
+        .method-card.active { border-color: var(--accent); background: rgba(14,165,233,0.05); }
+        .method-icon { font-size: 2rem; margin-bottom: 8px; }
+        .method-name { font-weight: 600; font-size: 0.9rem; }
+
+        .withdrawal-form { display: none; }
+        .withdrawal-form.active { display: block; }
+
+        .settings-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 32px; max-width: 600px; }
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; color: var(--text-muted); font-size: 0.8rem; margin-bottom: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 6px; padding: 12px; color: var(--text-main); font-size: 0.9rem; outline: none; font-family: var(--font-data); transition: border 0.3s; }
-        .form-input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(14,165,233,0.1); }
+        .form-input, .form-select { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 6px; padding: 12px; color: var(--text-main); font-size: 0.9rem; outline: none; font-family: var(--font-data); transition: border 0.3s; }
+        .form-input:focus, .form-select:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(14,165,233,0.1); }
+        .form-select { cursor: pointer; }
         .btn-save { background: var(--accent); color: #000; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.9rem; transition: all 0.3s; }
         .btn-save:hover { box-shadow: 0 0 15px var(--accent-glow); }
 
@@ -112,7 +123,7 @@
 
         .chat-fab { position: fixed; bottom: 32px; right: 32px; width: 56px; height: 56px; background: var(--accent); color: #000; border: none; border-radius: 50%; cursor: pointer; box-shadow: 0 0 20px var(--accent-glow); z-index: 1000; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
         .chat-fab:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--accent-glow); }
-        
+
         .chat-drawer { position: fixed; top: 0; right: -400px; width: 380px; height: 100%; background: var(--bg-panel); border-left: 1px solid var(--border); z-index: 1001; transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
         .chat-drawer.active { right: 0; }
         .chat-header { padding: 20px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
@@ -126,23 +137,28 @@
         .chat-input { flex: 1; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 6px; padding: 12px; color: var(--text-main); font-size: 0.9rem; outline: none; }
         .chat-input:focus { border-color: var(--accent); }
         .chat-send { background: var(--accent); color: #000; border: none; padding: 0 20px; border-radius: 6px; font-weight: 700; cursor: pointer; }
+
+        .tx-table { width: 100%; border-collapse: collapse; }
+        .tx-table th { background: var(--bg-dark); color: var(--text-muted); font-family: var(--font-data); font-size: 0.7rem; text-transform: uppercase; padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+        .tx-table td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        .tx-table tr:hover { background: rgba(14,165,233,0.02); }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
         <div class="brand-container">
-            <!-- Verum Invest Logo SVG -->
+            <!-- Sharp V Logo -->
             <svg class="brand-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 5 L15 25 L25 5 L20 5 L15 15 L10 5 Z" fill="#0ea5e9"/>
-                <path d="M12 5 L22 25 L32 5 L27 5 L22 15 L17 5 Z" fill="#38bdf8" opacity="0.8"/>
+                <path d="M8 6 L20 34 L32 6 L26 6 L20 22 L14 6 Z" fill="#0ea5e9"/>
+                <path d="M14 6 L20 22 L26 6 L22 6 L20 14 L18 6 Z" fill="#38bdf8" opacity="0.6"/>
             </svg>
             <div class="brand-text">
                 <span class="brand-name">VERUM</span>
                 <span class="brand-sub">INVEST</span>
             </div>
         </div>
-        
+
         <div class="nav-item active" onclick="switchView('home', this)">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             Home Dashboard
@@ -155,11 +171,15 @@
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
             Transactions
         </div>
+        <div class="nav-item" onclick="switchView('withdrawals', this)">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+            Withdrawals
+        </div>
         <div class="nav-item" onclick="switchView('settings', this)">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
             Account Settings
         </div>
-        
+
         <div class="sidebar-footer">
             <button class="btn-deposit" onclick="alert('Initializing secure deposit gateway...')">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -218,6 +238,7 @@
             </div>
         </div>
 
+        <!-- HOME VIEW -->
         <div id="view-home" class="view-container active">
             <div class="welcome-banner">
                 <h1>Welcome back, Julián.</h1>
@@ -227,12 +248,12 @@
             <div class="metrics-grid">
                 <div class="metric-card">
                     <div class="metric-label">Total Balance</div>
-                    <div class="metric-value">$254.36</div>
+                    <div class="metric-value" id="home-balance">$332.58</div>
                     <div class="metric-sub">USD</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label">Available Cash</div>
-                    <div class="metric-value">$254.36</div>
+                    <div class="metric-value" id="home-cash">$332.58</div>
                     <div class="metric-sub">Ready to deploy</div>
                 </div>
                 <div class="metric-card">
@@ -242,42 +263,30 @@
                 </div>
                 <div class="metric-card">
                     <div class="metric-label">Net Profit / Loss</div>
-                    <div class="metric-value" style="color: var(--green);">+$4.36</div>
-                    <div class="metric-sub">+1.74% ROI</div>
+                    <div class="metric-value" style="color: var(--green);" id="home-profit">+$82.58</div>
+                    <div class="metric-sub">+33.03% ROI</div>
                 </div>
             </div>
 
             <div class="news-section-title">Global Market Intelligence</div>
             <div class="news-grid">
                 <div class="news-card">
-                    <div class="news-header">
-                        <span class="news-ticker">BTC/USD</span>
-                        <span class="news-time">12 mins ago</span>
-                    </div>
+                    <div class="news-header"><span class="news-ticker">BTC/USD</span><span class="news-time">12 mins ago</span></div>
                     <div class="news-title">Bitcoin Surges Past $68k Resistance Amid Institutional Buying Pressure</div>
                     <div class="news-source">Verum Crypto Analytics</div>
                 </div>
                 <div class="news-card">
-                    <div class="news-header">
-                        <span class="news-ticker">SPX500</span>
-                        <span class="news-time">1 hour ago</span>
-                    </div>
+                    <div class="news-header"><span class="news-ticker">SPX500</span><span class="news-time">1 hour ago</span></div>
                     <div class="news-title">Federal Reserve Signals Potential Rate Adjustments in Q4 2026</div>
                     <div class="news-source">Global Macro Desk</div>
                 </div>
                 <div class="news-card">
-                    <div class="news-header">
-                        <span class="news-ticker">WTI OIL</span>
-                        <span class="news-time">3 hours ago</span>
-                    </div>
+                    <div class="news-header"><span class="news-ticker">WTI OIL</span><span class="news-time">3 hours ago</span></div>
                     <div class="news-title">Crude Oil Volatility Increases as Supply Chain Constraints Tighten</div>
                     <div class="news-source">Commodities Floor</div>
                 </div>
                 <div class="news-card">
-                    <div class="news-header">
-                        <span class="news-ticker">EUR/USD</span>
-                        <span class="news-time">5 hours ago</span>
-                    </div>
+                    <div class="news-header"><span class="news-ticker">EUR/USD</span><span class="news-time">5 hours ago</span></div>
                     <div class="news-title">Euro weakens against Dollar following ECB policy statement release</div>
                     <div class="news-source">Forex Strategy Team</div>
                 </div>
@@ -293,33 +302,187 @@
             </div>
         </div>
 
+        <!-- MARKETS VIEW -->
         <div id="view-markets" class="view-container" style="padding: 0; height: 100%;">
             <div class="chart-container" id="tv_chart"></div>
         </div>
 
+        <!-- TRANSACTIONS VIEW -->
         <div id="view-transactions" class="view-container">
             <div class="details-card">
                 <h3>Transaction Ledger</h3>
-                <div class="detail-row"><span class="detail-label">TX-ID</span><span class="detail-value">TX-8839201</span></div>
-                <div class="detail-row"><span class="detail-label">Type</span><span class="detail-value" style="color: var(--green);">DEPOSIT</span></div>
-                <div class="detail-row"><span class="detail-label">Amount</span><span class="detail-value">$250.00</span></div>
-                <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value" style="color: var(--green);">COMPLETED</span></div>
-                <div class="detail-row"><span class="detail-label">Timestamp</span><span class="detail-value">12.06.26 09:14:22</span></div>
+                <table class="tx-table">
+                    <thead>
+                        <tr>
+                            <th>TX-ID</th>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Asset</th>
+                            <th>Amount</th>
+                            <th>Profit/Loss</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="client-tx-body">
+                        <tr>
+                            <td style="font-family: var(--font-data); font-size: 0.8rem;">TX-8839201</td>
+                            <td>01.02.26</td>
+                            <td style="font-weight: 600;">DEPOSIT</td>
+                            <td>Initial Capital</td>
+                            <td>$250.00</td>
+                            <td>—</td>
+                            <td><span style="color: var(--green); font-weight: 600;">COMPLETED</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-family: var(--font-data); font-size: 0.8rem;">TX-8839202</td>
+                            <td>05.02.26</td>
+                            <td style="font-weight: 600;">PROFIT</td>
+                            <td>Mercado Libre (MELI)</td>
+                            <td>—</td>
+                            <td style="color: var(--green); font-weight: 700;">+$81.71</td>
+                            <td><span style="color: var(--green); font-weight: 600;">COMPLETED</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-family: var(--font-data); font-size: 0.8rem;">TX-8839203</td>
+                            <td>08.02.26</td>
+                            <td style="font-weight: 600;">PROFIT</td>
+                            <td>Apple (AAPL)</td>
+                            <td>—</td>
+                            <td style="color: var(--green); font-weight: 700;">+$0.87</td>
+                            <td><span style="color: var(--green); font-weight: 600;">COMPLETED</span></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
+        <!-- WITHDRAWALS VIEW -->
         <div id="view-withdrawals" class="view-container">
             <div class="details-card">
                 <h3>Withdrawal Center</h3>
-                <p style="color: var(--text-muted); margin-bottom: 20px;">Request a withdrawal of your available funds. Processing time: 24-48 hours.</p>
-                <div class="form-group">
-                    <label class="form-label">Amount to Withdraw (USD)</label>
-                    <input type="number" class="form-input" placeholder="0.00">
+                <p style="color: var(--text-muted); margin-bottom: 24px;">Request a withdrawal of your available funds. Processing time: 24-48 hours.</p>
+
+                <div class="withdrawal-methods">
+                    <div class="method-card active" onclick="selectWithdrawalMethod('crypto', this)">
+                        <div class="method-icon">₿</div>
+                        <div class="method-name">Cryptocurrency</div>
+                    </div>
+                    <div class="method-card" onclick="selectWithdrawalMethod('bank', this)">
+                        <div class="method-icon">🏦</div>
+                        <div class="method-name">Bank Transfer</div>
+                    </div>
+                    <div class="method-card" onclick="selectWithdrawalMethod('card', this)">
+                        <div class="method-icon">💳</div>
+                        <div class="method-name">Credit Card</div>
+                    </div>
                 </div>
-                <button class="btn-save" onclick="alert('Withdrawal request submitted to compliance.')">REQUEST WITHDRAWAL</button>
+
+                <!-- Crypto Form -->
+                <div id="form-crypto" class="withdrawal-form active">
+                    <div class="form-group">
+                        <label class="form-label">Withdrawal Amount (USD)</label>
+                        <input type="number" class="form-input" id="crypto-amount" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cryptocurrency</label>
+                        <select class="form-select" id="crypto-type">
+                            <option>USDT (Tether)</option>
+                            <option>ETH (Ethereum)</option>
+                            <option>BTC (Bitcoin)</option>
+                            <option>SOL (Solana)</option>
+                            <option>VTC (Vertcoin)</option>
+                            <option>LTC (Litecoin)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Network</label>
+                        <select class="form-select" id="crypto-network">
+                            <option>BEP20 (BNB Smart Chain)</option>
+                            <option>ERC20 (Ethereum)</option>
+                            <option>TRC20 (Tron)</option>
+                            <option>SOL (Solana)</option>
+                            <option>BTC (Bitcoin)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Wallet Address</label>
+                        <input type="text" class="form-input" id="crypto-wallet" placeholder="Enter your wallet address">
+                    </div>
+                    <button class="btn-save" style="width: 100%;" onclick="submitWithdrawal('CRYPTO')">REQUEST WITHDRAWAL</button>
+                </div>
+
+                <!-- Bank Form -->
+                <div id="form-bank" class="withdrawal-form">
+                    <div class="form-group">
+                        <label class="form-label">Withdrawal Amount (USD)</label>
+                        <input type="number" class="form-input" id="bank-amount" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Transfer Type</label>
+                        <select class="form-select" id="bank-type">
+                            <option>SWIFT International</option>
+                            <option>ACH Domestic</option>
+                            <option>SEPA (Europe)</option>
+                            <option>Wire Transfer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Account Number</label>
+                        <input type="text" class="form-input" id="bank-account" placeholder="Enter account number">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bank Name</label>
+                        <input type="text" class="form-input" id="bank-name" placeholder="Enter bank name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Country</label>
+                        <input type="text" class="form-input" id="bank-country" placeholder="Enter country">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">SWIFT / BIC Code</label>
+                        <input type="text" class="form-input" id="bank-swift" placeholder="Enter SWIFT code">
+                    </div>
+                    <button class="btn-save" style="width: 100%;" onclick="submitWithdrawal('BANK TRANSFER')">REQUEST WITHDRAWAL</button>
+                </div>
+
+                <!-- Card Form -->
+                <div id="form-card" class="withdrawal-form">
+                    <div class="form-group">
+                        <label class="form-label">Withdrawal Amount (USD)</label>
+                        <input type="number" class="form-input" id="card-amount" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Country</label>
+                        <input type="text" class="form-input" id="card-country" placeholder="Enter country">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Card Number</label>
+                        <input type="text" class="form-input" id="card-number" placeholder="1234 5678 9012 3456">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Expiration Date</label>
+                        <input type="text" class="form-input" id="card-expiry" placeholder="MM/YY">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Currency</label>
+                        <select class="form-select" id="card-currency">
+                            <option>USD</option>
+                            <option>EUR</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Card Type</label>
+                        <select class="form-select" id="card-type">
+                            <option>VISA</option>
+                            <option>MasterCard</option>
+                        </select>
+                    </div>
+                    <button class="btn-save" style="width: 100%;" onclick="submitWithdrawal('CREDIT CARD')">REQUEST WITHDRAWAL</button>
+                </div>
             </div>
         </div>
 
+        <!-- SETTINGS VIEW -->
         <div id="view-settings" class="view-container">
             <div class="settings-card">
                 <h3 style="margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">Security & Credentials</h3>
@@ -339,6 +502,10 @@
                     <div class="form-group">
                         <label class="form-label">New Password</label>
                         <input type="password" class="form-input" placeholder="Enter new password">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-input" placeholder="Confirm new password">
                     </div>
                     <button type="submit" class="btn-save">UPDATE CREDENTIALS</button>
                 </form>
@@ -364,14 +531,16 @@
     </div>
 
     <script>
+        let clientBalance = 332.58;
+
         function switchView(viewName, navEl) {
-            if(navEl) {
+            if (navEl) {
                 document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
                 navEl.classList.add('active');
             }
             document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
             document.getElementById(`view-${viewName}`).classList.add('active');
-            
+
             const titles = { 'home': 'Account Overview', 'markets': 'Live Markets', 'transactions': 'Transaction Ledger', 'settings': 'Account Settings', 'withdrawals': 'Withdrawal Center' };
             document.getElementById('page-title').textContent = titles[viewName] || 'Account Overview';
 
@@ -398,6 +567,65 @@
                 menu.classList.remove('active');
             }
         });
+
+        function selectWithdrawalMethod(method, el) {
+            document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            document.querySelectorAll('.withdrawal-form').forEach(f => f.classList.remove('active'));
+            document.getElementById(`form-${method}`).classList.add('active');
+        }
+
+        function submitWithdrawal(method) {
+            let amount = 0;
+            let details = '';
+
+            if (method === 'CRYPTO') {
+                amount = parseFloat(document.getElementById('crypto-amount').value);
+                const crypto = document.getElementById('crypto-type').value;
+                const network = document.getElementById('crypto-network').value;
+                const wallet = document.getElementById('crypto-wallet').value.trim();
+                if (!amount || !wallet) { alert('Please enter amount and wallet address.'); return; }
+                details = `${crypto} via ${network} to ${wallet.substring(0, 10)}...`;
+            } else if (method === 'BANK TRANSFER') {
+                amount = parseFloat(document.getElementById('bank-amount').value);
+                const account = document.getElementById('bank-account').value.trim();
+                const bank = document.getElementById('bank-name').value.trim();
+                const swift = document.getElementById('bank-swift').value.trim();
+                if (!amount || !account || !bank || !swift) { alert('Please fill all required fields.'); return; }
+                details = `${bank} | Acct: ${account} | SWIFT: ${swift}`;
+            } else if (method === 'CREDIT CARD') {
+                amount = parseFloat(document.getElementById('card-amount').value);
+                const cardNum = document.getElementById('card-number').value.trim();
+                const cardType = document.getElementById('card-type').value;
+                const currency = document.getElementById('card-currency').value;
+                if (!amount || !cardNum) { alert('Please enter amount and card number.'); return; }
+                details = `${cardType} ${currency} | Card: ****${cardNum.slice(-4)}`;
+            }
+
+            if (amount > clientBalance) { alert('Insufficient funds. Your available balance is $' + clientBalance.toFixed(2)); return; }
+
+            clientBalance -= amount;
+            document.getElementById('home-balance').textContent = '$' + clientBalance.toFixed(2);
+            document.getElementById('home-cash').textContent = '$' + clientBalance.toFixed(2);
+
+            alert(`Withdrawal request submitted successfully!\n\nMethod: ${method}\nAmount: $${amount.toFixed(2)}\nDetails: ${details}\n\nProcessing time: 24-48 hours. You will be notified upon approval.`);
+
+            // Add to transaction ledger
+            const txBody = document.getElementById('client-tx-body');
+            const txId = 'TX-' + Math.floor(Math.random() * 900000 + 100000);
+            const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.');
+            txBody.innerHTML += `
+                <tr>
+                    <td style="font-family: var(--font-data); font-size: 0.8rem;">${txId}</td>
+                    <td>${today}</td>
+                    <td style="font-weight: 600;">WITHDRAWAL</td>
+                    <td>${method}</td>
+                    <td>$${amount.toFixed(2)}</td>
+                    <td style="color: var(--red); font-weight: 700;">-$${amount.toFixed(2)}</td>
+                    <td><span style="color: var(--gold); font-weight: 600;">PENDING</span></td>
+                </tr>
+            `;
+        }
 
         function toggleChat() {
             document.getElementById('chatDrawer').classList.toggle('active');
