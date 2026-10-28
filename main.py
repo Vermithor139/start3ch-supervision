@@ -4,10 +4,15 @@ from fastapi.responses import HTMLResponse
 from pathlib import Path
 import uvicorn
 
-app = FastAPI(title="Verum Trady Tactical Mainframe", version="2.0.0")
-
-# Anchor paths to the exact location of main.py
+app = FastAPI(title="Verum Invest Tactical Mainframe", version="3.0.0")
 BASE_DIR = Path(__file__).resolve().parent
+
+@app.get("/login", response_class=HTMLResponse)
+def read_login():
+    login_path = BASE_DIR / "login.html"
+    if login_path.is_file():
+        return HTMLResponse(content=login_path.read_text(encoding="utf-8"))
+    return HTMLResponse(content="<h1>Login template not found</h1>", status_code=404)
 
 @app.get("/", response_class=HTMLResponse)
 def read_supervisor_dashboard():
@@ -25,9 +30,8 @@ def read_client_portal():
 
 @app.get("/health")
 def health_check():
-    return {"status": "online", "system": "Verum Trady Mainframe"}
+    return {"status": "online", "system": "Verum Invest Mainframe"}
 
-# CRITICAL FIX: Render deployment startup block
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)

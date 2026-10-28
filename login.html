@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verum Invest | Secure Access</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #030712; --bg-panel: #0b1120; --bg-card: #111827;
+            --border: #1e293b; --text-main: #f8fafc; --text-muted: #64748b;
+            --accent: #0ea5e9; --accent-glow: rgba(14, 165, 233, 0.3);
+            --font-ui: 'Inter', sans-serif; --font-data: 'JetBrains Mono', monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-ui); background: var(--bg-dark); color: var(--text-main); height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        
+        .login-container { width: 100%; max-width: 420px; padding: 40px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; }
+        .login-container::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--accent); border-radius: 12px 12px 0 0; }
+        
+        .brand-header { text-align: center; margin-bottom: 32px; }
+        .brand-logo { width: 48px; height: 48px; margin: 0 auto 16px; }
+        .brand-name { font-size: 1.5rem; font-weight: 700; letter-spacing: 2px; margin-bottom: 4px; }
+        .brand-sub { font-size: 0.7rem; font-weight: 600; color: var(--accent); letter-spacing: 3px; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .form-input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 6px; padding: 14px; color: var(--text-main); font-size: 0.9rem; outline: none; font-family: var(--font-data); transition: all 0.3s; }
+        .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+        
+        .btn-login { width: 100%; background: var(--accent); color: #000; border: none; padding: 14px; border-radius: 6px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.3s; margin-top: 10px; }
+        .btn-login:hover { box-shadow: 0 0 20px var(--accent-glow); transform: translateY(-1px); }
+
+        .error-msg { color: #ef4444; font-size: 0.85rem; text-align: center; margin-top: 16px; display: none; font-family: var(--font-data); }
+        .footer-text { text-align: center; margin-top: 24px; font-size: 0.75rem; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="brand-header">
+            <svg class="brand-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 6 L20 34 L32 6 L26 6 L20 22 L14 6 Z" fill="#0ea5e9"/>
+                <path d="M14 6 L20 22 L26 6 L22 6 L20 14 L18 6 Z" fill="#38bdf8" opacity="0.6"/>
+            </svg>
+            <div class="brand-name">VERUM</div>
+            <div class="brand-sub">INVEST</div>
+        </div>
+
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" class="form-input" id="email" placeholder="agent@verum.invest" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-input" id="password" placeholder="Enter secure password" required>
+            </div>
+            <button type="submit" class="btn-login">AUTHENTICATE</button>
+            <div class="error-msg" id="error">ACCESS DENIED: INVALID CREDENTIALS</div>
+        </form>
+
+        <div class="footer-text">
+            SECURE TERMINAL v2.4.1<br>
+            UNAUTHORIZED ACCESS IS PROHIBITED
+        </div>
+    </div>
+
+    <script>
+        // Mock Authentication Database
+        const credentials = {
+            'r.palomino@verum.invest': 'Vrm_Mgr_2026!Alpha', // Manager
+            'd.costa@verum.invest': 'Vrm_Ast_2026!Bravo',    // Asst Manager
+            'j.davis@verum.invest': 'Vrm_Cls_2026!Echo'      // Closer
+        };
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error');
+
+            if (credentials[email] && credentials[email] === pass) {
+                errorMsg.style.display = 'none';
+                // In a real app, this would set a secure HTTP-only cookie/token
+                window.location.href = '/'; // Redirects to CRM Dashboard
+            } else {
+                errorMsg.style.display = 'block';
+                // Shake animation
+                document.querySelector('.login-container').style.animation = 'shake 0.5s';
+                setTimeout(() => document.querySelector('.login-container').style.animation = '', 500);
+            }
+        }
+    </script>
+    <style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+    </style>
+</body>
+</html>

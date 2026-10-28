@@ -20,7 +20,6 @@
         ::-webkit-scrollbar-thumb { background: var(--hud-border); border-radius: 3px; }
 
         .sidebar { width: 260px; background: var(--hud-panel); border-right: 1px solid var(--hud-border); display: flex; flex-direction: column; padding: 24px 0; z-index: 10; }
-
         .brand-container { padding: 0 24px 24px; border-bottom: 1px solid var(--hud-border); display: flex; align-items: center; gap: 12px; }
         .brand-logo { width: 40px; height: 40px; }
         .brand-text { display: flex; flex-direction: column; }
@@ -31,7 +30,6 @@
         .nav-item:hover { color: var(--hud-text); background: rgba(255,255,255,0.03); }
         .nav-item.active { color: var(--hud-glow); background: rgba(14,165,233,0.05); border-left-color: var(--hud-glow); }
         .nav-icon { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-
         .user-card { margin: auto 24px 24px; padding: 16px; background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; }
         .user-name { font-weight: 600; font-size: 0.95rem; }
         .user-role { font-family: var(--font-data); font-size: 0.7rem; color: var(--status-orange); margin-top: 4px; letter-spacing: 1px; }
@@ -51,7 +49,6 @@
         .btn-hud.red:hover { background: var(--hud-red); color: #fff; }
 
         .content-area { flex: 1; overflow-y: auto; padding: 32px; }
-
         .view-section { display: none; }
         .view-section.active { display: block; }
 
@@ -67,22 +64,17 @@
         td { padding: 16px; border-bottom: 1px solid var(--hud-border); vertical-align: middle; }
         tbody tr { cursor: pointer; }
         tbody tr:hover { background: rgba(14,165,233,0.02); }
-
         .client-link { color: var(--hud-text); font-weight: 600; text-decoration: none; }
         .client-link:hover { color: var(--hud-glow); }
         .client-id { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); margin-top: 4px; }
-
         .status-select { background: var(--hud-bg); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 6px 10px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; outline: none; cursor: pointer; font-weight: 600; }
-        .status-select:focus { border-color: var(--hud-glow); }
         .status-depositor { border-color: var(--status-orange) !important; color: var(--status-orange) !important; }
         .status-retention { border-color: var(--status-blue) !important; color: var(--status-blue) !important; }
         .status-sub { border-color: var(--status-green) !important; color: var(--status-green) !important; }
-
         .text-green { color: var(--hud-green); font-weight: 700; }
         .text-red { color: var(--hud-red); font-weight: 700; }
         .comment-preview { font-size: 0.8rem; color: var(--hud-muted); max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Profile View */
         .profile-view { display: none; }
         .profile-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--hud-border); }
         .profile-title h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
@@ -95,58 +87,46 @@
         .profile-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
         .hud-card { background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; padding: 24px; }
         .card-title { font-family: var(--font-data); font-size: 0.75rem; color: var(--hud-glow); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid var(--hud-border); padding-bottom: 10px; }
-
         .info-row { display: flex; margin-bottom: 12px; font-size: 0.9rem; }
         .info-label { width: 140px; color: var(--hud-muted); font-weight: 500; }
         .info-val { flex: 1; font-weight: 600; }
         .info-val.highlight { background: rgba(14,165,233,0.1); color: var(--hud-glow); padding: 2px 8px; border-radius: 4px; font-family: var(--font-data); font-size: 0.85rem; }
-
         .status-control-group { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--hud-border); }
         .status-control-row { display: flex; gap: 16px; margin-bottom: 12px; align-items: center; }
         .status-control-label { width: 130px; font-family: var(--font-data); font-size: 0.7rem; text-transform: uppercase; font-weight: 600; }
         .status-control-label.orange { color: var(--status-orange); }
         .status-control-label.blue { color: var(--status-blue); }
         .status-control-label.green { color: var(--status-green); }
-
         .status-control-select { flex: 1; background: var(--hud-bg); padding: 10px 12px; border-radius: 4px; font-family: var(--font-data); font-size: 0.85rem; font-weight: 700; outline: none; cursor: pointer; }
         .status-control-select.orange { border: 1px solid var(--status-orange); color: var(--status-orange); }
         .status-control-select.blue { border: 1px solid var(--status-blue); color: var(--status-blue); }
         .status-control-select.green { border: 1px solid var(--status-green); color: var(--status-green); }
-
         .comment-stream-container { display: flex; flex-direction: column; height: 100%; min-height: 400px; }
         .comment-list { flex: 1; overflow-y: auto; margin-bottom: 16px; padding-right: 8px; }
         .comment-input-area { display: flex; gap: 12px; margin-top: auto; }
         .comment-input { flex: 1; background: var(--hud-bg); border: 1px solid var(--hud-border); border-radius: 4px; padding: 12px; color: var(--hud-text); font-family: var(--font-ui); outline: none; }
         .comment-input:focus { border-color: var(--hud-glow); }
-
         .comment-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .comment-meta { display: flex; justify-content: space-between; font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); margin-bottom: 6px; }
         .comment-text { font-size: 0.9rem; line-height: 1.5; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px; border-left: 2px solid var(--status-orange); }
-
         .tabs { display: flex; border-bottom: 1px solid var(--hud-border); margin-bottom: 24px; flex-wrap: wrap; }
         .tab-btn { background: none; border: none; color: var(--hud-muted); padding: 12px 24px; font-family: var(--font-data); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s; }
         .tab-btn:hover { color: var(--hud-text); }
         .tab-btn.active { color: var(--hud-glow); border-bottom-color: var(--hud-glow); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-
         .kyc-text { font-size: 0.9rem; line-height: 1.8; color: var(--hud-text); }
         .kyc-text strong { color: var(--status-orange); font-family: var(--font-data); font-size: 0.8rem; margin-right: 8px; }
-
-        /* Financial Controls */
         .fin-control-row { display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-end; }
         .fin-control-group { flex: 1; }
         .fin-control-label { display: block; font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); text-transform: uppercase; margin-bottom: 6px; }
         .fin-control-input { width: 100%; background: var(--hud-bg); border: 1px solid var(--hud-border); border-radius: 4px; padding: 10px; color: var(--hud-text); font-family: var(--font-data); font-size: 0.85rem; outline: none; }
         .fin-control-input:focus { border-color: var(--hud-glow); }
-
-        /* Analytics Metrics */
         .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 32px; }
         .analytics-card { background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; padding: 24px; }
         .analytics-card .label { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); text-transform: uppercase; margin-bottom: 8px; }
         .analytics-card .value { font-size: 2rem; font-weight: 700; color: var(--hud-text); }
         .analytics-card .sub { font-size: 0.8rem; color: var(--hud-green); margin-top: 4px; }
-
         .leaderboard-table { width: 100%; }
         .leaderboard-table th { background: var(--hud-bg); }
         .leaderboard-table td { padding: 12px 16px; }
@@ -154,8 +134,6 @@
         .rank-1 { background: var(--status-orange); color: #000; }
         .rank-2 { background: #94a3b8; color: #000; }
         .rank-3 { background: #b45309; color: #fff; }
-
-        /* System Config */
         .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
         .user-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--hud-bg); border: 1px solid var(--hud-border); border-radius: 6px; margin-bottom: 8px; }
         .user-list-info { display: flex; flex-direction: column; }
@@ -165,8 +143,6 @@
         .role-manager { background: rgba(249,115,22,0.2); color: var(--status-orange); }
         .role-assistant { background: rgba(59,130,246,0.2); color: var(--status-blue); }
         .role-closer { background: rgba(16,185,129,0.2); color: var(--status-green); }
-
-        /* Modal */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
         .modal-content { background: var(--hud-panel); border: 1px solid var(--hud-border); border-radius: 8px; width: 100%; max-width: 500px; padding: 32px; max-height: 90vh; overflow-y: auto; }
@@ -175,37 +151,18 @@
     </style>
 </head>
 <body>
-
     <div class="sidebar">
         <div class="brand-container">
-            <!-- Sharp V Logo -->
             <svg class="brand-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M8 6 L20 34 L32 6 L26 6 L20 22 L14 6 Z" fill="#0ea5e9"/>
                 <path d="M14 6 L20 22 L26 6 L22 6 L20 14 L18 6 Z" fill="#38bdf8" opacity="0.6"/>
             </svg>
-            <div class="brand-text">
-                <span class="brand-name">VERUM</span>
-                <span class="brand-sub">INVEST</span>
-            </div>
+            <div class="brand-text"><span class="brand-name">VERUM</span><span class="brand-sub">INVEST</span></div>
         </div>
-
-        <div class="nav-item active" onclick="switchMainView('leads', this)">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-            LEAD TELEMETRY
-        </div>
-        <div class="nav-item" onclick="switchMainView('analytics', this)">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-            ANALYTICS
-        </div>
-        <div class="nav-item" onclick="switchMainView('config', this)">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-            SYSTEM CONFIG
-        </div>
-
-        <div class="user-card">
-            <div class="user-name">Roberto Palomino</div>
-            <div class="user-role">[ROOT] MANAGER</div>
-        </div>
+        <div class="nav-item active" onclick="switchMainView('leads', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>LEAD TELEMETRY</div>
+        <div class="nav-item" onclick="switchMainView('analytics', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>ANALYTICS</div>
+        <div class="nav-item" onclick="switchMainView('config', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>SYSTEM CONFIG</div>
+        <div class="user-card"><div class="user-name">Roberto Palomino</div><div class="user-role">[ROOT] MANAGER</div></div>
     </div>
 
     <div class="main-content">
@@ -213,16 +170,10 @@
             <div class="page-title" id="pageTitle">LEAD <span>TELEMETRY</span> OVERVIEW</div>
             <div class="top-actions">
                 <button class="btn-hud orange" onclick="openModal('injectLead')">+ INJECT LEAD</button>
-                <a href="/client" class="btn-hud">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                    CLIENT PORTAL
-                </a>
+                <a href="/client" class="btn-hud"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>CLIENT PORTAL</a>
             </div>
         </div>
-
         <div class="content-area">
-
-            <!-- LEADS VIEW -->
             <div id="view-leads" class="view-section active">
                 <div class="filter-tabs">
                     <div class="filter-tab add-btn" onclick="addFilter()">+ ADD AGENT</div>
@@ -230,172 +181,46 @@
                     <div class="filter-tab" onclick="filterTable('LUIS', this)">LUIS</div>
                     <div class="filter-tab" onclick="filterTable('MARIA', this)">MARIA</div>
                 </div>
-
                 <div class="data-table-container">
                     <table>
-                        <thead>
-                            <tr>
-                                <th style="width: 40px;"><input type="checkbox"></th>
-                                <th>IDENTITY / CONTACT</th>
-                                <th>ORIGIN</th>
-                                <th>LAST SYNC</th>
-                                <th>CURRENT BAL</th>
-                                <th>WITHDRAWN / COMM</th>
-                                <th>DEPOSIT / PROFIT</th>
-                                <th>STATUS</th>
-                                <th>RETENTION</th>
-                                <th>SUB-STATUS</th>
-                                <th>AGENT LOG</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th style="width: 40px;"><input type="checkbox"></th><th>IDENTITY / CONTACT</th><th>ORIGIN</th><th>LAST SYNC</th><th>CURRENT BAL</th><th>WITHDRAWN / COMM</th><th>DEPOSIT / PROFIT</th><th>STATUS</th><th>RETENTION</th><th>SUB-STATUS</th><th>AGENT LOG</th></tr></thead>
                         <tbody id="lead-table-body"></tbody>
                     </table>
                 </div>
             </div>
-
-            <!-- ANALYTICS VIEW -->
             <div id="view-analytics" class="view-section">
                 <div class="analytics-grid">
-                    <div class="analytics-card">
-                        <div class="label">Total Revenue Generated</div>
-                        <div class="value">$284,520</div>
-                        <div class="sub">+12.4% vs last month</div>
-                    </div>
-                    <div class="analytics-card">
-                        <div class="label">Active Clients</div>
-                        <div class="value">147</div>
-                        <div class="sub">+8 new this week</div>
-                    </div>
-                    <div class="analytics-card">
-                        <div class="label">Conversion Rate</div>
-                        <div class="value">34.2%</div>
-                        <div class="sub">New → Depositor</div>
-                    </div>
-                    <div class="analytics-card">
-                        <div class="label">Pending Withdrawals</div>
-                        <div class="value" style="color: var(--status-orange);">12</div>
-                        <div class="sub" style="color: var(--hud-muted);">Requires approval</div>
-                    </div>
+                    <div class="analytics-card"><div class="label">Total Revenue Generated</div><div class="value">$284,520</div><div class="sub">+12.4% vs last month</div></div>
+                    <div class="analytics-card"><div class="label">Active Clients</div><div class="value">147</div><div class="sub">+8 new this week</div></div>
+                    <div class="analytics-card"><div class="label">Conversion Rate</div><div class="value">34.2%</div><div class="sub">New → Depositor</div></div>
+                    <div class="analytics-card"><div class="label">Pending Withdrawals</div><div class="value" style="color: var(--status-orange);">12</div><div class="sub" style="color: var(--hud-muted);">Requires approval</div></div>
                 </div>
-
                 <div class="hud-card">
                     <div class="card-title">Agent Performance Leaderboard</div>
                     <table class="leaderboard-table">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Agent</th>
-                                <th>Clients Managed</th>
-                                <th>Revenue Generated</th>
-                                <th>Conversion Rate</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Rank</th><th>Agent</th><th>Clients Managed</th><th>Revenue Generated</th><th>Conversion Rate</th><th>Status</th></tr></thead>
                         <tbody>
-                            <tr>
-                                <td><span class="rank-badge rank-1">1</span></td>
-                                <td style="font-weight: 700;">Jessica Margaret Davis</td>
-                                <td>24</td>
-                                <td class="text-green">$89,420</td>
-                                <td>42%</td>
-                                <td><span class="role-badge role-closer">ACTIVE</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank-badge rank-2">2</span></td>
-                                <td style="font-weight: 700;">Sandro Kevin Jaeger</td>
-                                <td>21</td>
-                                <td class="text-green">$76,180</td>
-                                <td>38%</td>
-                                <td><span class="role-badge role-closer">ACTIVE</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank-badge rank-3">3</span></td>
-                                <td style="font-weight: 700;">David James Balmer</td>
-                                <td>19</td>
-                                <td class="text-green">$64,920</td>
-                                <td>35%</td>
-                                <td><span class="role-badge role-closer">ACTIVE</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank-badge" style="background: var(--hud-bg); color: var(--hud-muted);">4</span></td>
-                                <td style="font-weight: 700;">Marc Benjamin Cohen</td>
-                                <td>18</td>
-                                <td>$52,340</td>
-                                <td>31%</td>
-                                <td><span class="role-badge role-closer">ACTIVE</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="rank-badge" style="background: var(--hud-bg); color: var(--hud-muted);">5</span></td>
-                                <td style="font-weight: 700;">Nicolas Augusto Lucas</td>
-                                <td>16</td>
-                                <td>$41,280</td>
-                                <td>28%</td>
-                                <td><span class="role-badge role-closer">ACTIVE</span></td>
-                            </tr>
+                            <tr><td><span class="rank-badge rank-1">1</span></td><td style="font-weight: 700;">Jessica Margaret Davis</td><td>24</td><td class="text-green">$89,420</td><td>42%</td><td><span class="role-badge role-closer">ACTIVE</span></td></tr>
+                            <tr><td><span class="rank-badge rank-2">2</span></td><td style="font-weight: 700;">Sandro Kevin Jaeger</td><td>21</td><td class="text-green">$76,180</td><td>38%</td><td><span class="role-badge role-closer">ACTIVE</span></td></tr>
+                            <tr><td><span class="rank-badge rank-3">3</span></td><td style="font-weight: 700;">David James Balmer</td><td>19</td><td class="text-green">$64,920</td><td>35%</td><td><span class="role-badge role-closer">ACTIVE</span></td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-
-            <!-- SYSTEM CONFIG VIEW -->
             <div id="view-config" class="view-section">
                 <div class="config-grid">
                     <div class="hud-card">
                         <div class="card-title">Staff Management</div>
                         <button class="btn-hud green" style="width: 100%; margin-bottom: 16px; justify-content: center;" onclick="openModal('addUser')">+ ADD NEW USER</button>
-
-                        <div class="user-list-item">
-                            <div class="user-list-info">
-                                <span class="user-list-name">Roberto Palomino</span>
-                                <span class="user-list-role">r.palomino@verum.invest</span>
-                            </div>
-                            <span class="role-badge role-manager">MANAGER</span>
-                        </div>
-                        <div class="user-list-item">
-                            <div class="user-list-info">
-                                <span class="user-list-name">Dominick Charles Costa</span>
-                                <span class="user-list-role">d.costa@verum.invest</span>
-                            </div>
-                            <span class="role-badge role-assistant">ASST. MANAGER</span>
-                        </div>
-                        <div class="user-list-item">
-                            <div class="user-list-info">
-                                <span class="user-list-name">Kenet James Dean</span>
-                                <span class="user-list-role">k.dean@verum.invest</span>
-                            </div>
-                            <span class="role-badge role-assistant">ASST. MANAGER</span>
-                        </div>
-                        <div class="user-list-item">
-                            <div class="user-list-info">
-                                <span class="user-list-name">Jessica Margaret Davis</span>
-                                <span class="user-list-role">j.davis@verum.invest</span>
-                            </div>
-                            <span class="role-badge role-closer">CLOSER</span>
-                        </div>
-                        <div class="user-list-item">
-                            <div class="user-list-info">
-                                <span class="user-list-name">Sandro Kevin Jaeger</span>
-                                <span class="user-list-role">s.jaeger@verum.invest</span>
-                            </div>
-                            <span class="role-badge role-closer">CLOSER</span>
-                        </div>
-                        <div class="user-list-item">
-                            <div class="user-list-info">
-                                <span class="user-list-name">David James Balmer</span>
-                                <span class="user-list-role">d.balmer@verum.invest</span>
-                            </div>
-                            <span class="role-badge role-closer">CLOSER</span>
-                        </div>
+                        <div class="user-list-item"><div class="user-list-info"><span class="user-list-name">Roberto Palomino</span><span class="user-list-role">r.palomino@verum.invest</span></div><span class="role-badge role-manager">MANAGER</span></div>
+                        <div class="user-list-item"><div class="user-list-info"><span class="user-list-name">Dominick Charles Costa</span><span class="user-list-role">d.costa@verum.invest</span></div><span class="role-badge role-assistant">ASST. MANAGER</span></div>
+                        <div class="user-list-item"><div class="user-list-info"><span class="user-list-name">Jessica Margaret Davis</span><span class="user-list-role">j.davis@verum.invest</span></div><span class="role-badge role-closer">CLOSER</span></div>
                     </div>
-
                     <div class="hud-card">
                         <div class="card-title">System Parameters</div>
                         <div class="info-row"><div class="info-label">Platform Status</div><div class="info-val" style="color: var(--hud-green);">OPERATIONAL</div></div>
                         <div class="info-row"><div class="info-label">Database Sync</div><div class="info-val">Last: 2 min ago</div></div>
                         <div class="info-row"><div class="info-label">Active Sessions</div><div class="info-val">14</div></div>
-                        <div class="info-row"><div class="info-label">API Endpoints</div><div class="info-val">8/8 Online</div></div>
-                        <div class="info-row"><div class="info-label">Storage Used</div><div class="info-val">2.4 GB / 10 GB</div></div>
-
                         <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--hud-border);">
                             <div class="card-title" style="margin-bottom: 12px;">Quick Actions</div>
                             <button class="btn-hud" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="alert('System backup initiated.')">BACKUP DATABASE</button>
@@ -405,118 +230,56 @@
                     </div>
                 </div>
             </div>
-
-            <!-- PROFILE VIEW -->
             <div id="view-profile" class="view-section profile-view">
                 <button class="btn-hud" onclick="showView('leads')" style="margin-bottom: 24px;">← RETURN TO TELEMETRY</button>
-
                 <div class="profile-header">
                     <div class="profile-title">
                         <h1 id="p-name">Client Name</h1>
                         <p>ID: <span id="p-id">000000</span> | Registered: <span id="p-reg">00.00.0000</span></p>
                     </div>
                     <div class="profile-metrics">
-                        <div class="metric-box">
-                            <div class="metric-label">Current Balance</div>
-                            <div class="metric-val text-green" id="p-balance">$0.00</div>
-                        </div>
-                        <div class="metric-box">
-                            <div class="metric-label">Total Deposited</div>
-                            <div class="metric-val" id="p-deposited">$0.00</div>
+                        <div class="metric-box"><div class="metric-label">Current Balance</div><div class="metric-val text-green" id="p-balance">$0.00</div></div>
+                        <div class="metric-box"><div class="metric-label">Total Deposited</div><div class="metric-val" id="p-deposited">$0.00</div></div>
+                        <!-- NEW: VIEW CLIENT PORTAL BUTTON -->
+                        <div class="metric-box" style="text-align: right;">
+                            <button class="btn-hud green" onclick="openClientPortal()" style="padding: 10px 20px; font-size: 0.8rem;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                VIEW CLIENT PORTAL
+                            </button>
                         </div>
                     </div>
                 </div>
-
                 <div class="profile-grid-2">
                     <div class="hud-card">
                         <div class="card-title">Client Intelligence & Status Control</div>
                         <div class="info-row"><div class="info-label">Email</div><div class="info-val">client@email.com</div></div>
                         <div class="info-row"><div class="info-label">Phone</div><div class="info-val highlight">+1 234 567 890</div></div>
-                        <div class="info-row"><div class="info-label">Country</div><div class="info-val">Argentina 🇦🇷</div></div>
-                        <div class="info-row">
-                            <div class="info-label">Assigned Agent</div>
-                            <div class="info-val">
-                                <select id="p-agent-select" class="status-control-select blue" style="padding: 6px 10px; font-size: 0.8rem;">
-                                    <option>LUIS</option>
-                                    <option>MARIA</option>
-                                    <option>JESSICA DAVIS</option>
-                                    <option>SANDRO JAEGER</option>
-                                    <option>DAVID BALMER</option>
-                                    <option>MARC COHEN</option>
-                                    <option>NICOLAS LUCAS</option>
-                                    <option>MAYRA BARRERA</option>
-                                    <option>JOE FREDERICK</option>
-                                    <option>ANA MERLANO</option>
-                                </select>
-                            </div>
-                        </div>
-
+                        <div class="info-row"><div class="info-label">Country</div><div class="info-val">Argentina 🇦</div></div>
+                        <div class="info-row"><div class="info-label">Assigned Agent</div><div class="info-val"><select id="p-agent-select" class="status-control-select blue" style="padding: 6px 10px; font-size: 0.8rem;"><option>LUIS</option><option>MARIA</option><option>JESSICA DAVIS</option><option>SANDRO JAEGER</option></select></div></div>
                         <div class="status-control-group">
-                            <div class="status-control-row">
-                                <div class="status-control-label orange">Depositor Status</div>
-                                <select class="status-control-select orange" id="p-status-depositor">
-                                    <option>DEPOSITOR</option>
-                                    <option>NEW LEAD</option>
-                                    <option>QUALIFIED</option>
-                                </select>
-                            </div>
-                            <div class="status-control-row">
-                                <div class="status-control-label blue">Retention Phase</div>
-                                <select class="status-control-select blue" id="p-status-retention">
-                                    <option>NEW</option>
-                                    <option>ACTIVE</option>
-                                    <option>REASSIGN</option>
-                                    <option>RECOVERY</option>
-                                </select>
-                            </div>
-                            <div class="status-control-row">
-                                <div class="status-control-label green">Closer Sub-Status</div>
-                                <select class="status-control-select green" id="p-status-sub">
-                                    <option>NO POTENTIAL</option>
-                                    <option>UNDER AGE</option>
-                                    <option>POTENTIAL</option>
-                                    <option>NO INTEREST</option>
-                                </select>
-                            </div>
+                            <div class="status-control-row"><div class="status-control-label orange">Depositor Status</div><select class="status-control-select orange" id="p-status-depositor"><option>DEPOSITOR</option><option>NEW LEAD</option></select></div>
+                            <div class="status-control-row"><div class="status-control-label blue">Retention Phase</div><select class="status-control-select blue" id="p-status-retention"><option>NEW</option><option>ACTIVE</option><option>REASSIGN</option><option>RECOVERY</option></select></div>
+                            <div class="status-control-row"><div class="status-control-label green">Closer Sub-Status</div><select class="status-control-select green" id="p-status-sub"><option>NO POTENTIAL</option><option>POTENTIAL</option><option>NO INTEREST</option></select></div>
                             <button class="btn-hud" style="width: 100%; margin-top: 16px; justify-content: center;" onclick="transmitStatusUpdate()">TRANSMIT STATUS UPDATE</button>
                         </div>
                     </div>
-
                     <div class="hud-card" style="display: flex; flex-direction: column;">
                         <div class="card-title">Agent Comment Stream</div>
-                        <div class="comment-stream-container">
-                            <div class="comment-list" id="p-comments"></div>
-                            <div class="comment-input-area">
-                                <input type="text" class="comment-input" id="new-comment" placeholder="Log interaction or call notes...">
-                                <button class="btn-hud" onclick="addComment()">TRANSMIT</button>
-                            </div>
-                        </div>
+                        <div class="comment-stream-container"><div class="comment-list" id="p-comments"></div><div class="comment-input-area"><input type="text" class="comment-input" id="new-comment" placeholder="Log interaction..."><button class="btn-hud" onclick="addComment()">TRANSMIT</button></div></div>
                     </div>
                 </div>
-
-                <!-- Financial Controls Panel -->
                 <div class="hud-card" style="margin-bottom: 24px;">
                     <div class="card-title" style="color: var(--status-orange);">Financial Controls (Manager / Asst. Manager Only)</div>
                     <div class="fin-control-row">
-                        <div class="fin-control-group">
-                            <label class="fin-control-label">Inject Profit Amount (USD)</label>
-                            <input type="number" class="fin-control-input" id="profit-amount" placeholder="0.00">
-                        </div>
-                        <div class="fin-control-group">
-                            <label class="fin-control-label">Asset / Instrument</label>
-                            <input type="text" class="fin-control-input" id="profit-asset" placeholder="e.g. Apple, Brent, BTC/USD">
-                        </div>
+                        <div class="fin-control-group"><label class="fin-control-label">Inject Profit Amount (USD)</label><input type="number" class="fin-control-input" id="profit-amount" placeholder="0.00"></div>
+                        <div class="fin-control-group"><label class="fin-control-label">Asset / Instrument</label><input type="text" class="fin-control-input" id="profit-asset" placeholder="e.g. Apple, Brent, BTC/USD"></div>
                         <button class="btn-hud green" onclick="injectProfit()" style="height: 42px; padding: 0 24px;">INJECT PROFIT</button>
                     </div>
                     <div class="fin-control-row">
-                        <div class="fin-control-group">
-                            <label class="fin-control-label">Adjust Balance Directly (USD)</label>
-                            <input type="number" class="fin-control-input" id="balance-adjust" placeholder="0.00">
-                        </div>
+                        <div class="fin-control-group"><label class="fin-control-label">Adjust Balance Directly (USD)</label><input type="number" class="fin-control-input" id="balance-adjust" placeholder="0.00"></div>
                         <button class="btn-hud" onclick="adjustBalance()" style="height: 42px; padding: 0 24px;">UPDATE BALANCE</button>
                     </div>
                 </div>
-
                 <div class="hud-card">
                     <div class="tabs">
                         <button class="tab-btn active" onclick="switchTab('activity', this)">Activity Timeline</button>
@@ -524,155 +287,24 @@
                         <button class="tab-btn" onclick="switchTab('withdrawals', this)">Withdrawal Requests</button>
                         <button class="tab-btn" onclick="switchTab('kyc', this)">KYC / Opener Intel</button>
                     </div>
-
-                    <div id="tab-activity" class="tab-content active">
-                        <h4 style="color: var(--status-orange); font-family: var(--font-data); font-size: 0.75rem; margin-bottom: 16px; text-transform: uppercase;">Recent Agent Comments</h4>
-                        <div id="tab-activity-comments" style="margin-bottom: 24px;"></div>
-
-                        <h4 style="color: var(--status-orange); font-family: var(--font-data); font-size: 0.75rem; margin-bottom: 16px; text-transform: uppercase;">System Activity Log</h4>
-                        <table style="width: 100%;">
-                            <thead><tr><th>Action</th><th>Operator</th><th>IP Address</th><th>Timestamp</th></tr></thead>
-                            <tbody>
-                                <tr><td>Dashboard Viewed</td><td>Alondra Annette Martinez</td><td>191.101.34.178</td><td>12.06.26 16:36:39</td></tr>
-                                <tr><td>Login Successful</td><td>Lucia Vega</td><td>191.101.34.178</td><td>12.06.26 13:29:51</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div id="tab-transactions" class="tab-content">
-                        <table style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>TX-ID</th>
-                                    <th>Date</th>
-                                    <th>Type</th>
-                                    <th>Asset</th>
-                                    <th>Amount</th>
-                                    <th>Profit/Loss</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="transaction-history-body"></tbody>
-                        </table>
-                    </div>
-
-                    <div id="tab-withdrawals" class="tab-content">
-                        <table style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>Request ID</th>
-                                    <th>Date</th>
-                                    <th>Method</th>
-                                    <th>Amount</th>
-                                    <th>Details</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="withdrawal-requests-body"></tbody>
-                        </table>
-                    </div>
-
-                    <div id="tab-kyc" class="tab-content">
-                        <div class="kyc-text">
-                            <p><strong>1. EDAD:</strong> 56 AÑOS</p>
-                            <p><strong>2. OCUPACIÓN:</strong> EMPLEADO CARNICERO</p>
-                            <p><strong>3. INGRESOS/RANGO:</strong> 1.1M PS ARG (761 USD) // LIBRE: 346 USD</p>
-                            <p><strong>4. DEUDAS O HIPOTECAS:</strong> NO DEUDAS BANCARIAS</p>
-                            <p><strong>5. BANCOS:</strong> MERCADO PAGO</p>
-                            <p><strong>6. BONO:</strong> SIN BONO</p>
-                            <p><strong>7. METODO DE TRABAJO:</strong> ANALISTA FINANCIERO</p>
-                            <p><strong>8. METODO DE PAGO:</strong> TRANSFERENCIA</p>
-                            <p><strong>9. PALABRA CLAVE:</strong> CABALLO</p>
-                            <p><strong>10. META DE INVERSION:</strong> TENER UNA CASA // APERTURAR UN NEGOCIO</p>
-                            <p><strong>11. DISPONIBILIDAD:</strong> 12PM A 1PM HORA PERU(L-V)</p>
-                            <p><strong>12. ESTADO/ CIUDAD:</strong> JUJUY</p>
-                            <p><strong>13. HIJOS:</strong> TODOS INDEPENDIENTES MAYORES DE 30</p>
-                            <p><strong>14. CASA PROPIA:</strong> ALQUILER DE 600K PS ARG (415 USD)</p>
-                            <p><strong>15. PREFIJO DE LLAMADA:</strong> CROCOCALLS</p>
-                            <p><strong>16. HUBO LLAMADA POR WSP:</strong> NO</p>
-                            <p><strong>17. DE DONDE SE LLAMA:</strong> NO SE INDICA</p>
-                            <p><strong>18. CON QUIENES VIVE:</strong> VIVE SOLO</p>
-                            <p><strong>19. FAMILIARES QUE SABEN:</strong> NADIE</p>
-                            <p><strong>20. CUENTA PROPIA O MANCOMUNADA:</strong> PROPIA</p>
-                            <p><strong>21. NUMERO ADICIONAL:</strong> UNICO NUMERO</p>
-                            <p><strong>22. CARACTERISTICAS:</strong> CL HABLADOR, INTERRUMPE A VECES, LE GUSTA HABLAR DE SI</p>
-                        </div>
-                    </div>
+                    <div id="tab-activity" class="tab-content active"><h4 style="color: var(--status-orange); font-family: var(--font-data); font-size: 0.75rem; margin-bottom: 16px; text-transform: uppercase;">Recent Agent Comments</h4><div id="tab-activity-comments" style="margin-bottom: 24px;"></div><h4 style="color: var(--status-orange); font-family: var(--font-data); font-size: 0.75rem; margin-bottom: 16px; text-transform: uppercase;">System Activity Log</h4><table style="width: 100%;"><thead><tr><th>Action</th><th>Operator</th><th>IP Address</th><th>Timestamp</th></tr></thead><tbody><tr><td>Dashboard Viewed</td><td>Alondra Annette Martinez</td><td>191.101.34.178</td><td>12.06.26 16:36:39</td></tr></tbody></table></div>
+                    <div id="tab-transactions" class="tab-content"><table style="width: 100%;"><thead><tr><th>TX-ID</th><th>Date</th><th>Type</th><th>Asset</th><th>Amount</th><th>Profit/Loss</th><th>Status</th></tr></thead><tbody id="transaction-history-body"></tbody></table></div>
+                    <div id="tab-withdrawals" class="tab-content"><table style="width: 100%;"><thead><tr><th>Request ID</th><th>Date</th><th>Method</th><th>Amount</th><th>Details</th><th>Status</th><th>Action</th></tr></thead><tbody id="withdrawal-requests-body"></tbody></table></div>
+                    <div id="tab-kyc" class="tab-content"><div class="kyc-text"><p><strong>1. EDAD:</strong> 56 AÑOS</p><p><strong>2. OCUPACIÓN:</strong> EMPLEADO CARNICERO</p><p><strong>22. CARACTERISTICAS:</strong> CL HABLADOR, INTERRUMPE A VECES.</p></div></div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Modals -->
-    <div class="modal-overlay" id="modal-injectLead">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('injectLead')">✕</button>
-            <div class="modal-title">Inject New Lead</div>
-            <div class="fin-control-group" style="margin-bottom: 16px;">
-                <label class="fin-control-label">Client Full Name</label>
-                <input type="text" class="fin-control-input" id="lead-name" placeholder="e.g. Martha Herrera">
-            </div>
-            <div class="fin-control-group" style="margin-bottom: 16px;">
-                <label class="fin-control-label">Country</label>
-                <input type="text" class="fin-control-input" id="lead-country" placeholder="e.g. Argentina">
-            </div>
-            <div class="fin-control-group" style="margin-bottom: 16px;">
-                <label class="fin-control-label">Initial Deposit (USD)</label>
-                <input type="number" class="fin-control-input" id="lead-deposit" placeholder="250.00">
-            </div>
-            <div class="fin-control-group" style="margin-bottom: 24px;">
-                <label class="fin-control-label">Assign To Agent</label>
-                <select class="fin-control-input" id="lead-agent">
-                    <option>LUIS</option>
-                    <option>MARIA</option>
-                    <option>JESSICA DAVIS</option>
-                    <option>SANDRO JAEGER</option>
-                </select>
-            </div>
-            <button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="injectLead()">INJECT INTO DATABASE</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modal-addUser">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('addUser')">✕</button>
-            <div class="modal-title">Add New System User</div>
-            <div class="fin-control-group" style="margin-bottom: 16px;">
-                <label class="fin-control-label">Full Name</label>
-                <input type="text" class="fin-control-input" placeholder="e.g. Fernando Lopez">
-            </div>
-            <div class="fin-control-group" style="margin-bottom: 16px;">
-                <label class="fin-control-label">Email Address</label>
-                <input type="email" class="fin-control-input" placeholder="f.lopez@verum.invest">
-            </div>
-            <div class="fin-control-group" style="margin-bottom: 16px;">
-                <label class="fin-control-label">Role</label>
-                <select class="fin-control-input">
-                    <option>CLOSER</option>
-                    <option>SUPERVISOR</option>
-                    <option>ASST. MANAGER</option>
-                </select>
-            </div>
-            <div class="fin-control-group" style="margin-bottom: 24px;">
-                <label class="fin-control-label">Assigned Supervisor (if Closer)</label>
-                <select class="fin-control-input">
-                    <option>Gonzalo</option>
-                    <option>None</option>
-                </select>
-            </div>
-            <button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="closeModal('addUser'); alert('User account created and credentials emailed.')">CREATE USER ACCOUNT</button>
-        </div>
-    </div>
+    <div class="modal-overlay" id="modal-injectLead"><div class="modal-content"><button class="modal-close" onclick="closeModal('injectLead')">✕</button><div class="modal-title">Inject New Lead</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Client Full Name</label><input type="text" class="fin-control-input" id="lead-name"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Country</label><input type="text" class="fin-control-input" id="lead-country"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Initial Deposit (USD)</label><input type="number" class="fin-control-input" id="lead-deposit"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Assign To Agent</label><select class="fin-control-input" id="lead-agent"><option>LUIS</option><option>MARIA</option><option>JESSICA DAVIS</option></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="injectLead()">INJECT INTO DATABASE</button></div></div>
+    <div class="modal-overlay" id="modal-addUser"><div class="modal-content"><button class="modal-close" onclick="closeModal('addUser')">✕</button><div class="modal-title">Add New System User</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Full Name</label><input type="text" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Email Address</label><input type="email" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Role</label><select class="fin-control-input"><option>CLOSER</option><option>SUPERVISOR</option><option>ASST. MANAGER</option></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="closeModal('addUser'); alert('User account created.')">CREATE USER ACCOUNT</button></div></div>
 
     <script>
         const clients = [
-            { txId: "TX-8839201", agent: "LUIS", name: "Martha Herrera", country: "Argentina", flag: "🇦🇷", lastLogin: "20.02.26 14:35", balance: 0, withdrawn: 51457, deposit: 51457, status: "DEPOSITOR", retention: "RECOVERY", subStatus: "NO POTENTIAL", comment: "CI se puso en contacto para d...", comments: [{agent: "Henry Rossi", time: "20.02.26 14:35", text: "CI se puso en contacto para discutir la recuperación de fondos."}], transactions: [{id: "TX-001", date: "15.01.26", type: "DEPOSIT", asset: "Initial Capital", amount: 51457, profit: 0, status: "COMPLETED"}], withdrawals: [] },
-            { txId: "TX-8839202", agent: "MARIA", name: "Orlando Amado Aguilar", country: "Argentina", flag: "🇦🇷", lastLogin: "06.02.26 16:50", balance: 0, withdrawn: 65288, deposit: 65288, status: "DEPOSITOR", retention: "REASSIGN", subStatus: "NO INTEREST", comment: "CI no da respuesta ni por 805...", comments: [{agent: "Henry Rossi", time: "06.02.26 16:50", text: "CI no da respuesta ni por 805. Reasignando."}], transactions: [{id: "TX-002", date: "20.01.26", type: "DEPOSIT", asset: "Initial Capital", amount: 65288, profit: 0, status: "COMPLETED"}], withdrawals: [] },
-            { txId: "TX-8839203", agent: "LUIS", name: "Victor Benito Paez Grance", country: "Paraguay", flag: "🇵🇾", lastLogin: "06.02.26 16:39", balance: 0, withdrawn: 50914.14, deposit: 50914.14, status: "DEPOSITOR", retention: "ACTIVE", subStatus: "POTENTIAL", comment: "Directo buzón de voz...", comments: [{agent: "Henry Rossi", time: "06.02.26 16:39", text: "Directo buzón de voz. Llamar mañana."}], transactions: [{id: "TX-003", date: "10.02.26", type: "PROFIT", asset: "Apple (AAPL)", amount: 0, profit: 2450, status: "COMPLETED"}, {id: "TX-004", date: "15.02.26", type: "PROFIT", asset: "Brent Crude", amount: 0, profit: 1820, status: "COMPLETED"}], withdrawals: [] },
-            { txId: "TX-8839204", agent: "MARIA", name: "Flora Paniagua", country: "Paraguay", flag: "🇵🇾", lastLogin: "06.02.26 16:25", balance: 332.58, withdrawn: 250.87, deposit: 81.71, status: "DEPOSITOR", retention: "NEW", subStatus: "UNDER AGE", comment: "Se intentó retomar...", comments: [{agent: "Henry Rossi", time: "06.02.26 16:25", text: "Se intentó retomar el contacto."}], transactions: [{id: "TX-005", date: "01.02.26", type: "DEPOSIT", asset: "Initial Capital", amount: 250, profit: 0, status: "COMPLETED"}, {id: "TX-006", date: "05.02.26", type: "PROFIT", asset: "Mercado Libre (MELI)", amount: 0, profit: 81.71, status: "COMPLETED"}], withdrawals: [{id: "WD-001", date: "06.02.26", method: "CRYPTO", amount: 250.87, details: "USDT via BEP20", status: "PENDING"}] }
+            { txId: "TX-8839201", agent: "LUIS", name: "Martha Herrera", country: "Argentina", flag: "🇦🇷", lastLogin: "20.02.26 14:35", balance: 0, withdrawn: 51457, deposit: 51457, status: "DEPOSITOR", retention: "RECOVERY", subStatus: "NO POTENTIAL", comment: "CI se puso en contacto...", comments: [{agent: "Henry Rossi", time: "20.02.26 14:35", text: "CI se puso en contacto para discutir la recuperación."}], transactions: [{id: "TX-001", date: "15.01.26", type: "DEPOSIT", asset: "Initial Capital", amount: 51457, profit: 0, status: "COMPLETED"}], withdrawals: [] },
+            { txId: "TX-8839202", agent: "MARIA", name: "Orlando Amado Aguilar", country: "Argentina", flag: "🇦🇷", lastLogin: "06.02.26 16:50", balance: 0, withdrawn: 65288, deposit: 65288, status: "DEPOSITOR", retention: "REASSIGN", subStatus: "NO INTEREST", comment: "CI no da respuesta...", comments: [{agent: "Henry Rossi", time: "06.02.26 16:50", text: "CI no da respuesta."}], transactions: [], withdrawals: [] },
+            { txId: "TX-8839203", agent: "LUIS", name: "Victor Benito Paez Grance", country: "Paraguay", flag: "🇵🇾", lastLogin: "06.02.26 16:39", balance: 0, withdrawn: 50914.14, deposit: 50914.14, status: "DEPOSITOR", retention: "ACTIVE", subStatus: "POTENTIAL", comment: "Directo buzón de voz...", comments: [{agent: "Henry Rossi", time: "06.02.26 16:39", text: "Directo buzón de voz."}], transactions: [{id: "TX-003", date: "10.02.26", type: "PROFIT", asset: "Apple (AAPL)", amount: 0, profit: 2450, status: "COMPLETED"}], withdrawals: [] },
+            { txId: "TX-8839204", agent: "MARIA", name: "Flora Paniagua", country: "Paraguay", flag: "🇵🇾", lastLogin: "06.02.26 16:25", balance: 332.58, withdrawn: 250.87, deposit: 81.71, status: "DEPOSITOR", retention: "NEW", subStatus: "UNDER AGE", comment: "Se intentó retomar...", comments: [{agent: "Henry Rossi", time: "06.02.26 16:25", text: "Se intentó retomar."}], transactions: [{id: "TX-005", date: "01.02.26", type: "DEPOSIT", asset: "Initial Capital", amount: 250, profit: 0, status: "COMPLETED"}], withdrawals: [{id: "WD-001", date: "06.02.26", method: "CRYPTO", amount: 250.87, details: "USDT via BEP20", status: "PENDING"}] }
         ];
-
         let currentFilter = 'ALL';
         let currentClient = null;
 
@@ -680,254 +312,58 @@
             const tbody = document.getElementById('lead-table-body');
             tbody.innerHTML = '';
             const filteredClients = currentFilter === 'ALL' ? clients : clients.filter(c => c.agent === currentFilter);
-
             filteredClients.forEach((c) => {
                 const tr = document.createElement('tr');
                 tr.onclick = () => openProfile(c.txId);
-                tr.innerHTML = `
-                    <td><input type="checkbox" onclick="event.stopPropagation()"></td>
-                    <td>
-                        <a href="#" class="client-link" onclick="event.preventDefault(); openProfile('${c.txId}')">${c.name}</a>
-                        <div class="client-id">${c.txId}</div>
-                    </td>
-                    <td>${c.country} ${c.flag}</td>
-                    <td style="font-family: var(--font-data); font-size: 0.8rem;">${c.lastLogin}</td>
-                    <td style="font-weight: 700;">$${c.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                    <td class="text-red">-$${c.withdrawn.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                    <td style="font-weight: 700;">$${c.deposit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                    <td><select class="status-select status-depositor" onclick="event.stopPropagation()"><option selected>${c.status}</option><option>NEW LEAD</option></select></td>
-                    <td><select class="status-select status-retention" onclick="event.stopPropagation()"><option>NEW</option><option selected>${c.retention}</option><option>REASSIGN</option><option>RECOVERY</option></select></td>
-                    <td><select class="status-select status-sub" onclick="event.stopPropagation()"><option selected>${c.subStatus}</option><option>NO POTENTIAL</option><option>UNDER AGE</option><option>POTENTIAL</option><option>NO INTEREST</option></select></td>
-                    <td><div class="comment-preview">${c.comment}</div></td>
-                `;
+                tr.innerHTML = `<td><input type="checkbox" onclick="event.stopPropagation()"></td><td><a href="#" class="client-link" onclick="event.preventDefault(); openProfile('${c.txId}')">${c.name}</a><div class="client-id">${c.txId}</div></td><td>${c.country} ${c.flag}</td><td style="font-family: var(--font-data); font-size: 0.8rem;">${c.lastLogin}</td><td style="font-weight: 700;">$${c.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-red">-$${c.withdrawn.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="font-weight: 700;">$${c.deposit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><select class="status-select status-depositor" onclick="event.stopPropagation()"><option selected>${c.status}</option></select></td><td><select class="status-select status-retention" onclick="event.stopPropagation()"><option selected>${c.retention}</option></select></td><td><select class="status-select status-sub" onclick="event.stopPropagation()"><option selected>${c.subStatus}</option></select></td><td><div class="comment-preview">${c.comment}</div></td>`;
                 tbody.appendChild(tr);
             });
         }
-
-        function filterTable(agent, el) {
-            currentFilter = agent;
-            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
-            renderTable();
-        }
-
-        function addFilter() {
-            const name = prompt("Enter Agent Name (e.g., FERNANDO):").trim().toUpperCase();
-            if (name && !document.querySelector(`.filter-tab[onclick="filterTable('${name}', this)"]`)) {
-                const tab = document.createElement('div');
-                tab.className = 'filter-tab';
-                tab.textContent = name;
-                tab.onclick = function() { filterTable(name, this); };
-                document.querySelector('.filter-tabs').appendChild(tab);
-            }
-        }
-
-        function switchMainView(viewName, navEl) {
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            navEl.classList.add('active');
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById(`view-${viewName}`).classList.add('active');
-
-            const titles = {
-                'leads': 'LEAD <span>TELEMETRY</span> OVERVIEW',
-                'analytics': 'PERFORMANCE <span>ANALYTICS</span>',
-                'config': 'SYSTEM <span>CONFIGURATION</span>'
-            };
-            document.getElementById('pageTitle').innerHTML = titles[viewName];
-        }
-
-        function showView(viewName) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById(`view-${viewName}`).classList.add('active');
-            document.getElementById('pageTitle').innerHTML = viewName === 'leads' ? 'LEAD <span>TELEMETRY</span> OVERVIEW' : 'CLIENT <span>INTELLIGENCE</span> DOSSIER';
+        function filterTable(agent, el) { currentFilter = agent; document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active')); el.classList.add('active'); renderTable(); }
+        function addFilter() { const name = prompt("Enter Agent Name:").trim().toUpperCase(); if (name) { const tab = document.createElement('div'); tab.className = 'filter-tab'; tab.textContent = name; tab.onclick = function() { filterTable(name, this); }; document.querySelector('.filter-tabs').appendChild(tab); } }
+        function switchMainView(viewName, navEl) { document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); navEl.classList.add('active'); document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewName}`).classList.add('active'); const titles = { 'leads': 'LEAD <span>TELEMETRY</span> OVERVIEW', 'analytics': 'PERFORMANCE <span>ANALYTICS</span>', 'config': 'SYSTEM <span>CONFIGURATION</span>' }; document.getElementById('pageTitle').innerHTML = titles[viewName]; }
+        function showView(viewName) { document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewName}`).classList.add('active'); document.getElementById('pageTitle').innerHTML = viewName === 'leads' ? 'LEAD <span>TELEMETRY</span> OVERVIEW' : 'CLIENT <span>INTELLIGENCE</span> DOSSIER'; }
+        
+        // NEW: DYNAMIC PORTAL ROUTING
+        function openClientPortal() {
+            if (!currentClient) return;
+            // Opens the client portal with the specific client ID in the URL
+            window.open(`/client?id=${currentClient.txId}`, '_blank');
         }
 
         function openProfile(txId) {
             currentClient = clients.find(client => client.txId === txId);
             if (!currentClient) return;
-
             document.getElementById('p-name').textContent = currentClient.name;
             document.getElementById('p-id').textContent = currentClient.txId;
             document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2});
             document.getElementById('p-deposited').textContent = '$' + currentClient.deposit.toLocaleString('en-US', {minimumFractionDigits: 2});
             document.getElementById('p-agent-select').value = currentClient.agent;
-
             document.getElementById('p-status-depositor').value = currentClient.status;
             document.getElementById('p-status-retention').value = currentClient.retention;
             document.getElementById('p-status-sub').value = currentClient.subStatus;
-
-            // Render Comments
             const commentContainer = document.getElementById('p-comments');
             commentContainer.innerHTML = '';
-            currentClient.comments.forEach(comm => {
-                commentContainer.innerHTML += `
-                    <div class="comment-item">
-                        <div class="comment-meta"><span>${comm.agent}</span><span>${comm.time}</span></div>
-                        <div class="comment-text">${comm.text}</div>
-                    </div>
-                `;
-            });
-
-            const activityCommentContainer = document.getElementById('tab-activity-comments');
-            activityCommentContainer.innerHTML = '';
-            currentClient.comments.slice(0, 2).forEach(comm => {
-                activityCommentContainer.innerHTML += `
-                    <div class="comment-item" style="border-bottom: 1px solid var(--hud-border); padding-bottom: 12px; margin-bottom: 12px;">
-                        <div class="comment-meta"><span>${comm.agent}</span><span>${comm.time}</span></div>
-                        <div class="comment-text" style="background: transparent; padding: 0; border-left: none;">${comm.text}</div>
-                    </div>
-                `;
-            });
-
-            // Render Transaction History
+            currentClient.comments.forEach(comm => { commentContainer.innerHTML += `<div class="comment-item"><div class="comment-meta"><span>${comm.agent}</span><span>${comm.time}</span></div><div class="comment-text">${comm.text}</div></div>`; });
             const txBody = document.getElementById('transaction-history-body');
             txBody.innerHTML = '';
-            currentClient.transactions.forEach(tx => {
-                const profitClass = tx.profit > 0 ? 'text-green' : (tx.profit < 0 ? 'text-red' : '');
-                txBody.innerHTML += `
-                    <tr>
-                        <td style="font-family: var(--font-data); font-size: 0.8rem;">${tx.id}</td>
-                        <td>${tx.date}</td>
-                        <td style="font-weight: 600;">${tx.type}</td>
-                        <td>${tx.asset}</td>
-                        <td>$${tx.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                        <td class="${profitClass}">${tx.profit > 0 ? '+' : ''}$${tx.profit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                        <td><span class="role-badge role-closer">${tx.status}</span></td>
-                    </tr>
-                `;
-            });
-
-            // Render Withdrawal Requests
+            currentClient.transactions.forEach(tx => { const profitClass = tx.profit > 0 ? 'text-green' : (tx.profit < 0 ? 'text-red' : ''); txBody.innerHTML += `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${tx.id}</td><td>${tx.date}</td><td style="font-weight: 600;">${tx.type}</td><td>${tx.asset}</td><td>$${tx.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="${profitClass}">${tx.profit > 0 ? '+' : ''}$${tx.profit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span class="role-badge role-closer">${tx.status}</span></td></tr>`; });
             const wdBody = document.getElementById('withdrawal-requests-body');
             wdBody.innerHTML = '';
-            if (currentClient.withdrawals.length === 0) {
-                wdBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--hud-muted); padding: 32px;">No pending withdrawal requests.</td></tr>';
-            } else {
-                currentClient.withdrawals.forEach(wd => {
-                    const statusClass = wd.status === 'PENDING' ? 'role-assistant' : 'role-closer';
-                    const actionBtn = wd.status === 'PENDING' ?
-                        `<button class="btn-hud green" style="padding: 4px 12px; font-size: 0.7rem;" onclick="approveWithdrawal('${wd.id}')">APPROVE</button>
-                         <button class="btn-hud red" style="padding: 4px 12px; font-size: 0.7rem; margin-left: 4px;" onclick="rejectWithdrawal('${wd.id}')">REJECT</button>` :
-                        `<span style="color: var(--hud-muted); font-size: 0.8rem;">—</span>`;
-                    wdBody.innerHTML += `
-                        <tr>
-                            <td style="font-family: var(--font-data); font-size: 0.8rem;">${wd.id}</td>
-                            <td>${wd.date}</td>
-                            <td>${wd.method}</td>
-                            <td style="font-weight: 700;">$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                            <td style="font-size: 0.8rem;">${wd.details}</td>
-                            <td><span class="role-badge ${statusClass}">${wd.status}</span></td>
-                            <td>${actionBtn}</td>
-                        </tr>
-                    `;
-                });
-            }
-
+            if (currentClient.withdrawals.length === 0) { wdBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--hud-muted); padding: 32px;">No pending withdrawal requests.</td></tr>'; } 
+            else { currentClient.withdrawals.forEach(wd => { const statusClass = wd.status === 'PENDING' ? 'role-assistant' : 'role-closer'; const actionBtn = wd.status === 'PENDING' ? `<button class="btn-hud green" style="padding: 4px 12px; font-size: 0.7rem;" onclick="approveWithdrawal('${wd.id}')">APPROVE</button><button class="btn-hud red" style="padding: 4px 12px; font-size: 0.7rem; margin-left: 4px;" onclick="rejectWithdrawal('${wd.id}')">REJECT</button>` : `<span style="color: var(--hud-muted); font-size: 0.8rem;">—</span>`; wdBody.innerHTML += `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${wd.id}</td><td>${wd.date}</td><td>${wd.method}</td><td style="font-weight: 700;">$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="font-size: 0.8rem;">${wd.details}</td><td><span class="role-badge ${statusClass}">${wd.status}</span></td><td>${actionBtn}</td></tr>`; }); }
             showView('profile');
         }
-
-        function transmitStatusUpdate() {
-            if (!currentClient) return;
-            currentClient.status = document.getElementById('p-status-depositor').value;
-            currentClient.retention = document.getElementById('p-status-retention').value;
-            currentClient.subStatus = document.getElementById('p-status-sub').value;
-            currentClient.agent = document.getElementById('p-agent-select').value;
-            alert('Status update transmitted to central database. Client record synchronized.');
-            renderTable();
-        }
-
-        function injectProfit() {
-            if (!currentClient) return;
-            const amount = parseFloat(document.getElementById('profit-amount').value);
-            const asset = document.getElementById('profit-asset').value.trim();
-            if (!amount || !asset) { alert('Please enter both amount and asset.'); return; }
-
-            const txId = 'TX-' + Math.floor(Math.random() * 90000 + 10000);
-            const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.');
-            currentClient.transactions.push({
-                id: txId, date: today, type: 'PROFIT', asset: asset, amount: 0, profit: amount, status: 'COMPLETED'
-            });
-            currentClient.balance += amount;
-            document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2});
-            document.getElementById('profit-amount').value = '';
-            document.getElementById('profit-asset').value = '';
-            alert(`Profit of $${amount.toLocaleString()} injected from ${asset}. Client balance updated and synchronized to portal.`);
-            openProfile(currentClient.txId);
-        }
-
-        function adjustBalance() {
-            if (!currentClient) return;
-            const amount = parseFloat(document.getElementById('balance-adjust').value);
-            if (isNaN(amount)) { alert('Please enter a valid amount.'); return; }
-            currentClient.balance = amount;
-            document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2});
-            document.getElementById('balance-adjust').value = '';
-            alert(`Balance adjusted to $${amount.toLocaleString()}. Client portal synchronized.`);
-        }
-
-        function approveWithdrawal(wdId) {
-            if (!currentClient) return;
-            const wd = currentClient.withdrawals.find(w => w.id === wdId);
-            if (!wd) return;
-            wd.status = 'APPROVED';
-            currentClient.balance -= wd.amount;
-            currentClient.withdrawn += wd.amount;
-            document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2});
-            alert(`Withdrawal ${wdId} approved. $${wd.amount.toLocaleString()} deducted from client balance. Portal synchronized.`);
-            openProfile(currentClient.txId);
-        }
-
-        function rejectWithdrawal(wdId) {
-            if (!currentClient) return;
-            const wd = currentClient.withdrawals.find(w => w.id === wdId);
-            if (!wd) return;
-            wd.status = 'REJECTED';
-            alert(`Withdrawal ${wdId} rejected. Client notified.`);
-            openProfile(currentClient.txId);
-        }
-
-        function addComment() {
-            const input = document.getElementById('new-comment');
-            const text = input.value.trim();
-            if (!text || !currentClient) return;
-            const now = new Date().toLocaleString();
-            currentClient.comments.unshift({agent: "Roberto Palomino (You)", time: now, text: text});
-            input.value = '';
-            openProfile(currentClient.txId);
-        }
-
-        function switchTab(tabId, btn) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-        }
-
+        function transmitStatusUpdate() { if (!currentClient) return; currentClient.status = document.getElementById('p-status-depositor').value; currentClient.retention = document.getElementById('p-status-retention').value; currentClient.subStatus = document.getElementById('p-status-sub').value; currentClient.agent = document.getElementById('p-agent-select').value; alert('Status update transmitted.'); renderTable(); }
+        function injectProfit() { if (!currentClient) return; const amount = parseFloat(document.getElementById('profit-amount').value); const asset = document.getElementById('profit-asset').value.trim(); if (!amount || !asset) { alert('Please enter both amount and asset.'); return; } const txId = 'TX-' + Math.floor(Math.random() * 90000 + 10000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); currentClient.transactions.push({ id: txId, date: today, type: 'PROFIT', asset: asset, amount: 0, profit: amount, status: 'COMPLETED' }); currentClient.balance += amount; document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('profit-amount').value = ''; document.getElementById('profit-asset').value = ''; alert(`Profit of $${amount} injected from ${asset}.`); openProfile(currentClient.txId); }
+        function adjustBalance() { if (!currentClient) return; const amount = parseFloat(document.getElementById('balance-adjust').value); if (isNaN(amount)) { alert('Please enter a valid amount.'); return; } currentClient.balance = amount; document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('balance-adjust').value = ''; alert(`Balance adjusted to $${amount}.`); }
+        function approveWithdrawal(wdId) { if (!currentClient) return; const wd = currentClient.withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'APPROVED'; currentClient.balance -= wd.amount; currentClient.withdrawn += wd.amount; document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); alert(`Withdrawal ${wdId} approved.`); openProfile(currentClient.txId); }
+        function rejectWithdrawal(wdId) { if (!currentClient) return; const wd = currentClient.withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'REJECTED'; alert(`Withdrawal ${wdId} rejected.`); openProfile(currentClient.txId); }
+        function addComment() { const input = document.getElementById('new-comment'); const text = input.value.trim(); if (!text || !currentClient) return; const now = new Date().toLocaleString(); currentClient.comments.unshift({agent: "Roberto Palomino (You)", time: now, text: text}); input.value = ''; openProfile(currentClient.txId); }
+        function switchTab(tabId, btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); btn.classList.add('active'); document.getElementById(`tab-${tabId}`).classList.add('active'); }
         function openModal(id) { document.getElementById(`modal-${id}`).classList.add('active'); }
         function closeModal(id) { document.getElementById(`modal-${id}`).classList.remove('active'); }
-
-        function injectLead() {
-            const name = document.getElementById('lead-name').value.trim();
-            const country = document.getElementById('lead-country').value.trim();
-            const deposit = parseFloat(document.getElementById('lead-deposit').value);
-            const agent = document.getElementById('lead-agent').value;
-            if (!name || !country || !deposit) { alert('Please fill all fields.'); return; }
-
-            const txId = 'TX-' + Math.floor(Math.random() * 900000 + 100000);
-            const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.');
-            clients.push({
-                txId, agent, name, country, flag: '🌎', lastLogin: today + ' 09:00',
-                balance: deposit, withdrawn: 0, deposit, status: 'NEW LEAD', retention: 'NEW', subStatus: 'POTENTIAL',
-                comment: 'New lead injected.', comments: [], transactions: [{id: txId, date: today, type: 'DEPOSIT', asset: 'Initial Capital', amount: deposit, profit: 0, status: 'COMPLETED'}], withdrawals: []
-            });
-            closeModal('injectLead');
-            document.getElementById('lead-name').value = '';
-            document.getElementById('lead-country').value = '';
-            document.getElementById('lead-deposit').value = '';
-            alert(`Lead "${name}" injected and assigned to ${agent}.`);
-            renderTable();
-        }
-
+        function injectLead() { const name = document.getElementById('lead-name').value.trim(); const country = document.getElementById('lead-country').value.trim(); const deposit = parseFloat(document.getElementById('lead-deposit').value); const agent = document.getElementById('lead-agent').value; if (!name || !country || !deposit) { alert('Please fill all fields.'); return; } const txId = 'TX-' + Math.floor(Math.random() * 900000 + 100000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); clients.push({ txId, agent, name, country, flag: '🌎', lastLogin: today + ' 09:00', balance: deposit, withdrawn: 0, deposit, status: 'NEW LEAD', retention: 'NEW', subStatus: 'POTENTIAL', comment: 'New lead injected.', comments: [], transactions: [{id: txId, date: today, type: 'DEPOSIT', asset: 'Initial Capital', amount: deposit, profit: 0, status: 'COMPLETED'}], withdrawals: [] }); closeModal('injectLead'); document.getElementById('lead-name').value = ''; document.getElementById('lead-country').value = ''; document.getElementById('lead-deposit').value = ''; alert(`Lead "${name}" injected.`); renderTable(); }
         renderTable();
     </script>
 </body>
