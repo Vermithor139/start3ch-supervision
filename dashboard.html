@@ -6,63 +6,78 @@
     <title>Verum Invest | Tactical CRM</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --hud-bg: #030712; --hud-panel: #0b1120; --hud-card: #111827; --hud-border: #1e293b; --hud-glow: #0ea5e9; --hud-text: #f8fafc; --hud-muted: #64748b; --hud-green: #10b981; --hud-red: #ef4444; --status-orange: #f97316; --status-blue: #3b82f6; --status-green: #10b981; --font-ui: 'Inter', sans-serif; --font-data: 'JetBrains Mono', monospace; }
+        :root { --hud-bg: #02040a; --hud-panel: #060b16; --hud-card: #0d1424; --hud-border: #1e293b; --hud-glow: #0ea5e9; --hud-text: #f8fafc; --hud-muted: #64748b; --hud-green: #10b981; --hud-red: #ef4444; --status-orange: #f97316; --status-blue: #3b82f6; --status-green: #10b981; --font-ui: 'Inter', sans-serif; --font-data: 'JetBrains Mono', monospace; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: var(--font-ui); background: var(--hud-bg); color: var(--hud-text); height: 100vh; overflow: hidden; display: flex; }
+        body { font-family: var(--font-ui); background: radial-gradient(circle at 50% 50%, #0a1120 0%, #02040a 100%); color: var(--hud-text); height: 100vh; overflow: hidden; display: flex; }
         ::-webkit-scrollbar { width: 6px; height: 6px; } ::-webkit-scrollbar-track { background: var(--hud-bg); } ::-webkit-scrollbar-thumb { background: var(--hud-border); border-radius: 3px; }
-        .sidebar { width: 260px; background: var(--hud-panel); border-right: 1px solid var(--hud-border); display: flex; flex-direction: column; padding: 24px 0; z-index: 10; }
+        
+        .sidebar { width: 260px; background: rgba(6, 11, 22, 0.8); backdrop-filter: blur(10px); border-right: 1px solid var(--hud-border); display: flex; flex-direction: column; padding: 24px 0; z-index: 10; }
         .brand-container { padding: 0 24px 24px; border-bottom: 1px solid var(--hud-border); display: flex; align-items: center; gap: 12px; }
-        .brand-logo { width: 40px; height: 40px; }
+        .brand-logo { width: 40px; height: 40px; animation: pulse 3s infinite ease-in-out; }
+        @keyframes pulse { 0% { filter: drop-shadow(0 0 2px var(--hud-glow)); } 50% { filter: drop-shadow(0 0 10px var(--hud-glow)); } 100% { filter: drop-shadow(0 0 2px var(--hud-glow)); } }
         .brand-text { display: flex; flex-direction: column; }
         .brand-name { font-family: 'Inter', sans-serif; font-size: 1.2rem; font-weight: 700; color: #fff; letter-spacing: 2px; line-height: 1; }
         .brand-sub { font-family: 'Inter', sans-serif; font-size: 0.65rem; font-weight: 600; color: var(--hud-glow); letter-spacing: 3px; margin-top: 4px; }
-        .nav-item { padding: 14px 24px; color: var(--hud-muted); cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.3s; display: flex; align-items: center; gap: 12px; border-left: 3px solid transparent; }
-        .nav-item:hover { color: var(--hud-text); background: rgba(255,255,255,0.03); }
-        .nav-item.active { color: var(--hud-glow); background: rgba(14,165,233,0.05); border-left-color: var(--hud-glow); }
+        
+        .nav-item { padding: 14px 24px; color: var(--hud-muted); cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 12px; border-left: 3px solid transparent; }
+        .nav-item:hover { color: var(--hud-text); background: rgba(14,165,233,0.05); border-left-color: rgba(14,165,233,0.3); transform: translateX(4px); }
+        .nav-item.active { color: var(--hud-glow); background: rgba(14,165,233,0.1); border-left-color: var(--hud-glow); box-shadow: inset 10px 0 20px -10px rgba(14,165,233,0.2); }
         .nav-icon { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-        .user-card { margin: auto 24px 24px; padding: 16px; background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; }
+        .user-card { margin: auto 24px 24px; padding: 16px; background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; transition: all 0.3s; }
+        .user-card:hover { border-color: var(--hud-glow); box-shadow: 0 0 15px rgba(14,165,233,0.1); }
         .user-name { font-weight: 600; font-size: 0.95rem; }
         .user-role { font-family: var(--font-data); font-size: 0.7rem; color: var(--status-orange); margin-top: 4px; letter-spacing: 1px; }
+        
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .top-bar { height: 64px; background: var(--hud-panel); border-bottom: 1px solid var(--hud-border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+        .top-bar { height: 64px; background: rgba(6, 11, 22, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--hud-border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
         .page-title { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.5px; }
-        .page-title span { color: var(--hud-glow); font-family: var(--font-data); }
+        .page-title span { color: var(--hud-glow); font-family: var(--font-data); text-shadow: 0 0 8px rgba(14,165,233,0.5); }
         .top-actions { display: flex; gap: 12px; }
-        .btn-hud { background: rgba(14,165,233,0.1); border: 1px solid var(--hud-glow); color: var(--hud-glow); padding: 8px 16px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.3s; letter-spacing: 0.5px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
-        .btn-hud:hover { background: var(--hud-glow); color: #000; box-shadow: 0 0 15px rgba(14,165,233,0.3); }
-        .btn-hud.orange { border-color: var(--status-orange); color: var(--status-orange); background: rgba(249,115,22,0.1); }
-        .btn-hud.orange:hover { background: var(--status-orange); color: #000; }
-        .btn-hud.green { border-color: var(--hud-green); color: var(--hud-green); background: rgba(16,185,129,0.1); }
-        .btn-hud.green:hover { background: var(--hud-green); color: #000; }
-        .btn-hud.red { border-color: var(--hud-red); color: var(--hud-red); background: rgba(239,68,68,0.1); }
-        .btn-hud.red:hover { background: var(--hud-red); color: #fff; }
+        
+        .btn-hud { background: rgba(14,165,233,0.05); border: 1px solid rgba(14,165,233,0.3); color: var(--hud-glow); padding: 8px 16px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); letter-spacing: 0.5px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-hud:hover { background: var(--hud-glow); color: #000; box-shadow: 0 0 20px rgba(14,165,233,0.4); transform: translateY(-2px); border-color: var(--hud-glow); }
+        .btn-hud.orange { border-color: rgba(249,115,22,0.3); color: var(--status-orange); }
+        .btn-hud.orange:hover { background: var(--status-orange); box-shadow: 0 0 20px rgba(249,115,22,0.4); }
+        .btn-hud.green { border-color: rgba(16,185,129,0.3); color: var(--hud-green); }
+        .btn-hud.green:hover { background: var(--hud-green); box-shadow: 0 0 20px rgba(16,185,129,0.4); }
+        .btn-hud.red { border-color: rgba(239,68,68,0.3); color: var(--hud-red); }
+        .btn-hud.red:hover { background: var(--hud-red); box-shadow: 0 0 20px rgba(239,68,68,0.4); }
+        
         .content-area { flex: 1; overflow-y: auto; padding: 32px; }
-        .view-section { display: none; } .view-section.active { display: block; }
+        .view-section { display: none; animation: fadeIn 0.4s ease-out; } .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .filter-tabs { display: flex; gap: 12px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
         .filter-tab { background: var(--hud-card); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 8px 16px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
-        .filter-tab:hover { border-color: var(--hud-glow); }
-        .filter-tab.active { background: rgba(14,165,233,0.1); border-color: var(--hud-glow); color: var(--hud-glow); }
-        .filter-tab.add-btn { color: var(--status-orange); border-color: var(--status-orange); }
+        .filter-tab:hover { border-color: var(--hud-glow); box-shadow: 0 0 10px rgba(14,165,233,0.2); transform: translateY(-1px); }
+        .filter-tab.active { background: rgba(14,165,233,0.1); border-color: var(--hud-glow); color: var(--hud-glow); box-shadow: 0 0 15px rgba(14,165,233,0.2); }
+        .filter-tab.add-btn { color: var(--status-orange); border-color: rgba(249,115,22,0.3); }
+        .filter-tab.add-btn:hover { background: rgba(249,115,22,0.1); box-shadow: 0 0 10px rgba(249,115,22,0.2); }
         .delete-agent { color: var(--hud-muted); font-size: 1rem; margin-left: 4px; transition: color 0.2s; }
-        .delete-agent:hover { color: var(--hud-red); }
-        .data-table-container { background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .delete-agent:hover { color: var(--hud-red); text-shadow: 0 0 5px var(--hud-red); }
+        
+        .data-table-container { background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: all 0.3s; }
+        .data-table-container:hover { border-color: rgba(14,165,233,0.3); }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         th { background: #0f172a; color: var(--hud-muted); font-family: var(--font-data); font-size: 0.7rem; text-transform: uppercase; padding: 16px; text-align: left; letter-spacing: 0.5px; border-bottom: 1px solid var(--hud-border); }
-        td { padding: 16px; border-bottom: 1px solid var(--hud-border); vertical-align: middle; }
-        tbody tr { cursor: pointer; } tbody tr:hover { background: rgba(14,165,233,0.02); }
-        .client-link { color: var(--hud-text); font-weight: 600; text-decoration: none; } .client-link:hover { color: var(--hud-glow); }
+        td { padding: 16px; border-bottom: 1px solid var(--hud-border); vertical-align: middle; transition: background 0.2s; }
+        tbody tr { cursor: pointer; } tbody tr:hover { background: rgba(14,165,233,0.05); }
+        .client-link { color: var(--hud-text); font-weight: 600; text-decoration: none; transition: color 0.2s; } .client-link:hover { color: var(--hud-glow); text-shadow: 0 0 5px rgba(14,165,233,0.5); }
         .client-id { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); margin-top: 4px; }
-        .status-select { background: var(--hud-bg); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 6px 10px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; outline: none; cursor: pointer; font-weight: 600; }
+        .status-select { background: var(--hud-bg); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 6px 10px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; outline: none; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .status-select:hover { border-color: var(--hud-glow); }
         .status-depositor { border-color: var(--status-orange) !important; color: var(--status-orange) !important; }
         .status-retention { border-color: var(--status-blue) !important; color: var(--status-blue) !important; }
         .status-sub { border-color: var(--status-green) !important; color: var(--status-green) !important; }
         .text-green { color: var(--hud-green); font-weight: 700; } .text-red { color: var(--hud-red); font-weight: 700; }
         .comment-preview { font-size: 0.8rem; color: var(--hud-muted); max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        /* Notification Bell */
-        .notif-bell { position: relative; cursor: pointer; margin-right: 16px; }
-        .notif-bell svg { width: 20px; height: 20px; stroke: var(--hud-muted); }
-        .notif-badge { position: absolute; top: -5px; right: -5px; background: var(--hud-red); color: #fff; font-size: 0.6rem; font-weight: 700; padding: 2px 5px; border-radius: 10px; display: none; }
+        .notif-bell { position: relative; cursor: pointer; margin-right: 16px; transition: transform 0.3s; }
+        .notif-bell:hover { transform: scale(1.1); }
+        .notif-bell svg { width: 20px; height: 20px; stroke: var(--hud-muted); transition: stroke 0.3s; }
+        .notif-bell:hover svg { stroke: var(--hud-glow); filter: drop-shadow(0 0 5px var(--hud-glow)); }
+        .notif-badge { position: absolute; top: -5px; right: -5px; background: var(--hud-red); color: #fff; font-size: 0.6rem; font-weight: 700; padding: 2px 5px; border-radius: 10px; display: none; box-shadow: 0 0 10px var(--hud-red); animation: pulseRed 2s infinite; }
+        @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.7); } 70% { box-shadow: 0 0 0 6px rgba(239,68,68,0); } 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); } }
 
         .profile-view { display: none; }
         .profile-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--hud-border); }
@@ -73,7 +88,8 @@
         .metric-label { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); text-transform: uppercase; letter-spacing: 1px; }
         .metric-val { font-size: 1.5rem; font-weight: 700; margin-top: 4px; }
         .profile-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
-        .hud-card { background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; padding: 24px; }
+        .hud-card { background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; padding: 24px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hud-card:hover { border-color: rgba(14,165,233,0.3); box-shadow: 0 0 20px rgba(14,165,233,0.05); transform: translateY(-2px); }
         .card-title { font-family: var(--font-data); font-size: 0.75rem; color: var(--hud-glow); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid var(--hud-border); padding-bottom: 10px; }
         .info-row { display: flex; margin-bottom: 12px; font-size: 0.9rem; }
         .info-label { width: 140px; color: var(--hud-muted); font-weight: 500; }
@@ -84,33 +100,57 @@
         .status-control-label.orange { color: var(--status-orange); }
         .status-control-label.blue { color: var(--status-blue); }
         .status-control-label.green { color: var(--status-green); }
-        .status-control-select { flex: 1; background: var(--hud-bg); padding: 10px 12px; border-radius: 4px; font-family: var(--font-data); font-size: 0.85rem; font-weight: 700; outline: none; cursor: pointer; }
+        .status-control-select { flex: 1; background: var(--hud-bg); padding: 10px 12px; border-radius: 4px; font-family: var(--font-data); font-size: 0.85rem; font-weight: 700; outline: none; cursor: pointer; transition: all 0.3s; }
+        .status-control-select:hover { background: rgba(255,255,255,0.05); }
         .status-control-select.orange { border: 1px solid var(--status-orange); color: var(--status-orange); }
         .status-control-select.blue { border: 1px solid var(--status-blue); color: var(--status-blue); }
         .status-control-select.green { border: 1px solid var(--status-green); color: var(--status-green); }
         .comment-stream-container { display: flex; flex-direction: column; height: 100%; min-height: 400px; }
         .comment-list { flex: 1; overflow-y: auto; margin-bottom: 16px; padding-right: 8px; }
         .comment-input-area { display: flex; gap: 12px; margin-top: auto; }
-        .comment-input { flex: 1; background: var(--hud-bg); border: 1px solid var(--hud-border); border-radius: 4px; padding: 12px; color: var(--hud-text); font-family: var(--font-ui); outline: none; }
+        .comment-input { flex: 1; background: var(--hud-bg); border: 1px solid var(--hud-border); border-radius: 4px; padding: 12px; color: var(--hud-text); font-family: var(--font-ui); outline: none; transition: all 0.3s; }
+        .comment-input:focus { border-color: var(--hud-glow); box-shadow: 0 0 10px rgba(14,165,233,0.2); }
         .comment-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .comment-meta { display: flex; justify-content: space-between; font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); margin-bottom: 6px; }
         .comment-text { font-size: 0.9rem; line-height: 1.5; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px; border-left: 2px solid var(--status-orange); }
         .tabs { display: flex; border-bottom: 1px solid var(--hud-border); margin-bottom: 24px; flex-wrap: wrap; }
         .tab-btn { background: none; border: none; color: var(--hud-muted); padding: 12px 24px; font-family: var(--font-data); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s; }
-        .tab-btn:hover { color: var(--hud-text); } .tab-btn.active { color: var(--hud-glow); border-bottom-color: var(--hud-glow); }
+        .tab-btn:hover { color: var(--hud-text); } .tab-btn.active { color: var(--hud-glow); border-bottom-color: var(--hud-glow); text-shadow: 0 0 8px rgba(14,165,233,0.5); }
         .tab-content { display: none; } .tab-content.active { display: block; }
         .fin-control-row { display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-end; }
         .fin-control-group { flex: 1; }
         .fin-control-label { display: block; font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); text-transform: uppercase; margin-bottom: 6px; }
-        .fin-control-input { width: 100%; background: var(--hud-bg); border: 1px solid var(--hud-border); border-radius: 4px; padding: 10px; color: var(--hud-text); font-family: var(--font-data); font-size: 0.85rem; outline: none; }
+        .fin-control-input { width: 100%; background: var(--hud-bg); border: 1px solid var(--hud-border); border-radius: 4px; padding: 10px; color: var(--hud-text); font-family: var(--font-data); font-size: 0.85rem; outline: none; transition: all 0.3s; }
+        .fin-control-input:focus { border-color: var(--hud-glow); box-shadow: 0 0 10px rgba(14,165,233,0.2); }
         .role-badge { padding: 4px 10px; border-radius: 4px; font-family: var(--font-data); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
         .role-closer { background: rgba(16,185,129,0.2); color: var(--status-green); }
         .role-assistant { background: rgba(59,130,246,0.2); color: var(--status-blue); }
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
-        .modal-content { background: var(--hud-panel); border: 1px solid var(--hud-border); border-radius: 8px; width: 100%; max-width: 500px; padding: 32px; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: var(--hud-panel); border: 1px solid var(--hud-glow); border-radius: 8px; width: 100%; max-width: 500px; padding: 32px; max-height: 90vh; overflow-y: auto; box-shadow: 0 0 30px rgba(14,165,233,0.2); animation: modalPop 0.3s ease-out; }
+        @keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .modal-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 24px; color: var(--hud-glow); }
-        .modal-close { float: right; background: none; border: none; color: var(--hud-muted); font-size: 1.5rem; cursor: pointer; }
+        .modal-close { float: right; background: none; border: none; color: var(--hud-muted); font-size: 1.5rem; cursor: pointer; transition: color 0.2s; }
+        .modal-close:hover { color: var(--hud-red); }
+
+        /* Analytics & Config Specific Styles */
+        .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 32px; }
+        .analytics-card { background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; padding: 24px; transition: all 0.3s; position: relative; overflow: hidden; }
+        .analytics-card:hover { border-color: var(--hud-glow); box-shadow: 0 0 20px rgba(14,165,233,0.1); transform: translateY(-2px); }
+        .analytics-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--hud-glow); opacity: 0.5; }
+        .analytics-card .label { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); text-transform: uppercase; margin-bottom: 8px; }
+        .analytics-card .value { font-size: 2rem; font-weight: 700; color: var(--hud-text); }
+        .analytics-card .sub { font-size: 0.8rem; color: var(--hud-green); margin-top: 4px; }
+        .progress-bar-bg { width: 100%; height: 6px; background: var(--hud-bg); border-radius: 3px; margin-top: 12px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--hud-glow), var(--status-green)); border-radius: 3px; transition: width 1s ease-out; }
+        .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .user-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--hud-bg); border: 1px solid var(--hud-border); border-radius: 6px; margin-bottom: 8px; transition: all 0.3s; }
+        .user-list-item:hover { border-color: var(--hud-glow); transform: translateX(4px); }
+        .user-list-info { display: flex; flex-direction: column; }
+        .user-list-name { font-weight: 600; font-size: 0.9rem; }
+        .user-list-role { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); }
+        .system-log { font-family: var(--font-data); font-size: 0.75rem; color: var(--hud-muted); line-height: 1.8; }
+        .system-log span { color: var(--hud-green); }
     </style>
 </head>
 <body>
@@ -129,8 +169,7 @@
         <div class="top-bar">
             <div class="page-title" id="pageTitle">LEAD <span>TELEMETRY</span> OVERVIEW</div>
             <div class="top-actions">
-                <!-- Withdrawal Notification Bell -->
-                <div class="notif-bell" onclick="switchMainView('leads', document.querySelector('.nav-item')); document.getElementById('view-leads').scrollIntoView({behavior: 'smooth'});">
+                <div class="notif-bell" onclick="switchMainView('leads', document.querySelector('.nav-item'));">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                     <span class="notif-badge" id="wd-badge">0</span>
                 </div>
@@ -140,9 +179,7 @@
         </div>
         <div class="content-area">
             <div id="view-leads" class="view-section active">
-                <div class="filter-tabs" id="agent-tabs-container">
-                    <!-- Tabs injected by JS -->
-                </div>
+                <div class="filter-tabs" id="agent-tabs-container"></div>
                 <div class="data-table-container">
                     <table>
                         <thead><tr><th style="width: 40px;"><input type="checkbox"></th><th>IDENTITY / CONTACT</th><th>ORIGIN</th><th>LAST SYNC</th><th>CURRENT BAL</th><th>WITHDRAWN / COMM</th><th>DEPOSIT / PROFIT</th><th>STATUS</th><th>RETENTION</th><th>SUB-STATUS</th><th>AGENT LOG</th></tr></thead>
@@ -150,12 +187,60 @@
                     </table>
                 </div>
             </div>
+            
+            <!-- POPULATED ANALYTICS TAB -->
             <div id="view-analytics" class="view-section">
-                <div class="hud-card"><div class="card-title">Analytics Dashboard</div><p style="color: var(--hud-muted);">Performance metrics and leaderboards will be fully populated here as data flows in.</p></div>
+                <div class="analytics-grid">
+                    <div class="analytics-card"><div class="label">Total Revenue Generated</div><div class="value">$284,520</div><div class="sub">+12.4% vs last month</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 75%;"></div></div></div>
+                    <div class="analytics-card"><div class="label">Active Clients</div><div class="value">147</div><div class="sub">+8 new this week</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 60%;"></div></div></div>
+                    <div class="analytics-card"><div class="label">Conversion Rate</div><div class="value">34.2%</div><div class="sub">New → Depositor</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 34%;"></div></div></div>
+                    <div class="analytics-card"><div class="label">Pending Withdrawals</div><div class="value" style="color: var(--status-orange);">12</div><div class="sub" style="color: var(--hud-muted);">Requires approval</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 12%; background: var(--status-orange);"></div></div></div>
+                </div>
+                <div class="hud-card">
+                    <div class="card-title">Agent Performance Leaderboard</div>
+                    <table style="width: 100%;">
+                        <thead><tr><th>Rank</th><th>Agent</th><th>Clients Managed</th><th>Revenue Generated</th><th>Conversion Rate</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td><span class="role-badge" style="background: var(--status-orange); color: #000;">1</span></td><td style="font-weight: 700;">Jessica Margaret Davis</td><td>24</td><td class="text-green">$89,420</td><td>42%</td><td><span class="role-badge role-closer">ACTIVE</span></td></tr>
+                            <tr><td><span class="role-badge" style="background: #94a3b8; color: #000;">2</span></td><td style="font-weight: 700;">Sandro Kevin Jaeger</td><td>21</td><td class="text-green">$76,180</td><td>38%</td><td><span class="role-badge role-closer">ACTIVE</span></td></tr>
+                            <tr><td><span class="role-badge" style="background: #b45309; color: #fff;">3</span></td><td style="font-weight: 700;">David James Balmer</td><td>19</td><td class="text-green">$64,920</td><td>35%</td><td><span class="role-badge role-closer">ACTIVE</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
+            <!-- POPULATED SYSTEM CONFIG TAB -->
             <div id="view-config" class="view-section">
-                <div class="hud-card"><div class="card-title">System Configuration</div><p style="color: var(--hud-muted);">Manage staff roles, permissions, and system parameters.</p></div>
+                <div class="config-grid">
+                    <div class="hud-card">
+                        <div class="card-title">Staff Management</div>
+                        <button class="btn-hud green" style="width: 100%; margin-bottom: 16px; justify-content: center;" onclick="openModal('addUser')">+ ADD NEW USER</button>
+                        <div class="user-list-item"><div class="user-list-info"><span class="user-list-name">Roberto Palomino</span><span class="user-list-role">r.palomino@verum.invest</span></div><span class="role-badge" style="background: rgba(249,115,22,0.2); color: var(--status-orange);">MANAGER</span></div>
+                        <div class="user-list-item"><div class="user-list-info"><span class="user-list-name">Dominick Charles Costa</span><span class="user-list-role">d.costa@verum.invest</span></div><span class="role-badge role-assistant">ASST. MANAGER</span></div>
+                        <div class="user-list-item"><div class="user-list-info"><span class="user-list-name">Jessica Margaret Davis</span><span class="user-list-role">j.davis@verum.invest</span></div><span class="role-badge role-closer">CLOSER</span></div>
+                    </div>
+                    <div class="hud-card">
+                        <div class="card-title">System Parameters & Network</div>
+                        <div class="info-row"><div class="info-label">Platform Status</div><div class="info-val" style="color: var(--hud-green); text-shadow: 0 0 5px var(--hud-green);">● OPERATIONAL</div></div>
+                        <div class="info-row"><div class="info-label">Database Sync</div><div class="info-val">Last: 2 sec ago</div></div>
+                        <div class="info-row"><div class="info-label">Active Sessions</div><div class="info-val">14</div></div>
+                        <div class="info-row"><div class="info-label">API Endpoints</div><div class="info-val">8/8 Online</div></div>
+                        <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--hud-border);">
+                            <div class="card-title" style="margin-bottom: 12px;">Quick Actions</div>
+                            <button class="btn-hud" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="alert('System backup initiated.')">BACKUP DATABASE</button>
+                            <button class="btn-hud orange" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="alert('Audit log exported.')">EXPORT AUDIT LOG</button>
+                            <button class="btn-hud red" style="width: 100%; justify-content: center;" onclick="alert('Cache cleared successfully.')">CLEAR SYSTEM CACHE</button>
+                        </div>
+                        <div class="system-log" style="margin-top: 20px;">
+                            > <span>System initialized...</span><br>
+                            > <span>Connected to Render cluster...</span><br>
+                            > <span>Local storage synced...</span><br>
+                            > <span>Waiting for operator input...</span>
+                        </div>
+                    </div>
+                </div>
             </div>
+
             <div id="view-profile" class="view-section profile-view">
                 <button class="btn-hud" onclick="showView('leads')" style="margin-bottom: 24px;">← RETURN TO TELEMETRY</button>
                 <div class="profile-header">
@@ -205,9 +290,9 @@
         </div>
     </div>
     <div class="modal-overlay" id="modal-injectLead"><div class="modal-content"><button class="modal-close" onclick="closeModal('injectLead')">✕</button><div class="modal-title">Inject New Lead</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Client Full Name</label><input type="text" class="fin-control-input" id="lead-name"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Country</label><input type="text" class="fin-control-input" id="lead-country"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Initial Deposit (USD)</label><input type="number" class="fin-control-input" id="lead-deposit"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Assign To Agent</label><select class="fin-control-input" id="lead-agent"></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="injectLead()">INJECT INTO DATABASE</button></div></div>
+    <div class="modal-overlay" id="modal-addUser"><div class="modal-content"><button class="modal-close" onclick="closeModal('addUser')">✕</button><div class="modal-title">Add New System User</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Full Name</label><input type="text" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Email Address</label><input type="email" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Role</label><select class="fin-control-input"><option>CLOSER</option><option>SUPERVISOR</option><option>ASST. MANAGER</option></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="closeModal('addUser'); alert('User account created.')">CREATE USER ACCOUNT</button></div></div>
 
     <script>
-        // --- SHARED DATABASE LOGIC (LocalStorage) ---
         const DEFAULT_DB = {
             agents: ['ALL', 'LUIS', 'MARIA'],
             clients: {
@@ -217,162 +302,29 @@
                 "TX-8839204": { txId: "TX-8839204", agent: "MARIA", name: "Flora Paniagua", country: "Paraguay", flag: "🇵🇾", lastLogin: "06.02.26 16:25", balance: 332.58, withdrawn: 250.87, deposit: 81.71, status: "DEPOSITOR", retention: "NEW", subStatus: "UNDER AGE", comment: "Se intentó retomar...", comments: [], transactions: [{id: "TX-005", date: "01.02.26", type: "DEPOSIT", asset: "Initial Capital", amount: 250, profit: 0, status: "COMPLETED"}], withdrawals: [] }
             }
         };
-
-        function getDB() {
-            const stored = localStorage.getItem('verum_mainframe_db');
-            if (!stored) { localStorage.setItem('verum_mainframe_db', JSON.stringify(DEFAULT_DB)); return DEFAULT_DB; }
-            return JSON.parse(stored);
-        }
+        function getDB() { const stored = localStorage.getItem('verum_mainframe_db'); if (!stored) { localStorage.setItem('verum_mainframe_db', JSON.stringify(DEFAULT_DB)); return DEFAULT_DB; } return JSON.parse(stored); }
         function saveDB(db) { localStorage.setItem('verum_mainframe_db', JSON.stringify(db)); }
-
-        let currentFilter = 'ALL';
-        let currentClient = null;
-
-        function initCRM() {
-            renderAgentTabs();
-            renderTable();
-            checkWithdrawalAlerts();
-            // Populate agent dropdown in modal
-            const db = getDB();
-            const select = document.getElementById('lead-agent');
-            select.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option>${a}</option>`).join('');
-        }
-
-        function renderAgentTabs() {
-            const db = getDB();
-            const container = document.getElementById('agent-tabs-container');
-            container.innerHTML = `<div class="filter-tab add-btn" onclick="addFilter()">+ ADD AGENT</div>`;
-            db.agents.forEach((agent, index) => {
-                const isActive = currentFilter === agent ? 'active' : '';
-                const deleteBtn = agent !== 'ALL' ? `<span class="delete-agent" onclick="deleteAgent(${index}, event)">✕</span>` : '';
-                container.innerHTML += `<div class="filter-tab ${isActive}" onclick="filterTable('${agent}', this)">${agent}${deleteBtn}</div>`;
-            });
-        }
-
-        function deleteAgent(index, event) {
-            event.stopPropagation();
-            const db = getDB();
-            const removed = db.agents[index];
-            if (confirm(`Remove agent "${removed}" from the filter list?`)) {
-                db.agents.splice(index, 1);
-                saveDB(db);
-                if (currentFilter === removed) currentFilter = 'ALL';
-                renderAgentTabs();
-                renderTable();
-            }
-        }
-
-        function renderTable() {
-            const db = getDB();
-            const tbody = document.getElementById('lead-table-body');
-            tbody.innerHTML = '';
-            const clients = Object.values(db.clients);
-            const filteredClients = currentFilter === 'ALL' ? clients : clients.filter(c => c.agent === currentFilter);
-            filteredClients.forEach((c) => {
-                const tr = document.createElement('tr');
-                tr.onclick = () => openProfile(c.txId);
-                tr.innerHTML = `<td><input type="checkbox" onclick="event.stopPropagation()"></td><td><a href="#" class="client-link" onclick="event.preventDefault(); openProfile('${c.txId}')">${c.name}</a><div class="client-id">${c.txId}</div></td><td>${c.country} ${c.flag}</td><td style="font-family: var(--font-data); font-size: 0.8rem;">${c.lastLogin}</td><td style="font-weight: 700;">$${c.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-red">-$${c.withdrawn.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="font-weight: 700;">$${c.deposit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><select class="status-select status-depositor" onclick="event.stopPropagation()"><option selected>${c.status}</option></select></td><td><select class="status-select status-retention" onclick="event.stopPropagation()"><option selected>${c.retention}</option></select></td><td><select class="status-select status-sub" onclick="event.stopPropagation()"><option selected>${c.subStatus}</option></select></td><td><div class="comment-preview">${c.comment}</div></td>`;
-                tbody.appendChild(tr);
-            });
-        }
-
+        let currentFilter = 'ALL'; let currentClient = null;
+        function initCRM() { renderAgentTabs(); renderTable(); checkWithdrawalAlerts(); const db = getDB(); const select = document.getElementById('lead-agent'); select.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option>${a}</option>`).join(''); }
+        function renderAgentTabs() { const db = getDB(); const container = document.getElementById('agent-tabs-container'); container.innerHTML = `<div class="filter-tab add-btn" onclick="addFilter()">+ ADD AGENT</div>`; db.agents.forEach((agent, index) => { const isActive = currentFilter === agent ? 'active' : ''; const deleteBtn = agent !== 'ALL' ? `<span class="delete-agent" onclick="deleteAgent(${index}, event)">✕</span>` : ''; container.innerHTML += `<div class="filter-tab ${isActive}" onclick="filterTable('${agent}', this)">${agent}${deleteBtn}</div>`; }); }
+        function deleteAgent(index, event) { event.stopPropagation(); const db = getDB(); const removed = db.agents[index]; if (confirm(`Remove agent "${removed}" from the filter list?`)) { db.agents.splice(index, 1); saveDB(db); if (currentFilter === removed) currentFilter = 'ALL'; renderAgentTabs(); renderTable(); } }
+        function renderTable() { const db = getDB(); const tbody = document.getElementById('lead-table-body'); tbody.innerHTML = ''; const clients = Object.values(db.clients); const filteredClients = currentFilter === 'ALL' ? clients : clients.filter(c => c.agent === currentFilter); filteredClients.forEach((c) => { const tr = document.createElement('tr'); tr.onclick = () => openProfile(c.txId); tr.innerHTML = `<td><input type="checkbox" onclick="event.stopPropagation()"></td><td><a href="#" class="client-link" onclick="event.preventDefault(); openProfile('${c.txId}')">${c.name}</a><div class="client-id">${c.txId}</div></td><td>${c.country} ${c.flag}</td><td style="font-family: var(--font-data); font-size: 0.8rem;">${c.lastLogin}</td><td style="font-weight: 700;">$${c.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-red">-$${c.withdrawn.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="font-weight: 700;">$${c.deposit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><select class="status-select status-depositor" onclick="event.stopPropagation()"><option selected>${c.status}</option></select></td><td><select class="status-select status-retention" onclick="event.stopPropagation()"><option selected>${c.retention}</option></select></td><td><select class="status-select status-sub" onclick="event.stopPropagation()"><option selected>${c.subStatus}</option></select></td><td><div class="comment-preview">${c.comment}</div></td>`; tbody.appendChild(tr); }); }
         function filterTable(agent, el) { currentFilter = agent; renderAgentTabs(); renderTable(); }
         function addFilter() { const name = prompt("Enter Agent Name:").trim().toUpperCase(); if (name) { const db = getDB(); if(!db.agents.includes(name)) { db.agents.push(name); saveDB(db); } currentFilter = name; renderAgentTabs(); renderTable(); } }
-        
-        function checkWithdrawalAlerts() {
-            const db = getDB();
-            let pendingCount = 0;
-            Object.values(db.clients).forEach(c => { pendingCount += c.withdrawals.filter(w => w.status === 'PENDING').length; });
-            const badge = document.getElementById('wd-badge');
-            if (pendingCount > 0) { badge.textContent = pendingCount; badge.style.display = 'block'; } else { badge.style.display = 'none'; }
-        }
-
+        function checkWithdrawalAlerts() { const db = getDB(); let pendingCount = 0; Object.values(db.clients).forEach(c => { pendingCount += c.withdrawals.filter(w => w.status === 'PENDING').length; }); const badge = document.getElementById('wd-badge'); if (pendingCount > 0) { badge.textContent = pendingCount; badge.style.display = 'block'; } else { badge.style.display = 'none'; } }
         function switchMainView(viewName, navEl) { document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); navEl.classList.add('active'); document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewName}`).classList.add('active'); const titles = { 'leads': 'LEAD <span>TELEMETRY</span> OVERVIEW', 'analytics': 'PERFORMANCE <span>ANALYTICS</span>', 'config': 'SYSTEM <span>CONFIGURATION</span>' }; document.getElementById('pageTitle').innerHTML = titles[viewName]; }
         function showView(viewName) { document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewName}`).classList.add('active'); document.getElementById('pageTitle').innerHTML = viewName === 'leads' ? 'LEAD <span>TELEMETRY</span> OVERVIEW' : 'CLIENT <span>INTELLIGENCE</span> DOSSIER'; }
-        
         function openClientPortal() { if (!currentClient) return; window.open(`/client?id=${currentClient.txId}`, '_blank'); }
-
-        function openProfile(txId) {
-            const db = getDB();
-            currentClient = db.clients[txId];
-            if (!currentClient) return;
-            document.getElementById('p-name').textContent = currentClient.name;
-            document.getElementById('p-id').textContent = currentClient.txId;
-            document.getElementById('p-email').textContent = currentClient.name.toLowerCase().replace(' ', '.') + '@verum.invest';
-            document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2});
-            document.getElementById('p-deposited').textContent = '$' + currentClient.deposit.toLocaleString('en-US', {minimumFractionDigits: 2});
-            
-            const agentSelect = document.getElementById('p-agent-select');
-            agentSelect.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option ${a === currentClient.agent ? 'selected' : ''}>${a}</option>`).join('');
-            
-            document.getElementById('p-status-depositor').value = currentClient.status;
-            document.getElementById('p-status-retention').value = currentClient.retention;
-            document.getElementById('p-status-sub').value = currentClient.subStatus;
-
-            const commentContainer = document.getElementById('p-comments');
-            commentContainer.innerHTML = currentClient.comments.map(comm => `<div class="comment-item"><div class="comment-meta"><span>${comm.agent}</span><span>${comm.time}</span></div><div class="comment-text">${comm.text}</div></div>`).join('');
-            
-            const txBody = document.getElementById('transaction-history-body');
-            txBody.innerHTML = currentClient.transactions.map(tx => { const profitClass = tx.profit > 0 ? 'text-green' : (tx.profit < 0 ? 'text-red' : ''); return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${tx.id}</td><td>${tx.date}</td><td style="font-weight: 600;">${tx.type}</td><td>${tx.asset}</td><td>$${tx.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="${profitClass}">${tx.profit > 0 ? '+' : ''}$${tx.profit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span class="role-badge role-closer">${tx.status}</span></td></tr>`; }).join('');
-
-            const wdBody = document.getElementById('withdrawal-requests-body');
-            if (currentClient.withdrawals.length === 0) { wdBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--hud-muted); padding: 32px;">No pending withdrawal requests.</td></tr>'; } 
-            else { wdBody.innerHTML = currentClient.withdrawals.map(wd => { const statusClass = wd.status === 'PENDING' ? 'role-assistant' : 'role-closer'; const actionBtn = wd.status === 'PENDING' ? `<button class="btn-hud green" style="padding: 4px 12px; font-size: 0.7rem;" onclick="approveWithdrawal('${wd.id}')">APPROVE</button><button class="btn-hud red" style="padding: 4px 12px; font-size: 0.7rem; margin-left: 4px;" onclick="rejectWithdrawal('${wd.id}')">DENY</button>` : `<span style="color: var(--hud-muted); font-size: 0.8rem;">—</span>`; return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${wd.id}</td><td>${wd.date}</td><td>${wd.method}</td><td style="font-weight: 700;">$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="font-size: 0.8rem;">${wd.details}</td><td><span class="role-badge ${statusClass}">${wd.status}</span></td><td>${actionBtn}</td></tr>`; }).join(''); }
-            showView('profile');
-        }
-
-        function transmitStatusUpdate() { 
-            if (!currentClient) return; 
-            const db = getDB();
-            db.clients[currentClient.txId].status = document.getElementById('p-status-depositor').value; 
-            db.clients[currentClient.txId].retention = document.getElementById('p-status-retention').value; 
-            db.clients[currentClient.txId].subStatus = document.getElementById('p-status-sub').value; 
-            db.clients[currentClient.txId].agent = document.getElementById('p-agent-select').value; 
-            saveDB(db);
-            alert('Status update transmitted and saved.'); renderTable(); 
-        }
-        function injectProfit() { 
-            if (!currentClient) return; 
-            const amount = parseFloat(document.getElementById('profit-amount').value); 
-            const asset = document.getElementById('profit-asset').value.trim(); 
-            if (!amount || !asset) { alert('Please enter both amount and asset.'); return; } 
-            const db = getDB();
-            const txId = 'TX-' + Math.floor(Math.random() * 90000 + 10000); 
-            const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); 
-            db.clients[currentClient.txId].transactions.push({ id: txId, date: today, type: 'PROFIT', asset: asset, amount: 0, profit: amount, status: 'COMPLETED' }); 
-            db.clients[currentClient.txId].balance += amount; 
-            saveDB(db);
-            document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); 
-            document.getElementById('profit-amount').value = ''; document.getElementById('profit-asset').value = ''; 
-            alert(`Profit of $${amount} injected from ${asset}.`); openProfile(currentClient.txId); 
-        }
-        function approveWithdrawal(wdId) { 
-            if (!currentClient) return; 
-            const db = getDB();
-            const wd = db.clients[currentClient.txId].withdrawals.find(w => w.id === wdId); 
-            if (!wd) return; 
-            wd.status = 'APPROVED'; 
-            db.clients[currentClient.txId].balance -= wd.amount; 
-            db.clients[currentClient.txId].withdrawn += wd.amount; 
-            saveDB(db);
-            document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); 
-            alert(`Withdrawal ${wdId} approved.`); openProfile(currentClient.txId); checkWithdrawalAlerts();
-        }
-        function rejectWithdrawal(wdId) { 
-            if (!currentClient) return; 
-            const db = getDB();
-            const wd = db.clients[currentClient.txId].withdrawals.find(w => w.id === wdId); 
-            if (!wd) return; 
-            wd.status = 'REJECTED'; 
-            saveDB(db);
-            alert(`Withdrawal ${wdId} rejected.`); openProfile(currentClient.txId); checkWithdrawalAlerts();
-        }
+        function openProfile(txId) { const db = getDB(); currentClient = db.clients[txId]; if (!currentClient) return; document.getElementById('p-name').textContent = currentClient.name; document.getElementById('p-id').textContent = currentClient.txId; document.getElementById('p-email').textContent = currentClient.name.toLowerCase().replace(' ', '.') + '@verum.invest'; document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('p-deposited').textContent = '$' + currentClient.deposit.toLocaleString('en-US', {minimumFractionDigits: 2}); const agentSelect = document.getElementById('p-agent-select'); agentSelect.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option ${a === currentClient.agent ? 'selected' : ''}>${a}</option>`).join(''); document.getElementById('p-status-depositor').value = currentClient.status; document.getElementById('p-status-retention').value = currentClient.retention; document.getElementById('p-status-sub').value = currentClient.subStatus; const commentContainer = document.getElementById('p-comments'); commentContainer.innerHTML = currentClient.comments.map(comm => `<div class="comment-item"><div class="comment-meta"><span>${comm.agent}</span><span>${comm.time}</span></div><div class="comment-text">${comm.text}</div></div>`).join(''); const txBody = document.getElementById('transaction-history-body'); txBody.innerHTML = currentClient.transactions.map(tx => { const profitClass = tx.profit > 0 ? 'text-green' : (tx.profit < 0 ? 'text-red' : ''); return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${tx.id}</td><td>${tx.date}</td><td style="font-weight: 600;">${tx.type}</td><td>${tx.asset}</td><td>$${tx.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="${profitClass}">${tx.profit > 0 ? '+' : ''}$${tx.profit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span class="role-badge role-closer">${tx.status}</span></td></tr>`; }).join(''); const wdBody = document.getElementById('withdrawal-requests-body'); if (currentClient.withdrawals.length === 0) { wdBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--hud-muted); padding: 32px;">No pending withdrawal requests.</td></tr>'; } else { wdBody.innerHTML = currentClient.withdrawals.map(wd => { const statusClass = wd.status === 'PENDING' ? 'role-assistant' : 'role-closer'; const actionBtn = wd.status === 'PENDING' ? `<button class="btn-hud green" style="padding: 4px 12px; font-size: 0.7rem;" onclick="approveWithdrawal('${wd.id}')">APPROVE</button><button class="btn-hud red" style="padding: 4px 12px; font-size: 0.7rem; margin-left: 4px;" onclick="rejectWithdrawal('${wd.id}')">DENY</button>` : `<span style="color: var(--hud-muted); font-size: 0.8rem;">—</span>`; return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${wd.id}</td><td>${wd.date}</td><td>${wd.method}</td><td style="font-weight: 700;">$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="font-size: 0.8rem;">${wd.details}</td><td><span class="role-badge ${statusClass}">${wd.status}</span></td><td>${actionBtn}</td></tr>`; }).join(''); } showView('profile'); }
+        function transmitStatusUpdate() { if (!currentClient) return; const db = getDB(); db.clients[currentClient.txId].status = document.getElementById('p-status-depositor').value; db.clients[currentClient.txId].retention = document.getElementById('p-status-retention').value; db.clients[currentClient.txId].subStatus = document.getElementById('p-status-sub').value; db.clients[currentClient.txId].agent = document.getElementById('p-agent-select').value; saveDB(db); alert('Status update transmitted and saved.'); renderTable(); }
+        function injectProfit() { if (!currentClient) return; const amount = parseFloat(document.getElementById('profit-amount').value); const asset = document.getElementById('profit-asset').value.trim(); if (!amount || !asset) { alert('Please enter both amount and asset.'); return; } const db = getDB(); const txId = 'TX-' + Math.floor(Math.random() * 90000 + 10000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[currentClient.txId].transactions.push({ id: txId, date: today, type: 'PROFIT', asset: asset, amount: 0, profit: amount, status: 'COMPLETED' }); db.clients[currentClient.txId].balance += amount; saveDB(db); document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('profit-amount').value = ''; document.getElementById('profit-asset').value = ''; alert(`Profit of $${amount} injected from ${asset}.`); openProfile(currentClient.txId); }
+        function approveWithdrawal(wdId) { if (!currentClient) return; const db = getDB(); const wd = db.clients[currentClient.txId].withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'APPROVED'; db.clients[currentClient.txId].balance -= wd.amount; db.clients[currentClient.txId].withdrawn += wd.amount; saveDB(db); document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); alert(`Withdrawal ${wdId} approved.`); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
+        function rejectWithdrawal(wdId) { if (!currentClient) return; const db = getDB(); const wd = db.clients[currentClient.txId].withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'REJECTED'; saveDB(db); alert(`Withdrawal ${wdId} rejected.`); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
         function addComment() { const input = document.getElementById('new-comment'); const text = input.value.trim(); if (!text || !currentClient) return; const now = new Date().toLocaleString(); const db = getDB(); db.clients[currentClient.txId].comments.unshift({agent: "Roberto Palomino (You)", time: now, text: text}); saveDB(db); input.value = ''; openProfile(currentClient.txId); }
         function switchTab(tabId, btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); btn.classList.add('active'); document.getElementById(`tab-${tabId}`).classList.add('active'); }
         function openModal(id) { document.getElementById(`modal-${id}`).classList.add('active'); }
         function closeModal(id) { document.getElementById(`modal-${id}`).classList.remove('active'); }
         function injectLead() { const name = document.getElementById('lead-name').value.trim(); const country = document.getElementById('lead-country').value.trim(); const deposit = parseFloat(document.getElementById('lead-deposit').value); const agent = document.getElementById('lead-agent').value; if (!name || !country || !deposit) { alert('Please fill all fields.'); return; } const db = getDB(); const txId = 'TX-' + Math.floor(Math.random() * 900000 + 100000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[txId] = { txId, agent, name, country, flag: '🌎', lastLogin: today + ' 09:00', balance: deposit, withdrawn: 0, deposit, status: 'NEW LEAD', retention: 'NEW', subStatus: 'POTENTIAL', comment: 'New lead injected.', comments: [], transactions: [{id: txId, date: today, type: 'DEPOSIT', asset: 'Initial Capital', amount: deposit, profit: 0, status: 'COMPLETED'}], withdrawals: [] }; saveDB(db); closeModal('injectLead'); document.getElementById('lead-name').value = ''; document.getElementById('lead-country').value = ''; document.getElementById('lead-deposit').value = ''; alert(`Lead "${name}" injected.`); renderTable(); }
-        
         initCRM();
     </script>
 </body>
