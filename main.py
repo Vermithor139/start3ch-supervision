@@ -1,32 +1,97 @@
 ﻿import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from pathlib import Path
 import uvicorn
 
-app = FastAPI(title="Verum Invest Tactical Mainframe", version="3.0.0")
+app = FastAPI(title="Verum Invest Tactical Mainframe", version="5.0.0")
 BASE_DIR = Path(__file__).resolve().parent
 
+# --- GOD MODE IP FIREWALL ---
+@app.middleware("http")
+async def strict_ip_firewall(request: Request, call_next):
+    ALLOWED_IP = "191.96.215.107"
+    path = request.url.path
+    
+    # 1. ALWAYS ALLOW PUBLIC ROUTES (Clients are global)
+    public_routes = ["/client", "/client-login", "/health", "/favicon.ico", "/static", "/docs", "/openapi.json"]
+    if any(path == route or path.startswith(route + "/") for route in public_routes):
+        return await call_next(request)
+    
+    # 2. EXTRACT REAL IP (Bypassing Render/Cloud Proxies)
+    # We check multiple headers to find the true source IP
+    forwarded_for = request.headers.get("X-Forwarded-For", "")
+    real_ip_header = request.headers.get("X-Real-IP", "")
+    client_host = request.client.host if request.client else "unknown"
+    
+    # The first IP in the list is always the real client
+    if forwarded_for:
+        detected_ip = forwarded_for.split(",")[0].strip()
+    elif real_ip_header:
+        detected_ip = real_ip_header.strip()
+    else:
+        detected_ip = client_host
+
+    # 3. ALLOW LOCALHOST FOR YOUR TESTING (Remove this line in final production if desired)
+    if detected_ip in ["127.0.0.1", "localhost", "::1"]:
+        return await call_next(request)
+
+    # 4. STRICT BLOCK: If IP is not the dedicated one, DENY ACCESS
+    if detected_ip != ALLOWED_IP:
+        print(f" BLOCKED ACCESS ATTEMPT from IP: {detected_ip} on route {path}")
+        return HTMLResponse(
+            content="""
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>403 Forbidden | Verum Invest</title>
+                <style>
+                    body { background: #02040a; color: #ef4444; font-family: 'Courier New', monospace; 
+                           display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+                    .box { text-align: center; padding: 40px; border: 2px solid #ef4444; border-radius: 8px; 
+                           background: rgba(239,68,68,0.05); max-width: 500px; box-shadow: 0 0 30px rgba(239,68,68,0.2); }
+                    h1 { font-size: 4rem; margin: 0 0 10px 0; letter-spacing: 5px; }
+                    h2 { color: #f8fafc; margin-bottom: 20px; font-size: 1.5rem; }
+                    p { color: #94a3b8; font-size: 0.9rem; line-height: 1.6; margin-bottom: 10px; }
+                    .ip { color: #0ea5e9; background: rgba(14,165,233,0.1); padding: 8px 16px; 
+                          border-radius: 4px; font-size: 1rem; margin-top: 20px; display: inline-block; border: 1px solid #0ea5e9; }
+                </style>
+            </head>
+            <body>
+                <div class="box">
+                    <h1> 403</h1>
+                    <h2>ACCESS DENIED</h2>
+                    <p>This terminal is restricted to authorized IP nodes only.</p>
+                    <p>Your connection attempt has been logged and flagged by security.</p>
+                    <div class="ip">DETECTED IP: """ + detected_ip + """</div>
+                    <p style="margin-top: 30px; font-size: 0.75rem; color: #475569;">Verum Invest Security Protocol v5.0</p>
+                </div>
+            </body>
+            </html>
+            """,
+            status_code=403
+        )
+    
+    # IP matches allowed node — proceed
+    return await call_next(request)
+
+# --- ROUTES ---
 @app.get("/login", response_class=HTMLResponse)
 def read_login():
-    login_path = BASE_DIR / "login.html"
-    if login_path.is_file():
-        return HTMLResponse(content=login_path.read_text(encoding="utf-8"))
-    return HTMLResponse(content="<h1>Login template not found</h1>", status_code=404)
+    return HTMLResponse(content=(BASE_DIR / "login.html").read_text(encoding="utf-8"))
+
+@app.get("/client-login", response_class=HTMLResponse)
+def read_client_login():
+    return HTMLResponse(content=(BASE_DIR / "client-login.html").read_text(encoding="utf-8"))
 
 @app.get("/", response_class=HTMLResponse)
-def read_supervisor_dashboard():
-    dashboard_path = BASE_DIR / "dashboard.html"
-    if dashboard_path.is_file():
-        return HTMLResponse(content=dashboard_path.read_text(encoding="utf-8"))
-    return HTMLResponse(content="<h1>Dashboard template not found</h1>", status_code=404)
+def read_dashboard():
+    return HTMLResponse(content=(BASE_DIR / "dashboard.html").read_text(encoding="utf-8"))
 
 @app.get("/client", response_class=HTMLResponse)
 def read_client_portal():
-    client_path = BASE_DIR / "client.html"
-    if client_path.is_file():
-        return HTMLResponse(content=client_path.read_text(encoding="utf-8"))
-    return HTMLResponse(content="<h1>Client portal template not found</h1>", status_code=404)
+    return HTMLResponse(content=(BASE_DIR / "client.html").read_text(encoding="utf-8"))
 
 @app.get("/health")
 def health_check():
