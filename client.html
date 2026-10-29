@@ -94,8 +94,11 @@
         .btn-save { background: var(--accent); color: #000; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.9rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .btn-save:hover { box-shadow: 0 0 20px var(--accent-glow); transform: translateY(-2px); }
         .markets-layout { display: flex; height: 100%; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-        .watchlist-panel { width: 320px; background: var(--bg-card); display: flex; flex-direction: column; overflow: hidden; }
+        .watchlist-panel { width: 320px; background: var(--bg-card); display: flex; flex-direction: column; overflow: hidden; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s; }
+        .watchlist-panel.collapsed { width: 0; opacity: 0; border: none; }
         .watchlist-header { padding: 16px; border-bottom: 1px solid var(--border); font-weight: 600; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
+        .watchlist-toggle { cursor: pointer; transition: transform 0.3s; }
+        .watchlist-toggle:hover { color: var(--accent); }
         .watchlist-content { flex: 1; overflow-y: auto; }
         .wl-category { border-bottom: 1px solid var(--border); }
         .wl-cat-header { padding: 12px 16px; font-family: var(--font-data); font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); transition: all 0.2s; }
@@ -113,7 +116,7 @@
         .wl-change { font-family: var(--font-data); font-size: 0.75rem; text-align: right; margin-top: 2px; }
         .wl-change.up { color: var(--green); }
         .wl-change.down { color: var(--red); }
-        .chart-panel { flex: 1; background: var(--bg-dark); position: relative; }
+        .chart-panel { flex: 1; background: var(--bg-dark); position: relative; transition: all 0.4s; }
         .chart-container { width: 100%; height: 100%; }
         .chat-fab { position: fixed; bottom: 32px; right: 32px; width: 56px; height: 56px; background: var(--accent); color: #000; border: none; border-radius: 50%; cursor: pointer; box-shadow: 0 0 20px var(--accent-glow); z-index: 1000; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; }
         .chat-fab:hover { transform: scale(1.1) rotate(10deg); box-shadow: 0 0 30px var(--accent-glow); }
@@ -211,8 +214,11 @@
 
         <div id="view-markets" class="view-container" style="padding: 0; height: 100%;">
             <div class="markets-layout">
-                <div class="watchlist-panel">
-                    <div class="watchlist-header"><span>Watchlist</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+                <div class="watchlist-panel" id="watchlist-panel">
+                    <div class="watchlist-header">
+                        <span>Watchlist</span>
+                        <svg class="watchlist-toggle" onclick="toggleWatchlist()" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg>
+                    </div>
                     <div class="watchlist-content">
                         <div class="wl-category">
                             <div class="wl-cat-header" onclick="toggleWlCategory(this)">INDICES <span class="arrow">▼</span></div>
@@ -272,7 +278,7 @@
                 <h3>Withdrawal Center</h3>
                 <p style="color: var(--text-muted); margin-bottom: 24px;">Request a withdrawal of your available funds. Processing time: 24-48 hours.</p>
                 <div class="withdrawal-methods">
-                    <div class="method-card active" onclick="selectWithdrawalMethod('crypto', this)"><div class="method-icon">₿</div><div class="method-name">Cryptocurrency</div></div>
+                    <div class="method-card active" onclick="selectWithdrawalMethod('crypto', this)"><div class="method-icon"></div><div class="method-name">Cryptocurrency</div></div>
                     <div class="method-card" onclick="selectWithdrawalMethod('bank', this)"><div class="method-icon">🏦</div><div class="method-name">Bank Transfer</div></div>
                     <div class="method-card" onclick="selectWithdrawalMethod('card', this)"><div class="method-icon">💳</div><div class="method-name">Credit Card</div></div>
                 </div>
@@ -322,7 +328,7 @@
 
     <button class="chat-fab" onclick="toggleChat()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
     <div class="chat-drawer" id="chatDrawer">
-        <div class="chat-header"><h3>TACTICAL SUPPORT</h3><button class="chat-close" onclick="toggleChat()">✕</button></div>
+        <div class="chat-header"><h3>TACTICAL SUPPORT</h3><button class="chat-close" onclick="toggleChat()"></button></div>
         <div class="chat-body" id="chatBody"><div class="chat-msg advisor">Welcome to Verum Invest. I am your assigned advisor. How can I assist your portfolio today?</div></div>
         <div class="chat-footer"><input type="text" id="chatInput" class="chat-input" placeholder="Transmit message..." onkeypress="handleChatKey(event)"><button class="chat-send" onclick="sendChat()">SEND</button></div>
     </div>
@@ -330,6 +336,7 @@
     <script>
         function getDB() { const stored = localStorage.getItem('verum_mainframe_db'); if (!stored) return null; return JSON.parse(stored); }
         let currentClientId = "TX-8839201"; let clientBalance = 0;
+        function toggleWatchlist() { document.getElementById('watchlist-panel').classList.toggle('collapsed'); }
         function toggleWlCategory(header) { header.classList.toggle('active'); const content = header.nextElementSibling; content.classList.toggle('show'); }
         function switchClientView(clientId) { currentClientId = clientId; const db = getDB(); if (!db || !db.clients[clientId]) return; const data = db.clients[clientId]; const initials = data.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase(); document.getElementById('header-name').textContent = data.name; document.getElementById('header-id').textContent = `ID: VT-${data.txId.split('-')[1]}`; document.getElementById('header-avatar').textContent = initials; document.getElementById('welcome-name').textContent = `Welcome back, ${data.name.split(' ')[0]}.`; document.getElementById('detail-name').textContent = data.name; document.getElementById('detail-id').textContent = `VT-${data.txId.split('-')[1]}`; document.getElementById('home-balance').textContent = '$' + data.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('home-cash').textContent = '$' + data.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('home-invested').textContent = '$' + data.deposit.toLocaleString('en-US', {minimumFractionDigits: 2}); const profit = data.balance - data.deposit; const profitEl = document.getElementById('home-profit'); profitEl.textContent = (profit >= 0 ? '+' : '') + '$' + profit.toLocaleString('en-US', {minimumFractionDigits: 2}); profitEl.style.color = profit >= 0 ? 'var(--green)' : 'var(--red)'; clientBalance = data.balance; renderClientTransactions(data); }
         function renderClientTransactions(data) { const txBody = document.getElementById('client-tx-body'); let html = data.transactions.map(tx => { const profitClass = tx.profit > 0 ? 'text-green' : (tx.profit < 0 ? 'text-red' : ''); return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${tx.id}</td><td>${tx.date}</td><td style="font-weight: 600;">${tx.type}</td><td>${tx.asset}</td><td>$${tx.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="${profitClass}" style="font-weight: 700;">${tx.profit > 0 ? '+' : ''}$${tx.profit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span style="color: var(--green); font-weight: 600;">${tx.status}</span></td></tr>`; }).join(''); data.withdrawals.forEach(wd => { html += `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${wd.id}</td><td>${wd.date}</td><td style="font-weight: 600;">WITHDRAWAL</td><td>${wd.method}</td><td>$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="color: var(--red); font-weight: 700;">-$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span style="color: var(--gold); font-weight: 600;">${wd.status}</span></td></tr>`; }); txBody.innerHTML = html; }
