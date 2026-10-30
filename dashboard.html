@@ -181,7 +181,7 @@
                         <div class="notif-list" id="notif-list"></div>
                     </div>
                 </div>
-                <button class="btn-hud orange" onclick="openModal('injectLead')">+ INJECT LEAD</button>
+                <button class="btn-hud orange" id="inject-lead-btn" onclick="openModal('injectLead')">+ INJECT LEAD</button>
                 <a href="/client" class="btn-hud"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>CLIENT PORTAL</a>
                 <button class="btn-hud red" onclick="logout()">LOG OUT</button>
             </div>
@@ -338,15 +338,26 @@
             document.getElementById('user-role-display').textContent = `[${role.replace('_', ' ').toUpperCase()}]`;
 
             const analyticsNav = document.getElementById('nav-analytics'); const configNav = document.getElementById('nav-config'); const finControls = document.getElementById('financial-controls');
-            if (role === 'CLOSER') { if(analyticsNav) analyticsNav.style.display = 'none'; if(configNav) configNav.style.display = 'none'; if(finControls) finControls.style.display = 'none'; } 
-            else { if(analyticsNav) analyticsNav.style.display = 'flex'; if(configNav) configNav.style.display = 'flex'; if(finControls) finControls.style.display = 'block'; }
+            const injectBtn = document.getElementById('inject-lead-btn');
+            
+            if (role === 'CLOSER') { 
+                if(analyticsNav) analyticsNav.style.display = 'none'; 
+                if(configNav) configNav.style.display = 'none'; 
+                if(finControls) finControls.style.display = 'none';
+                if(injectBtn) injectBtn.style.display = 'none';
+            } else { 
+                if(analyticsNav) analyticsNav.style.display = 'flex'; 
+                if(configNav) configNav.style.display = 'flex'; 
+                if(finControls) finControls.style.display = 'block';
+                if(injectBtn) injectBtn.style.display = 'inline-flex';
+            }
         }
 
         function renderAgentTabs() { 
             const db = getDB(); 
             const container = document.getElementById('agent-tabs-container'); 
             
-            // FIX: Closers don't see filter tabs at all
+            // CRITICAL FIX: Closers don't see filter tabs or add agent button
             if (currentUserRole === 'CLOSER') {
                 container.style.display = 'none';
                 return;
@@ -369,7 +380,7 @@
             tbody.innerHTML = ''; 
             let clients = Object.values(db.clients); 
             
-            // FIX: Closers ONLY see their own clients
+            // CRITICAL FIX: Closers ONLY see their own clients
             if (currentUserRole === 'CLOSER') {
                 const nameToAgent = {
                     'Sandro Kevin Jaeger': 'SANDRO', 'Jessica Margaret Davis': 'JESSICA',
