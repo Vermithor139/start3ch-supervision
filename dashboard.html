@@ -153,10 +153,6 @@
         .system-log { font-family: var(--font-data); font-size: 0.75rem; color: var(--hud-muted); line-height: 1.8; }
         .system-log span { color: var(--hud-green); }
         .ip-display { background: rgba(14,165,233,0.05); border: 1px solid rgba(14,165,233,0.2); padding: 8px 12px; border-radius: 4px; font-family: var(--font-data); font-size: 0.8rem; color: var(--hud-glow); margin-top: 12px; display: inline-block; }
-        
-        /* Link Generator Box */
-        .link-generator { background: rgba(16,185,129,0.1); border: 1px dashed var(--hud-green); padding: 16px; border-radius: 6px; margin-top: 20px; display: flex; gap: 12px; align-items: center; }
-        .link-generator input { flex: 1; background: var(--hud-bg); border: 1px solid var(--hud-border); color: var(--hud-green); padding: 10px; font-family: var(--font-data); border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -262,7 +258,6 @@
                     <div class="profile-title">
                         <h1 id="p-name">Client Name</h1>
                         <p>ID: <span id="p-id">000000</span></p>
-                        <!-- NEW: Link Generator Button -->
                         <button class="btn-hud green" onclick="copyClientLink()" style="margin-top: 15px; padding: 10px 20px; font-size: 0.8rem;">🔗 COPY CLIENT PORTAL LINK</button>
                     </div>
                     <div class="profile-metrics">
@@ -347,17 +342,47 @@
             else { if(analyticsNav) analyticsNav.style.display = 'flex'; if(configNav) configNav.style.display = 'flex'; if(finControls) finControls.style.display = 'block'; }
         }
 
-        function renderAgentTabs() { const db = getDB(); const container = document.getElementById('agent-tabs-container'); container.innerHTML = `<div class="filter-tab add-btn" onclick="addFilter()">+ ADD AGENT</div>`; db.agents.forEach((agent, index) => { const isActive = currentFilter === agent ? 'active' : ''; const deleteBtn = agent !== 'ALL' ? `<span class="delete-agent" onclick="deleteAgent(${index}, event)"></span>` : ''; container.innerHTML += `<div class="filter-tab ${isActive}" onclick="filterTable('${agent}', this)">${agent}${deleteBtn}</div>`; }); }
+        function renderAgentTabs() { 
+            const db = getDB(); 
+            const container = document.getElementById('agent-tabs-container'); 
+            
+            // FIX: Closers don't see filter tabs at all
+            if (currentUserRole === 'CLOSER') {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.style.display = 'flex';
+            container.innerHTML = `<div class="filter-tab add-btn" onclick="addFilter()">+ ADD AGENT</div>`; 
+            db.agents.forEach((agent, index) => { 
+                const isActive = currentFilter === agent ? 'active' : ''; 
+                const deleteBtn = agent !== 'ALL' ? `<span class="delete-agent" onclick="deleteAgent(${index}, event)">✕</span>` : ''; 
+                container.innerHTML += `<div class="filter-tab ${isActive}" onclick="filterTable('${agent}', this)">${agent}${deleteBtn}</div>`; 
+            }); 
+        }
+        
         function deleteAgent(index, event) { event.stopPropagation(); const db = getDB(); const removed = db.agents[index]; if (confirm(`Remove agent "${removed}" from the filter list?`)) { db.agents.splice(index, 1); saveDB(db); if (currentFilter === removed) currentFilter = 'ALL'; renderAgentTabs(); renderTable(); } }
         
         function renderTable() { 
-            const db = getDB(); const tbody = document.getElementById('lead-table-body'); tbody.innerHTML = ''; 
+            const db = getDB(); 
+            const tbody = document.getElementById('lead-table-body'); 
+            tbody.innerHTML = ''; 
             let clients = Object.values(db.clients); 
+            
+            // FIX: Closers ONLY see their own clients
             if (currentUserRole === 'CLOSER') {
-                const nameToAgent = { 'Sandro Kevin Jaeger': 'SANDRO', 'Jessica Margaret Davis': 'JESSICA', 'David James Balmer': 'DAVID', 'Marc Benjamin Cohen': 'MARC', 'Nicolas Augusto Lucas': 'NICOLAS', 'Patricia Gonzales': 'PATRICIA', 'Joe Henry Frederick': 'JOE', 'Ana Maria Merlano': 'ANA', 'Juan Diego Briceño': 'JUAN', 'Fiorella Villari': 'FIORELLA', 'Andres Morales': 'ANDRES', 'Fernando Brauer': 'FERNANDO' };
+                const nameToAgent = {
+                    'Sandro Kevin Jaeger': 'SANDRO', 'Jessica Margaret Davis': 'JESSICA',
+                    'David James Balmer': 'DAVID', 'Marc Benjamin Cohen': 'MARC',
+                    'Nicolas Augusto Lucas': 'NICOLAS', 'Patricia Gonzales': 'PATRICIA',
+                    'Joe Henry Frederick': 'JOE', 'Ana Maria Merlano': 'ANA',
+                    'Juan Diego Briceño': 'JUAN', 'Fiorella Villari': 'FIORELLA',
+                    'Andres Morales': 'ANDRES', 'Fernando Brauer': 'FERNANDO'
+                };
                 const myAgent = nameToAgent[currentUserName] || currentUserName.toUpperCase().split(' ')[0];
                 clients = clients.filter(c => c.agent === myAgent);
             }
+            
             const filteredClients = currentFilter === 'ALL' ? clients : clients.filter(c => c.agent === currentFilter); 
             const canModifyDepositor = currentUserRole !== 'CLOSER';
             
@@ -389,7 +414,6 @@
         function switchMainView(viewName, navEl) { document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); if(navEl) navEl.classList.add('active'); document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewName}`).classList.add('active'); const titles = { 'leads': 'LEAD <span>TELEMETRY</span> OVERVIEW', 'analytics': 'PERFORMANCE <span>ANALYTICS</span>', 'config': 'SYSTEM <span>CONFIGURATION</span>' }; document.getElementById('pageTitle').innerHTML = titles[viewName]; }
         function showView(viewName) { document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewName}`).classList.add('active'); document.getElementById('pageTitle').innerHTML = viewName === 'leads' ? 'LEAD <span>TELEMETRY</span> OVERVIEW' : 'CLIENT <span>INTELLIGENCE</span> DOSSIER'; }
         
-        // NEW: Copy Client Link Function
         function copyClientLink() {
             if (!currentClient) return;
             const domain = window.location.origin;
