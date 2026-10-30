@@ -357,7 +357,6 @@
             const db = getDB(); 
             const container = document.getElementById('agent-tabs-container'); 
             
-            // CRITICAL FIX: Closers don't see filter tabs or add agent button
             if (currentUserRole === 'CLOSER') {
                 container.style.display = 'none';
                 return;
@@ -380,7 +379,6 @@
             tbody.innerHTML = ''; 
             let clients = Object.values(db.clients); 
             
-            // CRITICAL FIX: Closers ONLY see their own clients
             if (currentUserRole === 'CLOSER') {
                 const nameToAgent = {
                     'Sandro Kevin Jaeger': 'SANDRO', 'Jessica Margaret Davis': 'JESSICA',
