@@ -58,6 +58,7 @@
         .client-id { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); margin-top: 4px; }
         .status-select { background: var(--hud-bg); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 6px 10px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; outline: none; cursor: pointer; font-weight: 600; transition: all 0.3s; }
         .status-select:hover { border-color: var(--hud-glow); }
+        .status-select:disabled { opacity: 0.5; cursor: not-allowed; }
         .status-depositor { border-color: var(--status-orange) !important; color: var(--status-orange) !important; }
         .status-retention { border-color: var(--status-blue) !important; color: var(--status-blue) !important; }
         .status-sub { border-color: var(--hud-green) !important; color: var(--hud-green) !important; }
@@ -103,6 +104,7 @@
         .status-control-label.green { color: var(--hud-green); }
         .status-control-select { flex: 1; background: var(--hud-bg); padding: 10px 12px; border-radius: 4px; font-family: var(--font-data); font-size: 0.85rem; font-weight: 700; outline: none; cursor: pointer; transition: all 0.3s; }
         .status-control-select:hover { background: rgba(255,255,255,0.05); }
+        .status-control-select:disabled { opacity: 0.5; cursor: not-allowed; }
         .status-control-select.orange { border: 1px solid var(--status-orange); color: var(--status-orange); }
         .status-control-select.blue { border: 1px solid var(--status-blue); color: var(--status-blue); }
         .status-control-select.green { border: 1px solid var(--hud-green); color: var(--hud-green); }
@@ -302,7 +304,7 @@
         </div>
     </div>
     <div class="modal-overlay" id="modal-injectLead"><div class="modal-content"><button class="modal-close" onclick="closeModal('injectLead')">✕</button><div class="modal-title">Inject New Lead</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Client Full Name</label><input type="text" class="fin-control-input" id="lead-name"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Country</label><input type="text" class="fin-control-input" id="lead-country"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Initial Deposit (USD)</label><input type="number" class="fin-control-input" id="lead-deposit"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Assign To Agent</label><select class="fin-control-input" id="lead-agent"></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="injectLead()">INJECT INTO DATABASE</button></div></div>
-    <div class="modal-overlay" id="modal-addUser"><div class="modal-content"><button class="modal-close" onclick="closeModal('addUser')">✕</button><div class="modal-title">Add New System User</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Full Name</label><input type="text" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Email Address</label><input type="email" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Role</label><select class="fin-control-input"><option>CLOSER</option><option>SUPERVISOR</option><option>ASST. MANAGER</option></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="closeModal('addUser'); alert('User account created.')">CREATE USER ACCOUNT</button></div></div>
+    <div class="modal-overlay" id="modal-addUser"><div class="modal-content"><button class="modal-close" onclick="closeModal('addUser')"></button><div class="modal-title">Add New System User</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Full Name</label><input type="text" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Email Address</label><input type="email" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Role</label><select class="fin-control-input"><option>CLOSER</option><option>SUPERVISOR</option><option>ASST. MANAGER</option></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="closeModal('addUser'); alert('User account created.')">CREATE USER ACCOUNT</button></div></div>
 
     <script>
         const DEFAULT_DB = {
@@ -310,13 +312,14 @@
             clients: {
                 "TX-8839201": { txId: "TX-8839201", agent: "LUIS", name: "Martha Herrera", country: "Argentina", flag: "🇦🇷", phone: "+1 234 567 890", lastLogin: "20.02.26 14:35", balance: 0, withdrawn: 51457, deposit: 51457, status: "DEPOSITOR", retention: "RECOVERY", subStatus: "NO POTENTIAL", comment: "CI se puso en contacto...", comments: [{agent: "Henry Rossi", time: "20.02.26 14:35", text: "CI se puso en contacto para discutir la recuperación."}], transactions: [{id: "TX-001", date: "15.01.26", type: "DEPOSIT", asset: "Initial Capital", amount: 51457, profit: 0, status: "COMPLETED"}], withdrawals: [] },
                 "TX-8839202": { txId: "TX-8839202", agent: "MARIA", name: "Orlando Amado Aguilar", country: "Argentina", flag: "🇦🇷", phone: "+1 234 567 891", lastLogin: "06.02.26 16:50", balance: 0, withdrawn: 65288, deposit: 65288, status: "DEPOSITOR", retention: "REASSIGN", subStatus: "NO INTEREST", comment: "CI no da respuesta...", comments: [], transactions: [], withdrawals: [] },
-                "TX-8839203": { txId: "TX-8839203", agent: "LUIS", name: "Victor Benito Paez Grance", country: "Paraguay", flag: "🇵🇾", phone: "+1 234 567 892", lastLogin: "06.02.26 16:39", balance: 2450, withdrawn: 50914.14, deposit: 50914.14, status: "DEPOSITOR", retention: "ACTIVE", subStatus: "POTENTIAL", comment: "Directo buzón de voz...", comments: [], transactions: [{id: "TX-003", date: "10.02.26", type: "PROFIT", asset: "Apple (AAPL)", amount: 0, profit: 2450, status: "COMPLETED"}], withdrawals: [] },
+                "TX-8839203": { txId: "TX-8839203", agent: "LUIS", name: "Victor Benito Paez Grance", country: "Paraguay", flag: "🇾", phone: "+1 234 567 892", lastLogin: "06.02.26 16:39", balance: 2450, withdrawn: 50914.14, deposit: 50914.14, status: "DEPOSITOR", retention: "ACTIVE", subStatus: "POTENTIAL", comment: "Directo buzón de voz...", comments: [], transactions: [{id: "TX-003", date: "10.02.26", type: "PROFIT", asset: "Apple (AAPL)", amount: 0, profit: 2450, status: "COMPLETED"}], withdrawals: [] },
                 "TX-8839204": { txId: "TX-8839204", agent: "MARIA", name: "Flora Paniagua", country: "Paraguay", flag: "🇵🇾", phone: "+1 234 567 893", lastLogin: "06.02.26 16:25", balance: 332.58, withdrawn: 250.87, deposit: 81.71, status: "DEPOSITOR", retention: "NEW", subStatus: "UNDER AGE", comment: "Se intentó retomar...", comments: [], transactions: [{id: "TX-005", date: "01.02.26", type: "DEPOSIT", asset: "Initial Capital", amount: 250, profit: 0, status: "COMPLETED"}], withdrawals: [] }
             }
         };
         function getDB() { const stored = localStorage.getItem('verum_mainframe_db'); if (!stored) { localStorage.setItem('verum_mainframe_db', JSON.stringify(DEFAULT_DB)); return DEFAULT_DB; } return JSON.parse(stored); }
         function saveDB(db) { localStorage.setItem('verum_mainframe_db', JSON.stringify(db)); }
         let currentFilter = 'ALL'; let currentClient = null;
+        let currentUserRole = 'MANAGER'; let currentUserName = 'Roberto Palomino';
         
         function initCRM() { 
             renderAgentTabs(); 
@@ -334,6 +337,8 @@
                 sessionStorage.setItem('verum_role', role);
                 sessionStorage.setItem('verum_user', name);
             }
+            currentUserRole = role;
+            currentUserName = name;
 
             document.getElementById('user-name-display').textContent = name;
             document.getElementById('user-role-display').textContent = `[${role.replace('_', ' ').toUpperCase()}]`;
@@ -356,16 +361,37 @@
         function renderAgentTabs() { const db = getDB(); const container = document.getElementById('agent-tabs-container'); container.innerHTML = `<div class="filter-tab add-btn" onclick="addFilter()">+ ADD AGENT</div>`; db.agents.forEach((agent, index) => { const isActive = currentFilter === agent ? 'active' : ''; const deleteBtn = agent !== 'ALL' ? `<span class="delete-agent" onclick="deleteAgent(${index}, event)">✕</span>` : ''; container.innerHTML += `<div class="filter-tab ${isActive}" onclick="filterTable('${agent}', this)">${agent}${deleteBtn}</div>`; }); }
         function deleteAgent(index, event) { event.stopPropagation(); const db = getDB(); const removed = db.agents[index]; if (confirm(`Remove agent "${removed}" from the filter list?`)) { db.agents.splice(index, 1); saveDB(db); if (currentFilter === removed) currentFilter = 'ALL'; renderAgentTabs(); renderTable(); } }
         
+        // SURGICAL FIX: Dropdowns now save changes AND respect permissions
         function renderTable() { 
             const db = getDB(); 
             const tbody = document.getElementById('lead-table-body'); 
             tbody.innerHTML = ''; 
-            const clients = Object.values(db.clients); 
+            let clients = Object.values(db.clients); 
+            
+            // PERMISSION: Closers only see their own clients
+            if (currentUserRole === 'CLOSER') {
+                // Map user name to agent code (simplified - in production use a proper mapping)
+                const nameToAgent = {
+                    'Sandro Kevin Jaeger': 'SANDRO', 'Jessica Margaret Davis': 'JESSICA',
+                    'David James Balmer': 'DAVID', 'Marc Benjamin Cohen': 'MARC',
+                    'Nicolas Augusto Lucas': 'NICOLAS', 'Patricia Gonzales': 'PATRICIA',
+                    'Joe Henry Frederick': 'JOE', 'Ana Maria Merlano': 'ANA',
+                    'Juan Diego Briceño': 'JUAN', 'Fiorella Villari': 'FIORELLA',
+                    'Andres Morales': 'ANDRES', 'Fernando Brauer': 'FERNANDO'
+                };
+                const myAgent = nameToAgent[currentUserName] || currentUserName.toUpperCase().split(' ')[0];
+                clients = clients.filter(c => c.agent === myAgent);
+            }
+            
             const filteredClients = currentFilter === 'ALL' ? clients : clients.filter(c => c.agent === currentFilter); 
+            
+            // Check if user can modify depositor status
+            const canModifyDepositor = currentUserRole !== 'CLOSER';
+            const canReassignAgent = currentUserRole !== 'CLOSER';
+            
             filteredClients.forEach((c) => { 
                 const tr = document.createElement('tr'); 
                 tr.onclick = () => openProfile(c.txId); 
-                // FIX: Added event.stopPropagation() to all select elements
                 tr.innerHTML = `<td><input type="checkbox" onclick="event.stopPropagation()"></td>
                 <td><a href="#" class="client-link" onclick="event.preventDefault(); openProfile('${c.txId}')">${c.name}</a><div class="client-id">${c.txId}</div></td>
                 <td>${c.country} ${c.flag}</td>
@@ -373,13 +399,24 @@
                 <td style="font-weight: 700;">$${c.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
                 <td class="text-red">-$${c.withdrawn.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
                 <td style="font-weight: 700;">$${c.deposit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                <td><select class="status-select status-depositor" onclick="event.stopPropagation()"><option selected>${c.status}</option></select></td>
-                <td><select class="status-select status-retention" onclick="event.stopPropagation()"><option selected>${c.retention}</option></select></td>
-                <td><select class="status-select status-sub" onclick="event.stopPropagation()"><option selected>${c.subStatus}</option></select></td>
+                <td><select class="status-select status-depositor" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'status', this.value)" ${!canModifyDepositor ? 'disabled title="Reserved for openers/management"' : ''}><option selected>${c.status}</option></select></td>
+                <td><select class="status-select status-retention" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'retention', this.value)"><option selected>${c.retention}</option></select></td>
+                <td><select class="status-select status-sub" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'subStatus', this.value)"><option selected>${c.subStatus}</option></select></td>
                 <td><div class="comment-preview">${c.comment}</div></td>`; 
                 tbody.appendChild(tr); 
             }); 
         }
+        
+        // NEW: Save dropdown changes to database
+        function updateStatus(txId, field, value) {
+            const db = getDB();
+            if (db.clients[txId]) {
+                db.clients[txId][field] = value;
+                saveDB(db);
+                console.log(`Updated ${field} for ${txId} to ${value}`);
+            }
+        }
+
         function filterTable(agent, el) { currentFilter = agent; renderAgentTabs(); renderTable(); }
         function addFilter() { const name = prompt("Enter Agent Name:").trim().toUpperCase(); if (name) { const db = getDB(); if(!db.agents.includes(name)) { db.agents.push(name); saveDB(db); } currentFilter = name; renderAgentTabs(); renderTable(); } }
         
@@ -403,9 +440,28 @@
             document.getElementById('p-deposited').textContent = '$' + currentClient.deposit.toLocaleString('en-US', {minimumFractionDigits: 2}); 
             const agentSelect = document.getElementById('p-agent-select'); 
             agentSelect.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option ${a === currentClient.agent ? 'selected' : ''}>${a}</option>`).join(''); 
+            
+            // PERMISSION: Disable agent reassignment for closers
+            if (currentUserRole === 'CLOSER') {
+                agentSelect.disabled = true;
+                agentSelect.title = 'Agent reassignment restricted to management';
+            } else {
+                agentSelect.disabled = false;
+            }
+            
             document.getElementById('p-status-depositor').value = currentClient.status; 
             document.getElementById('p-status-retention').value = currentClient.retention; 
             document.getElementById('p-status-sub').value = currentClient.subStatus; 
+            
+            // PERMISSION: Disable depositor status for closers
+            const depositorSelect = document.getElementById('p-status-depositor');
+            if (currentUserRole === 'CLOSER') {
+                depositorSelect.disabled = true;
+                depositorSelect.title = 'Depositor status reserved for openers/management';
+            } else {
+                depositorSelect.disabled = false;
+            }
+            
             const commentContainer = document.getElementById('p-comments'); 
             commentContainer.innerHTML = currentClient.comments.length ? currentClient.comments.map(comm => `<div class="comment-item"><div class="comment-meta"><span>${comm.agent}</span><span>${comm.time}</span></div><div class="comment-text">${comm.text}</div></div>`).join('') : '<div style="color:var(--hud-muted); font-size:0.85rem;">No comments yet.</div>'; 
             
