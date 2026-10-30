@@ -4,12 +4,14 @@ from fastapi.responses import HTMLResponse
 from pathlib import Path
 import uvicorn
 
-app = FastAPI(title="Verum Invest Tactical Mainframe", version="5.0.0")
+app = FastAPI(title="Verum Invest Tactical Mainframe", version="5.1.0")
 BASE_DIR = Path(__file__).resolve().parent
 
 @app.middleware("http")
 async def strict_ip_firewall(request: Request, call_next):
-    ALLOWED_IP = "191.96.215.107"
+    # ALLOWED IPS: The dedicated node AND your current developer IP
+    ALLOWED_IPS = ["191.96.215.107", "41.81.195.117", "127.0.0.1", "localhost"]
+    
     path = request.url.path
     
     # 1. ALWAYS ALLOW PUBLIC ROUTES (Clients are global)
@@ -29,12 +31,8 @@ async def strict_ip_firewall(request: Request, call_next):
     else:
         detected_ip = client_host
 
-    # 3. ALLOW LOCALHOST FOR YOUR TESTING
-    if detected_ip in ["127.0.0.1", "localhost", "::1"]:
-        return await call_next(request)
-
-    # 4. STRICT BLOCK
-    if detected_ip != ALLOWED_IP:
+    # 3. STRICT BLOCK: If IP is not in the allowed list, DENY ACCESS
+    if detected_ip not in ALLOWED_IPS:
         return HTMLResponse(
             content="""
             <!DOCTYPE html>
@@ -56,28 +54,33 @@ async def strict_ip_firewall(request: Request, call_next):
             </head>
             <body>
                 <div class="box">
-                    <h1>403</h1>
+                    <h1> 403</h1>
                     <h2>ACCESS DENIED</h2>
                     <p>This terminal is restricted to authorized IP nodes only.</p>
                     <p>Your connection attempt has been logged and flagged by security.</p>
                     <div class="ip">DETECTED IP: """ + detected_ip + """</div>
-                    <p style="margin-top: 30px; font-size: 0.75rem; color: #475569;">Verum Invest Security Protocol v5.0</p>
+                    <p style="margin-top: 30px; font-size: 0.75rem; color: #475569;">Verum Invest Security Protocol v5.1</p>
                 </div>
             </body>
             </html>
             """,
             status_code=403
         )
+    
     return await call_next(request)
 
 @app.get("/login", response_class=HTMLResponse)
 def read_login(): return HTMLResponse(content=(BASE_DIR / "login.html").read_text(encoding="utf-8"))
+
 @app.get("/client-login", response_class=HTMLResponse)
 def read_client_login(): return HTMLResponse(content=(BASE_DIR / "client-login.html").read_text(encoding="utf-8"))
+
 @app.get("/", response_class=HTMLResponse)
 def read_dashboard(): return HTMLResponse(content=(BASE_DIR / "dashboard.html").read_text(encoding="utf-8"))
+
 @app.get("/client", response_class=HTMLResponse)
 def read_client_portal(): return HTMLResponse(content=(BASE_DIR / "client.html").read_text(encoding="utf-8"))
+
 @app.get("/health")
 def health_check(): return {"status": "online", "system": "Verum Invest Mainframe"}
 
