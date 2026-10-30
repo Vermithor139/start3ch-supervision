@@ -2,94 +2,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verum Invest | Secure Access Terminal</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Verum Invest | Secure Access</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg-dark: #02040a; --bg-panel: #060b16; --border: #1e293b; --text-main: #f8fafc; --text-muted: #64748b; --accent: #0ea5e9; --accent-glow: rgba(14, 165, 233, 0.3); --red: #ef4444; --font-ui: 'Inter', sans-serif; --font-data: 'JetBrains Mono', monospace; }
+        :root { --bg: #02040a; --card: #060b16; --border: #1e293b; --text: #f8fafc; --muted: #64748b; --accent: #0ea5e9; --red: #ef4444; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: var(--font-ui); background: radial-gradient(circle at 50% 50%, #0a1120 0%, #02040a 100%); color: var(--text-main); height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        body::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(14, 165, 233, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(14, 165, 233, 0.03) 1px, transparent 1px); background-size: 40px 40px; z-index: -1; }
-        .login-container { width: 100%; max-width: 420px; padding: 40px; background: rgba(6, 11, 22, 0.8); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); position: relative; animation: fadeIn 0.6s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .login-container::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--accent); border-radius: 12px 12px 0 0; box-shadow: 0 0 15px var(--accent); }
-        .brand-header { text-align: center; margin-bottom: 32px; }
-        .brand-logo { width: 56px; height: 56px; margin: 0 auto 16px; animation: pulse 3s infinite ease-in-out; }
-        @keyframes pulse { 0% { filter: drop-shadow(0 0 2px var(--accent)); } 50% { filter: drop-shadow(0 0 15px var(--accent)); } 100% { filter: drop-shadow(0 0 2px var(--accent)); } }
-        .brand-name { font-size: 1.5rem; font-weight: 700; letter-spacing: 3px; margin-bottom: 4px; text-shadow: 0 0 10px rgba(14,165,233,0.3); }
-        .brand-sub { font-size: 0.7rem; font-weight: 600; color: var(--accent); letter-spacing: 4px; }
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; color: var(--text-muted); font-family: var(--font-data); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-        .form-input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 6px; padding: 14px; color: var(--text-main); font-size: 0.9rem; outline: none; font-family: var(--font-data); transition: all 0.3s; }
-        .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
-        .btn-login { width: 100%; background: var(--accent); color: #000; border: none; padding: 14px; border-radius: 6px; font-family: var(--font-data); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.3s; margin-top: 10px; letter-spacing: 1px; text-transform: uppercase; }
-        .btn-login:hover { box-shadow: 0 0 25px var(--accent-glow); transform: translateY(-2px); }
-        .error-msg { color: var(--red); font-family: var(--font-data); font-size: 0.8rem; text-align: center; margin-top: 16px; display: none; padding: 10px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 4px; }
-        .footer-text { text-align: center; margin-top: 32px; font-family: var(--font-data); font-size: 0.65rem; color: var(--text-muted); line-height: 1.6; }
-        .ip-badge { display: inline-block; background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.2); padding: 4px 8px; border-radius: 4px; color: var(--accent); margin-top: 8px; }
+        body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at 50% 50%, #0a1120 0%, #02040a 100%); color: var(--text); height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-box { width: 100%; max-width: 400px; padding: 40px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; }
+        .logo { width: 50px; height: 50px; margin: 0 auto 15px; }
+        h1 { font-size: 1.5rem; letter-spacing: 3px; margin-bottom: 5px; }
+        .sub { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent); letter-spacing: 4px; margin-bottom: 30px; }
+        input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px; color: var(--text); font-family: 'JetBrains Mono', monospace; margin-bottom: 15px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(14,165,233,0.2); }
+        button { width: 100%; background: var(--accent); color: #000; border: none; padding: 14px; border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.3s; letter-spacing: 1px; }
+        button:hover { box-shadow: 0 0 20px rgba(14,165,233,0.4); transform: translateY(-2px); }
+        .error { color: var(--red); font-size: 0.8rem; margin-top: 15px; display: none; font-family: 'JetBrains Mono', monospace; }
+        .ip-tag { margin-top: 30px; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--muted); }
+        .ip-tag span { color: var(--accent); background: rgba(14,165,233,0.1); padding: 4px 8px; border-radius: 4px; }
     </style>
 </head>
 <body>
-    <div class="login-container" id="loginBox">
-        <div class="brand-header">
-            <svg class="brand-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 6 L20 34 L32 6 L26 6 L20 22 L14 6 Z" fill="#0ea5e9"/><path d="M14 6 L20 22 L26 6 L22 6 L20 14 L18 6 Z" fill="#38bdf8" opacity="0.6"/></svg>
-            <div class="brand-name">VERUM</div>
-            <div class="brand-sub">INVEST</div>
-        </div>
-        <form id="loginForm" onsubmit="handleLogin(event)">
-            <div class="form-group">
-                <label class="form-label">Agent Identifier (Email)</label>
-                <input type="email" class="form-input" id="email" placeholder="agent@verum.invest" required autocomplete="off">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Access Key (Password)</label>
-                <input type="password" class="form-input" id="password" placeholder="Enter secure key" required>
-            </div>
-            <button type="submit" class="btn-login">Authenticate</button>
-            <div class="error-msg" id="error">⚠ ACCESS DENIED: INVALID CREDENTIALS</div>
+    <div class="login-box">
+        <svg class="logo" viewBox="0 0 40 40" fill="none"><path d="M8 6 L20 34 L32 6 L26 6 L20 22 L14 6 Z" fill="#0ea5e9"/><path d="M14 6 L20 22 L26 6 L22 6 L20 14 L18 6 Z" fill="#38bdf8" opacity="0.6"/></svg>
+        <h1>VERUM</h1><div class="sub">INVEST</div>
+        <form onsubmit="handleLogin(event)">
+            <input type="email" id="email" placeholder="Agent Email" required>
+            <input type="password" id="password" placeholder="Access Key" required>
+            <button type="submit">AUTHENTICATE</button>
+            <div class="error" id="error">ACCESS DENIED: INVALID CREDENTIALS</div>
         </form>
-        <div class="footer-text">
-            SECURE TERMINAL v3.0.1<br>
-            UNAUTHORIZED ACCESS IS STRICTLY PROHIBITED<br>
-            <span class="ip-badge">NODE IP: 191.96.215.107</span>
-        </div>
+        <div class="ip-tag">SECURE NODE: <span>191.96.215.107</span></div>
     </div>
     <script>
-        const authorizedPersonnel = {
-            'r.palomino@verum.invest': 'Vrm_Mgr_2026!Alpha',
-            'd.costa@verum.invest': 'FamiliaToreto',
-            'k.dean@verum.invest': 'Vrm_Ast_2026!Bravo',
-            's.jaeger@verum.invest': 'Vrm_Cls_2026!Sandro',
-            'j.davis@verum.invest': 'Vrm_Cls_2026!Jessica',
-            'd.balmer@verum.invest': 'Vrm_Cls_2026!David',
-            'm.cohen@verum.invest': 'Vrm_Cls_2026!Marc',
-            'n.lucas@verum.invest': 'Vrm_Cls_2026!Nicolas',
-            'p.gonzales@verum.invest': 'Vrm_Cls_2026!Patricia',
-            'j.frederick@verum.invest': 'Vrm_Cls_2026!Joe',
-            'a.merlano@verum.invest': 'Vrm_Cls_2026!Ana'
+        const staffDB = {
+            'r.palomino@verum.invest': { pass: 'Vrm_Mgr_2026!Alpha', role: 'MANAGER', name: 'Roberto Palomino' },
+            'd.costa@verum.invest': { pass: 'FamiliaToreto', role: 'ASST_MANAGER', name: 'Dominick Costa' },
+            'k.dean@verum.invest': { pass: 'Vrm_Ast_2026!Bravo', role: 'ASST_MANAGER', name: 'Kenet Dean' },
+            's.jaeger@verum.invest': { pass: 'Vrm_Cls_2026!Sandro', role: 'CLOSER', name: 'Sandro Jaeger' },
+            'j.davis@verum.invest': { pass: 'Vrm_Cls_2026!Jessica', role: 'CLOSER', name: 'Jessica Davis' },
+            'd.balmer@verum.invest': { pass: 'Vrm_Cls_2026!David', role: 'CLOSER', name: 'David Balmer' },
+            'm.cohen@verum.invest': { pass: 'Vrm_Cls_2026!Marc', role: 'CLOSER', name: 'Marc Cohen' },
+            'n.lucas@verum.invest': { pass: 'Vrm_Cls_2026!Nicolas', role: 'CLOSER', name: 'Nicolas Lucas' },
+            'p.gonzales@verum.invest': { pass: 'Vrm_Cls_2026!Patricia', role: 'CLOSER', name: 'Patricia Gonzales' },
+            'j.frederick@verum.invest': { pass: 'Vrm_Cls_2026!Joe', role: 'CLOSER', name: 'Joe Frederick' },
+            'a.merlano@verum.invest': { pass: 'Vrm_Cls_2026!Ana', role: 'CLOSER', name: 'Ana Merlano' }
         };
         function handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('email').value.trim().toLowerCase();
             const pass = document.getElementById('password').value;
-            const errorMsg = document.getElementById('error');
-            const loginBox = document.getElementById('loginBox');
-            if (authorizedPersonnel[email] && authorizedPersonnel[email] === pass) {
-                errorMsg.style.display = 'none';
-                const btn = document.querySelector('.btn-login');
-                btn.textContent = 'AUTHENTICATING...';
-                btn.style.opacity = '0.7';
-                setTimeout(() => { window.location.href = '/'; }, 800);
-            } else {
-                errorMsg.style.display = 'block';
-                loginBox.style.animation = 'none';
-                loginBox.offsetHeight;
-                loginBox.style.animation = 'shake 0.4s ease-in-out';
-            }
+            const user = staffDB[email];
+            if (user && user.pass === pass) {
+                sessionStorage.setItem('verum_role', user.role);
+                sessionStorage.setItem('verum_user', user.name);
+                window.location.href = '/';
+            } else { document.getElementById('error').style.display = 'block'; }
         }
-        const styleSheet = document.createElement("style");
-        styleSheet.innerText = `@keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-10px); } 40% { transform: translateX(10px); } 60% { transform: translateX(-10px); } 80% { transform: translateX(10px); } }`;
-        document.head.appendChild(styleSheet);
     </script>
 </body>
 </html>

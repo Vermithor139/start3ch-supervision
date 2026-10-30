@@ -33,22 +33,15 @@
             const params = new URLSearchParams(window.location.search);
             if(params.get('email')) document.getElementById('email').value = params.get('email');
         }
-
         function clientLogin(e) {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
-            
-            // Mock Client Authentication (In production, this checks a real database)
-            // For prototype: Any email works if password is "Verum2026"
             if(pass === 'Verum2026' || pass === 'verum') {
-                // Redirect to portal with pre-populated data
                 const name = new URLSearchParams(window.location.search).get('name') || 'Client';
                 const id = new URLSearchParams(window.location.search).get('id') || 'TX-9999999';
                 window.location.href = `/client?email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${id}`;
-            } else {
-                document.getElementById('error').style.display = 'block';
-            }
+            } else { document.getElementById('error').style.display = 'block'; }
         }
     </script>
 </body>
