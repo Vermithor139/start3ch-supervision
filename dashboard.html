@@ -250,7 +250,7 @@
                 </div>
             </div>
 
-            <div id="view-profile" class="view-section profile-view">
+            <div id="view-profile" class="view-section">
                 <button class="btn-hud" onclick="showView('leads')" style="margin-bottom: 24px;">← RETURN TO TELEMETRY</button>
                 <div class="profile-header">
                     <div class="profile-title"><h1 id="p-name">Client Name</h1><p>ID: <span id="p-id">000000</span></p></div>
@@ -262,6 +262,8 @@
                 <div class="profile-grid-2">
                     <div class="hud-card">
                         <div class="card-title">Client Intelligence & Status Control</div>
+                        <div class="info-row"><div class="info-label">Phone</div><div class="info-val" id="p-phone">+1 234 567 890</div></div>
+                        <div class="info-row"><div class="info-label">Country</div><div class="info-val" id="p-country">Argentina 🇦🇷</div></div>
                         <div class="info-row"><div class="info-label">Email</div><div class="info-val" id="p-email">client@email.com</div></div>
                         <div class="info-row"><div class="info-label">Assigned Agent</div><div class="info-val"><select id="p-agent-select" class="status-control-select blue" style="padding: 6px 10px; font-size: 0.8rem;"></select></div></div>
                         <div class="status-control-group">
@@ -284,19 +286,32 @@
                         <button class="btn-hud green" onclick="injectProfit()" style="height: 42px; padding: 0 24px;">INJECT PROFIT</button>
                     </div>
                 </div>
+                <div class="hud-card">
+                    <div class="tabs">
+                        <button class="tab-btn active" onclick="switchTab('activity', this)">Activity Timeline</button>
+                        <button class="tab-btn" onclick="switchTab('kyc', this)">KYC / Opener Intel</button>
+                        <button class="tab-btn" onclick="switchTab('transactions', this)">Transaction History</button>
+                        <button class="tab-btn" onclick="switchTab('withdrawals', this)">Withdrawal Requests</button>
+                    </div>
+                    <div id="tab-activity" class="tab-content active"><div style="color: var(--hud-muted); font-size: 0.85rem; padding: 20px;">Client portal login history and activity logs will appear here.</div></div>
+                    <div id="tab-kyc" class="tab-content"><div style="color: var(--hud-muted); font-size: 0.85rem; padding: 20px;">KYC documents and opener intelligence data.</div></div>
+                    <div id="tab-transactions" class="tab-content"><table style="width: 100%;"><thead><tr><th>TX-ID</th><th>Date</th><th>Type</th><th>Asset</th><th>Amount</th><th>Profit/Loss</th><th>Status</th></tr></thead><tbody id="transaction-history-body"></tbody></table></div>
+                    <div id="tab-withdrawals" class="tab-content"><table style="width: 100%;"><thead><tr><th>Request ID</th><th>Date</th><th>Method</th><th>Amount</th><th>Details</th><th>Status</th><th>Action</th></tr></thead><tbody id="withdrawal-requests-body"></tbody></table></div>
+                </div>
             </div>
         </div>
     </div>
     <div class="modal-overlay" id="modal-injectLead"><div class="modal-content"><button class="modal-close" onclick="closeModal('injectLead')">✕</button><div class="modal-title">Inject New Lead</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Client Full Name</label><input type="text" class="fin-control-input" id="lead-name"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Country</label><input type="text" class="fin-control-input" id="lead-country"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Initial Deposit (USD)</label><input type="number" class="fin-control-input" id="lead-deposit"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Assign To Agent</label><select class="fin-control-input" id="lead-agent"></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="injectLead()">INJECT INTO DATABASE</button></div></div>
+    <div class="modal-overlay" id="modal-addUser"><div class="modal-content"><button class="modal-close" onclick="closeModal('addUser')">✕</button><div class="modal-title">Add New System User</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Full Name</label><input type="text" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Email Address</label><input type="email" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Role</label><select class="fin-control-input"><option>CLOSER</option><option>SUPERVISOR</option><option>ASST. MANAGER</option></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="closeModal('addUser'); alert('User account created.')">CREATE USER ACCOUNT</button></div></div>
 
     <script>
         const DEFAULT_DB = {
             agents: ['ALL', 'LUIS', 'MARIA'],
             clients: {
-                "TX-8839201": { txId: "TX-8839201", agent: "LUIS", name: "Martha Herrera", country: "Argentina", flag: "🇦🇷", lastLogin: "20.02.26 14:35", balance: 0, withdrawn: 51457, deposit: 51457, status: "DEPOSITOR", retention: "RECOVERY", subStatus: "NO POTENTIAL", comment: "CI se puso en contacto...", comments: [], transactions: [], withdrawals: [] },
-                "TX-8839202": { txId: "TX-8839202", agent: "MARIA", name: "Orlando Amado Aguilar", country: "Argentina", flag: "🇦🇷", lastLogin: "06.02.26 16:50", balance: 0, withdrawn: 65288, deposit: 65288, status: "DEPOSITOR", retention: "REASSIGN", subStatus: "NO INTEREST", comment: "CI no da respuesta...", comments: [], transactions: [], withdrawals: [] },
-                "TX-8839203": { txId: "TX-8839203", agent: "LUIS", name: "Victor Benito Paez Grance", country: "Paraguay", flag: "🇵🇾", lastLogin: "06.02.26 16:39", balance: 2450, withdrawn: 50914.14, deposit: 50914.14, status: "DEPOSITOR", retention: "ACTIVE", subStatus: "POTENTIAL", comment: "Directo buzón de voz...", comments: [], transactions: [], withdrawals: [] },
-                "TX-8839204": { txId: "TX-8839204", agent: "MARIA", name: "Flora Paniagua", country: "Paraguay", flag: "🇵🇾", lastLogin: "06.02.26 16:25", balance: 332.58, withdrawn: 250.87, deposit: 81.71, status: "DEPOSITOR", retention: "NEW", subStatus: "UNDER AGE", comment: "Se intentó retomar...", comments: [], transactions: [], withdrawals: [] }
+                "TX-8839201": { txId: "TX-8839201", agent: "LUIS", name: "Martha Herrera", country: "Argentina", flag: "🇦🇷", phone: "+1 234 567 890", lastLogin: "20.02.26 14:35", balance: 0, withdrawn: 51457, deposit: 51457, status: "DEPOSITOR", retention: "RECOVERY", subStatus: "NO POTENTIAL", comment: "CI se puso en contacto...", comments: [{agent: "Henry Rossi", time: "20.02.26 14:35", text: "CI se puso en contacto para discutir la recuperación."}], transactions: [{id: "TX-001", date: "15.01.26", type: "DEPOSIT", asset: "Initial Capital", amount: 51457, profit: 0, status: "COMPLETED"}], withdrawals: [] },
+                "TX-8839202": { txId: "TX-8839202", agent: "MARIA", name: "Orlando Amado Aguilar", country: "Argentina", flag: "🇦🇷", phone: "+1 234 567 891", lastLogin: "06.02.26 16:50", balance: 0, withdrawn: 65288, deposit: 65288, status: "DEPOSITOR", retention: "REASSIGN", subStatus: "NO INTEREST", comment: "CI no da respuesta...", comments: [], transactions: [], withdrawals: [] },
+                "TX-8839203": { txId: "TX-8839203", agent: "LUIS", name: "Victor Benito Paez Grance", country: "Paraguay", flag: "🇵🇾", phone: "+1 234 567 892", lastLogin: "06.02.26 16:39", balance: 2450, withdrawn: 50914.14, deposit: 50914.14, status: "DEPOSITOR", retention: "ACTIVE", subStatus: "POTENTIAL", comment: "Directo buzón de voz...", comments: [], transactions: [{id: "TX-003", date: "10.02.26", type: "PROFIT", asset: "Apple (AAPL)", amount: 0, profit: 2450, status: "COMPLETED"}], withdrawals: [] },
+                "TX-8839204": { txId: "TX-8839204", agent: "MARIA", name: "Flora Paniagua", country: "Paraguay", flag: "🇵🇾", phone: "+1 234 567 893", lastLogin: "06.02.26 16:25", balance: 332.58, withdrawn: 250.87, deposit: 81.71, status: "DEPOSITOR", retention: "NEW", subStatus: "UNDER AGE", comment: "Se intentó retomar...", comments: [], transactions: [{id: "TX-005", date: "01.02.26", type: "DEPOSIT", asset: "Initial Capital", amount: 250, profit: 0, status: "COMPLETED"}], withdrawals: [] }
             }
         };
         function getDB() { const stored = localStorage.getItem('verum_mainframe_db'); if (!stored) { localStorage.setItem('verum_mainframe_db', JSON.stringify(DEFAULT_DB)); return DEFAULT_DB; } return JSON.parse(stored); }
@@ -311,21 +326,18 @@
             const select = document.getElementById('lead-agent'); 
             if(select) select.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option>${a}</option>`).join(''); 
             
-            // CRITICAL FIX: Robust session reading with Manager fallback
             let role = sessionStorage.getItem('verum_role');
             let name = sessionStorage.getItem('verum_user');
             
             if (!role || !name) {
-                role = 'MANAGER';
-                name = 'Roberto Palomino';
+                role = 'MANAGER'; name = 'Roberto Palomino';
                 sessionStorage.setItem('verum_role', role);
                 sessionStorage.setItem('verum_user', name);
             }
 
             document.getElementById('user-name-display').textContent = name;
-            document.getElementById('user-role-display').textContent = `[${role.replace('_', ' ')}]`;
+            document.getElementById('user-role-display').textContent = `[${role.replace('_', ' ').toUpperCase()}]`;
 
-            // FIX: Only hide tabs for CLOSERS, ensure they are visible for others
             const analyticsNav = document.getElementById('nav-analytics');
             const configNav = document.getElementById('nav-config');
             const finControls = document.getElementById('financial-controls');
@@ -343,7 +355,31 @@
 
         function renderAgentTabs() { const db = getDB(); const container = document.getElementById('agent-tabs-container'); container.innerHTML = `<div class="filter-tab add-btn" onclick="addFilter()">+ ADD AGENT</div>`; db.agents.forEach((agent, index) => { const isActive = currentFilter === agent ? 'active' : ''; const deleteBtn = agent !== 'ALL' ? `<span class="delete-agent" onclick="deleteAgent(${index}, event)">✕</span>` : ''; container.innerHTML += `<div class="filter-tab ${isActive}" onclick="filterTable('${agent}', this)">${agent}${deleteBtn}</div>`; }); }
         function deleteAgent(index, event) { event.stopPropagation(); const db = getDB(); const removed = db.agents[index]; if (confirm(`Remove agent "${removed}" from the filter list?`)) { db.agents.splice(index, 1); saveDB(db); if (currentFilter === removed) currentFilter = 'ALL'; renderAgentTabs(); renderTable(); } }
-        function renderTable() { const db = getDB(); const tbody = document.getElementById('lead-table-body'); tbody.innerHTML = ''; const clients = Object.values(db.clients); const filteredClients = currentFilter === 'ALL' ? clients : clients.filter(c => c.agent === currentFilter); filteredClients.forEach((c) => { const tr = document.createElement('tr'); tr.onclick = () => openProfile(c.txId); tr.innerHTML = `<td><input type="checkbox" onclick="event.stopPropagation()"></td><td><a href="#" class="client-link" onclick="event.preventDefault(); openProfile('${c.txId}')">${c.name}</a><div class="client-id">${c.txId}</div></td><td>${c.country} ${c.flag}</td><td style="font-family: var(--font-data); font-size: 0.8rem;">${c.lastLogin}</td><td style="font-weight: 700;">$${c.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="text-red">-$${c.withdrawn.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="font-weight: 700;">$${c.deposit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><select class="status-select status-depositor" onclick="event.stopPropagation()"><option selected>${c.status}</option></select></td><td><select class="status-select status-retention" onclick="event.stopPropagation()"><option selected>${c.retention}</option></select></td><td><select class="status-select status-sub" onclick="event.stopPropagation()"><option selected>${c.subStatus}</option></select></td><td><div class="comment-preview">${c.comment}</div></td>`; tbody.appendChild(tr); }); }
+        
+        function renderTable() { 
+            const db = getDB(); 
+            const tbody = document.getElementById('lead-table-body'); 
+            tbody.innerHTML = ''; 
+            const clients = Object.values(db.clients); 
+            const filteredClients = currentFilter === 'ALL' ? clients : clients.filter(c => c.agent === currentFilter); 
+            filteredClients.forEach((c) => { 
+                const tr = document.createElement('tr'); 
+                tr.onclick = () => openProfile(c.txId); 
+                // FIX: Added event.stopPropagation() to all select elements
+                tr.innerHTML = `<td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                <td><a href="#" class="client-link" onclick="event.preventDefault(); openProfile('${c.txId}')">${c.name}</a><div class="client-id">${c.txId}</div></td>
+                <td>${c.country} ${c.flag}</td>
+                <td style="font-family: var(--font-data); font-size: 0.8rem;">${c.lastLogin}</td>
+                <td style="font-weight: 700;">$${c.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td class="text-red">-$${c.withdrawn.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td style="font-weight: 700;">$${c.deposit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td><select class="status-select status-depositor" onclick="event.stopPropagation()"><option selected>${c.status}</option></select></td>
+                <td><select class="status-select status-retention" onclick="event.stopPropagation()"><option selected>${c.retention}</option></select></td>
+                <td><select class="status-select status-sub" onclick="event.stopPropagation()"><option selected>${c.subStatus}</option></select></td>
+                <td><div class="comment-preview">${c.comment}</div></td>`; 
+                tbody.appendChild(tr); 
+            }); 
+        }
         function filterTable(agent, el) { currentFilter = agent; renderAgentTabs(); renderTable(); }
         function addFilter() { const name = prompt("Enter Agent Name:").trim().toUpperCase(); if (name) { const db = getDB(); if(!db.agents.includes(name)) { db.agents.push(name); saveDB(db); } currentFilter = name; renderAgentTabs(); renderTable(); } }
         
@@ -353,21 +389,46 @@
         document.addEventListener('click', function(e) { const dropdown = document.getElementById('notif-dropdown'); const bell = document.querySelector('.notif-bell'); if (!dropdown.contains(e.target) && !bell.contains(e.target)) { dropdown.classList.remove('active'); } });
         function switchMainView(viewName, navEl) { document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); if(navEl) navEl.classList.add('active'); document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewName}`).classList.add('active'); const titles = { 'leads': 'LEAD <span>TELEMETRY</span> OVERVIEW', 'analytics': 'PERFORMANCE <span>ANALYTICS</span>', 'config': 'SYSTEM <span>CONFIGURATION</span>' }; document.getElementById('pageTitle').innerHTML = titles[viewName]; }
         function showView(viewName) { document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewName}`).classList.add('active'); document.getElementById('pageTitle').innerHTML = viewName === 'leads' ? 'LEAD <span>TELEMETRY</span> OVERVIEW' : 'CLIENT <span>INTELLIGENCE</span> DOSSIER'; }
-        function openProfile(txId) { const db = getDB(); currentClient = db.clients[txId]; if (!currentClient) return; document.getElementById('p-name').textContent = currentClient.name; document.getElementById('p-id').textContent = currentClient.txId; document.getElementById('p-email').textContent = currentClient.name.toLowerCase().replace(' ', '.') + '@verum.invest'; document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('p-deposited').textContent = '$' + currentClient.deposit.toLocaleString('en-US', {minimumFractionDigits: 2}); const agentSelect = document.getElementById('p-agent-select'); agentSelect.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option ${a === currentClient.agent ? 'selected' : ''}>${a}</option>`).join(''); document.getElementById('p-status-depositor').value = currentClient.status; document.getElementById('p-status-retention').value = currentClient.retention; document.getElementById('p-status-sub').value = currentClient.subStatus; const commentContainer = document.getElementById('p-comments'); commentContainer.innerHTML = currentClient.comments.length ? currentClient.comments.map(comm => `<div class="comment-item"><div class="comment-meta"><span>${comm.agent}</span><span>${comm.time}</span></div><div class="comment-text">${comm.text}</div></div>`).join('') : '<div style="color:var(--hud-muted); font-size:0.85rem;">No comments yet.</div>'; showView('profile'); }
+        
+        function openProfile(txId) { 
+            const db = getDB(); 
+            currentClient = db.clients[txId]; 
+            if (!currentClient) return; 
+            document.getElementById('p-name').textContent = currentClient.name; 
+            document.getElementById('p-id').textContent = currentClient.txId; 
+            document.getElementById('p-phone').textContent = currentClient.phone || 'N/A';
+            document.getElementById('p-country').textContent = currentClient.country + ' ' + currentClient.flag;
+            document.getElementById('p-email').textContent = currentClient.name.toLowerCase().replace(' ', '.') + '@verum.invest'; 
+            document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); 
+            document.getElementById('p-deposited').textContent = '$' + currentClient.deposit.toLocaleString('en-US', {minimumFractionDigits: 2}); 
+            const agentSelect = document.getElementById('p-agent-select'); 
+            agentSelect.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option ${a === currentClient.agent ? 'selected' : ''}>${a}</option>`).join(''); 
+            document.getElementById('p-status-depositor').value = currentClient.status; 
+            document.getElementById('p-status-retention').value = currentClient.retention; 
+            document.getElementById('p-status-sub').value = currentClient.subStatus; 
+            const commentContainer = document.getElementById('p-comments'); 
+            commentContainer.innerHTML = currentClient.comments.length ? currentClient.comments.map(comm => `<div class="comment-item"><div class="comment-meta"><span>${comm.agent}</span><span>${comm.time}</span></div><div class="comment-text">${comm.text}</div></div>`).join('') : '<div style="color:var(--hud-muted); font-size:0.85rem;">No comments yet.</div>'; 
+            
+            const txBody = document.getElementById('transaction-history-body'); 
+            txBody.innerHTML = currentClient.transactions.length ? currentClient.transactions.map(tx => { const profitClass = tx.profit > 0 ? 'text-green' : (tx.profit < 0 ? 'text-red' : ''); return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${tx.id}</td><td>${tx.date}</td><td style="font-weight: 600;">${tx.type}</td><td>${tx.asset}</td><td>$${tx.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="${profitClass}">${tx.profit > 0 ? '+' : ''}$${tx.profit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span class="role-badge role-closer">${tx.status}</span></td></tr>`; }).join('') : '<tr><td colspan="7" style="text-align:center; color:var(--hud-muted); padding:20px;">No transactions yet.</td></tr>';
+            
+            const wdBody = document.getElementById('withdrawal-requests-body'); 
+            if (currentClient.withdrawals.length === 0) { wdBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--hud-muted); padding: 32px;">No pending withdrawal requests.</td></tr>'; } 
+            else { wdBody.innerHTML = currentClient.withdrawals.map(wd => { const statusClass = wd.status === 'PENDING' ? 'role-assistant' : 'role-closer'; const actionBtn = wd.status === 'PENDING' ? `<button class="btn-hud green" style="padding: 4px 12px; font-size: 0.7rem;" onclick="approveWithdrawal('${wd.id}')">APPROVE</button><button class="btn-hud red" style="padding: 4px 12px; font-size: 0.7rem; margin-left: 4px;" onclick="rejectWithdrawal('${wd.id}')">DENY</button>` : `<span style="color: var(--hud-muted); font-size: 0.8rem;">—</span>`; return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${wd.id}</td><td>${wd.date}</td><td>${wd.method}</td><td style="font-weight: 700;">$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="font-size: 0.8rem;">${wd.details}</td><td><span class="role-badge ${statusClass}">${wd.status}</span></td><td>${actionBtn}</td></tr>`; }).join(''); } 
+            showView('profile'); 
+        }
         function transmitStatusUpdate() { if (!currentClient) return; const db = getDB(); db.clients[currentClient.txId].status = document.getElementById('p-status-depositor').value; db.clients[currentClient.txId].retention = document.getElementById('p-status-retention').value; db.clients[currentClient.txId].subStatus = document.getElementById('p-status-sub').value; db.clients[currentClient.txId].agent = document.getElementById('p-agent-select').value; saveDB(db); alert('Status update transmitted and saved.'); renderTable(); }
         function injectProfit() { if (!currentClient) return; const amount = parseFloat(document.getElementById('profit-amount').value); const asset = document.getElementById('profit-asset').value.trim(); if (!amount || !asset) { alert('Please enter both amount and asset.'); return; } const db = getDB(); const txId = 'TX-' + Math.floor(Math.random() * 90000 + 10000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[currentClient.txId].transactions.push({ id: txId, date: today, type: 'PROFIT', asset: asset, amount: 0, profit: amount, status: 'COMPLETED' }); db.clients[currentClient.txId].balance += amount; saveDB(db); document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('profit-amount').value = ''; document.getElementById('profit-asset').value = ''; alert(`Profit of $${amount} injected from ${asset}.`); openProfile(currentClient.txId); }
+        function approveWithdrawal(wdId) { if (!currentClient) return; const db = getDB(); const wd = db.clients[currentClient.txId].withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'APPROVED'; db.clients[currentClient.txId].balance -= wd.amount; db.clients[currentClient.txId].withdrawn += wd.amount; saveDB(db); document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); alert(`Withdrawal ${wdId} approved.`); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
+        function rejectWithdrawal(wdId) { if (!currentClient) return; const db = getDB(); const wd = db.clients[currentClient.txId].withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'REJECTED'; saveDB(db); alert(`Withdrawal ${wdId} rejected.`); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
         function addComment() { const input = document.getElementById('new-comment'); const text = input.value.trim(); if (!text || !currentClient) return; const now = new Date().toLocaleString(); const db = getDB(); db.clients[currentClient.txId].comments.unshift({agent: sessionStorage.getItem('verum_user') || "Manager", time: now, text: text}); saveDB(db); input.value = ''; openProfile(currentClient.txId); }
+        function switchTab(tabId, btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); btn.classList.add('active'); document.getElementById(`tab-${tabId}`).classList.add('active'); }
         function openModal(id) { document.getElementById(`modal-${id}`).classList.add('active'); }
         function closeModal(id) { document.getElementById(`modal-${id}`).classList.remove('active'); }
-        function injectLead() { const name = document.getElementById('lead-name').value.trim(); const country = document.getElementById('lead-country').value.trim(); const deposit = parseFloat(document.getElementById('lead-deposit').value); const agent = document.getElementById('lead-agent').value; if (!name || !country || !deposit) { alert('Please fill all fields.'); return; } const db = getDB(); const txId = 'TX-' + Math.floor(Math.random() * 900000 + 100000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[txId] = { txId, agent, name, country, flag: '🌎', lastLogin: today + ' 09:00', balance: deposit, withdrawn: 0, deposit, status: 'NEW LEAD', retention: 'NEW', subStatus: 'POTENTIAL', comment: 'New lead injected.', comments: [], transactions: [{id: txId, date: today, type: 'DEPOSIT', asset: 'Initial Capital', amount: deposit, profit: 0, status: 'COMPLETED'}], withdrawals: [] }; saveDB(db); closeModal('injectLead'); document.getElementById('lead-name').value = ''; document.getElementById('lead-country').value = ''; document.getElementById('lead-deposit').value = ''; alert(`Lead "${name}" injected.`); renderTable(); }
+        function injectLead() { const name = document.getElementById('lead-name').value.trim(); const country = document.getElementById('lead-country').value.trim(); const deposit = parseFloat(document.getElementById('lead-deposit').value); const agent = document.getElementById('lead-agent').value; if (!name || !country || !deposit) { alert('Please fill all fields.'); return; } const db = getDB(); const txId = 'TX-' + Math.floor(Math.random() * 900000 + 100000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[txId] = { txId, agent, name, country, flag: '🌎', phone: '+1 234 567 899', lastLogin: today + ' 09:00', balance: deposit, withdrawn: 0, deposit, status: 'NEW LEAD', retention: 'NEW', subStatus: 'POTENTIAL', comment: 'New lead injected.', comments: [], transactions: [{id: txId, date: today, type: 'DEPOSIT', asset: 'Initial Capital', amount: deposit, profit: 0, status: 'COMPLETED'}], withdrawals: [] }; saveDB(db); closeModal('injectLead'); document.getElementById('lead-name').value = ''; document.getElementById('lead-country').value = ''; document.getElementById('lead-deposit').value = ''; alert(`Lead "${name}" injected.`); renderTable(); }
         function logout() { sessionStorage.clear(); window.location.href = '/login'; }
         
-        // Initialize
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initCRM);
-        } else {
-            initCRM();
-        }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initCRM); } else { initCRM(); }
     </script>
 </body>
 </html>

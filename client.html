@@ -94,8 +94,9 @@
         .btn-save { background: var(--accent); color: #000; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.9rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .btn-save:hover { box-shadow: 0 0 20px var(--accent-glow); transform: translateY(-2px); }
         .markets-layout { display: flex; height: 100%; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-        .watchlist-panel { width: 320px; background: var(--bg-card); display: flex; flex-direction: column; overflow: hidden; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s; }
-        .watchlist-panel.collapsed { width: 0; opacity: 0; border: none; }
+        .watchlist-panel { width: 320px; background: var(--bg-card); display: flex; flex-direction: column; overflow: hidden; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .watchlist-panel.collapsed { width: 48px; }
+        .watchlist-panel.collapsed .wl-content, .watchlist-panel.collapsed .watchlist-header span:first-child { display: none; }
         .watchlist-header { padding: 16px; border-bottom: 1px solid var(--border); font-weight: 600; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
         .watchlist-toggle { cursor: pointer; transition: transform 0.3s; }
         .watchlist-toggle:hover { color: var(--accent); }
@@ -139,8 +140,17 @@
         .tx-table th { background: var(--bg-dark); color: var(--text-muted); font-family: var(--font-data); font-size: 0.7rem; text-transform: uppercase; padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
         .tx-table td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; transition: background 0.2s; }
         .tx-table tr:hover { background: rgba(14,165,233,0.05); }
-        #toast { position: fixed; top: 80px; right: 32px; background: var(--bg-card); border: 1px solid var(--accent); padding: 16px 24px; border-radius: 8px; display: none; z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        /* Custom Modal Styles */
+        .custom-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 2000; align-items: center; justify-content: center; }
+        .custom-modal-overlay.active { display: flex; }
+        .custom-modal { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 24px; width: 90%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: modalPop 0.3s ease-out; }
+        @keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .custom-modal h3 { color: var(--green); font-size: 1.1rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .custom-modal p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 8px; }
+        .custom-modal .detail { color: var(--text-main); font-family: var(--font-data); font-size: 0.85rem; margin-bottom: 4px; }
+        .custom-modal .btn-accept { background: var(--gold); color: #000; border: none; padding: 10px 24px; border-radius: 20px; font-weight: 700; cursor: pointer; float: right; margin-top: 16px; transition: 0.3s; }
+        .custom-modal .btn-accept:hover { background: #f59e0b; box-shadow: 0 0 15px rgba(251,191,36,0.4); }
     </style>
 </head>
 <body>
@@ -292,7 +302,7 @@
                 <p style="color: var(--text-muted); margin-bottom: 24px;">Request a withdrawal of your available funds. Processing time: 24-48 hours.</p>
                 <div class="withdrawal-methods">
                     <div class="method-card active" onclick="selectWithdrawalMethod('crypto', this)"><div class="method-icon">₿</div><div class="method-name">Cryptocurrency</div></div>
-                    <div class="method-card" onclick="selectWithdrawalMethod('bank', this)"><div class="method-icon"></div><div class="method-name">Bank Transfer</div></div>
+                    <div class="method-card" onclick="selectWithdrawalMethod('bank', this)"><div class="method-icon">🏦</div><div class="method-name">Bank Transfer</div></div>
                     <div class="method-card" onclick="selectWithdrawalMethod('card', this)"><div class="method-icon">💳</div><div class="method-name">Credit Card</div></div>
                 </div>
                 <div id="form-crypto" class="withdrawal-form active">
@@ -334,9 +344,16 @@
         </div>
     </div>
 
-    <div id="toast">
-        <div style="font-weight: 700; color: var(--accent); margin-bottom: 4px;">Request Submitted</div>
-        <div style="font-size: 0.9rem;">Your withdrawal is pending manager approval.</div>
+    <!-- Custom Withdrawal Modal -->
+    <div class="custom-modal-overlay" id="wd-modal">
+        <div class="custom-modal">
+            <h3>✅ Withdrawal request submitted successfully!</h3>
+            <p>Method: <span class="detail" id="modal-method">CRYPTO</span></p>
+            <p>Amount: <span class="detail" id="modal-amount">$0.00</span></p>
+            <p style="margin-top: 16px; font-size: 0.8rem;">Processing time: 24-48 hours.</p>
+            <button class="btn-accept" onclick="closeWdModal()">Aceptar</button>
+            <div style="clear:both;"></div>
+        </div>
     </div>
 
     <button class="chat-fab" onclick="toggleChat()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
@@ -349,7 +366,12 @@
     <script>
         function getDB() { const stored = localStorage.getItem('verum_mainframe_db'); if (!stored) return null; return JSON.parse(stored); }
         let currentClientId = "TX-8839201"; let clientBalance = 0;
-        function toggleWatchlist() { document.getElementById('watchlist-panel').classList.toggle('collapsed'); }
+        
+        function toggleWatchlist() {
+            const panel = document.getElementById('watchlist-panel');
+            panel.classList.toggle('collapsed');
+        }
+
         function toggleWlCategory(header) { header.classList.toggle('active'); const content = header.nextElementSibling; content.classList.toggle('show'); }
         function switchClientView(clientId) { currentClientId = clientId; const db = getDB(); if (!db || !db.clients[clientId]) return; const data = db.clients[clientId]; const initials = data.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase(); document.getElementById('header-name').textContent = data.name; document.getElementById('header-id').textContent = `ID: VT-${data.txId.split('-')[1]}`; document.getElementById('header-avatar').textContent = initials; document.getElementById('welcome-name').textContent = `Welcome back, ${data.name.split(' ')[0]}.`; document.getElementById('detail-name').textContent = data.name; document.getElementById('detail-id').textContent = `VT-${data.txId.split('-')[1]}`; document.getElementById('home-balance').textContent = '$' + data.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('home-cash').textContent = '$' + data.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('home-invested').textContent = '$' + data.deposit.toLocaleString('en-US', {minimumFractionDigits: 2}); const profit = data.balance - data.deposit; const profitEl = document.getElementById('home-profit'); profitEl.textContent = (profit >= 0 ? '+' : '') + '$' + profit.toLocaleString('en-US', {minimumFractionDigits: 2}); profitEl.style.color = profit >= 0 ? 'var(--green)' : 'var(--red)'; clientBalance = data.balance; renderClientTransactions(data); }
         function renderClientTransactions(data) { const txBody = document.getElementById('client-tx-body'); let html = data.transactions.map(tx => { const profitClass = tx.profit > 0 ? 'text-green' : (tx.profit < 0 ? 'text-red' : ''); return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${tx.id}</td><td>${tx.date}</td><td style="font-weight: 600;">${tx.type}</td><td>${tx.asset}</td><td>$${tx.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="${profitClass}" style="font-weight: 700;">${tx.profit > 0 ? '+' : ''}$${tx.profit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span style="color: var(--green); font-weight: 600;">${tx.status}</span></td></tr>`; }).join(''); data.withdrawals.forEach(wd => { html += `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${wd.id}</td><td>${wd.date}</td><td style="font-weight: 600;">WITHDRAWAL</td><td>${wd.method}</td><td>$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="color: var(--red); font-weight: 700;">-$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span style="color: var(--gold); font-weight: 600;">${wd.status}</span></td></tr>`; }); txBody.innerHTML = html; }
@@ -359,11 +381,37 @@
         function toggleMenu() { document.getElementById('mainMenu').classList.toggle('active'); }
         document.addEventListener('click', function(event) { const menu = document.getElementById('mainMenu'); const btn = document.querySelector('.menu-btn'); if (!menu.contains(event.target) && !btn.contains(event.target)) { menu.classList.remove('active'); } });
         function selectWithdrawalMethod(method, el) { document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active')); el.classList.add('active'); document.querySelectorAll('.withdrawal-form').forEach(f => f.classList.remove('active')); document.getElementById(`form-${method}`).classList.add('active'); }
-        function submitWithdrawal(method) { let amount = 0; let details = ''; if (method === 'CRYPTO') { amount = parseFloat(document.getElementById('crypto-amount').value); const crypto = document.getElementById('crypto-type').value; const wallet = document.getElementById('crypto-wallet').value.trim(); if (!amount || !wallet) { alert('Please enter amount and wallet address.'); return; } details = `${crypto} via ${document.getElementById('crypto-network').value}`; } else if (method === 'BANK TRANSFER') { amount = parseFloat(document.getElementById('bank-amount').value); if (!amount) { alert('Please enter amount.'); return; } details = 'Bank Transfer'; } else if (method === 'CREDIT CARD') { amount = parseFloat(document.getElementById('card-amount').value); if (!amount) { alert('Please enter amount.'); return; } details = 'Credit Card'; } if (amount > clientBalance) { alert('Insufficient funds. Your available balance is $' + clientBalance.toFixed(2)); return; } const db = getDB(); const wdId = 'WD-' + Math.floor(Math.random() * 90000 + 10000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[currentClientId].withdrawals.push({ id: wdId, date: today, method: method, amount: amount, details: details, status: 'PENDING' }); localStorage.setItem('verum_mainframe_db', JSON.stringify(db)); const toast = document.getElementById('toast'); toast.style.display = 'block'; setTimeout(() => { toast.style.display = 'none'; }, 4000); clientBalance -= amount; document.getElementById('home-balance').textContent = '$' + clientBalance.toFixed(2); document.getElementById('home-cash').textContent = '$' + clientBalance.toFixed(2); switchClientView(currentClientId); }
+        
+        function submitWithdrawal(method) { 
+            let amount = 0; let details = ''; 
+            if (method === 'CRYPTO') { amount = parseFloat(document.getElementById('crypto-amount').value); const crypto = document.getElementById('crypto-type').value; const wallet = document.getElementById('crypto-wallet').value.trim(); if (!amount || !wallet) { alert('Please enter amount and wallet address.'); return; } details = `${crypto} via ${document.getElementById('crypto-network').value}`; } 
+            else if (method === 'BANK TRANSFER') { amount = parseFloat(document.getElementById('bank-amount').value); if (!amount) { alert('Please enter amount.'); return; } details = 'Bank Transfer'; } 
+            else if (method === 'CREDIT CARD') { amount = parseFloat(document.getElementById('card-amount').value); if (!amount) { alert('Please enter amount.'); return; } details = 'Credit Card'; } 
+            if (amount > clientBalance) { alert('Insufficient funds. Your available balance is $' + clientBalance.toFixed(2)); return; } 
+            
+            const db = getDB(); 
+            const wdId = 'WD-' + Math.floor(Math.random() * 90000 + 10000); 
+            const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); 
+            db.clients[currentClientId].withdrawals.push({ id: wdId, date: today, method: method, amount: amount, details: details, status: 'PENDING' }); 
+            localStorage.setItem('verum_mainframe_db', JSON.stringify(db)); 
+            
+            // Show Custom Modal
+            document.getElementById('modal-method').textContent = method;
+            document.getElementById('modal-amount').textContent = '$' + amount.toFixed(2);
+            document.getElementById('wd-modal').classList.add('active');
+            
+            clientBalance -= amount; 
+            document.getElementById('home-balance').textContent = '$' + clientBalance.toFixed(2); 
+            document.getElementById('home-cash').textContent = '$' + clientBalance.toFixed(2); 
+            switchClientView(currentClientId); 
+        }
+        
+        function closeWdModal() { document.getElementById('wd-modal').classList.remove('active'); }
+        
         function toggleChat() { document.getElementById('chatDrawer').classList.toggle('active'); }
         function sendChat() { const input = document.getElementById('chatInput'); const text = input.value.trim(); if (!text) return; const body = document.getElementById('chatBody'); body.innerHTML += `<div class="chat-msg client">${text}</div>`; input.value = ''; body.scrollTop = body.scrollHeight; setTimeout(() => { body.innerHTML += `<div class="chat-msg advisor">Message received in supervisor queue. An advisor will review your request shortly.</div>`; body.scrollTop = body.scrollHeight; }, 1200); }
         function handleChatKey(e) { if (e.key === 'Enter') sendChat(); }
-        document.addEventListener('keydown', function(event) { if (event.key === 'Escape') { document.getElementById('chatDrawer').classList.remove('active'); } });
+        document.addEventListener('keydown', function(event) { if (event.key === 'Escape') { document.getElementById('chatDrawer').classList.remove('active'); document.getElementById('wd-modal').classList.remove('active'); } });
         function clientLogout() { sessionStorage.clear(); window.location.href = '/client-login'; }
     </script>
 </body>
