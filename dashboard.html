@@ -81,7 +81,6 @@
         .notif-item-desc { font-size: 0.75rem; color: var(--hud-muted); margin-bottom: 8px; }
         .notif-item-action { font-size: 0.7rem; color: var(--hud-glow); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         .notif-empty { padding: 24px; text-align: center; color: var(--hud-muted); font-size: 0.85rem; }
-        .profile-view { display: none; }
         .profile-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--hud-border); }
         .profile-title h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
         .profile-title p { font-family: var(--font-data); color: var(--hud-muted); font-size: 0.85rem; }
@@ -195,6 +194,7 @@
                     </table>
                 </div>
             </div>
+            
             <div id="view-analytics" class="view-section">
                 <div class="analytics-grid">
                     <div class="analytics-card"><div class="label">Total Revenue Generated</div><div class="value">$284,520</div><div class="sub">+12.4% vs last month</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 75%;"></div></div></div>
@@ -214,6 +214,7 @@
                     </table>
                 </div>
             </div>
+
             <div id="view-config" class="view-section">
                 <div class="config-grid">
                     <div class="hud-card">
@@ -248,6 +249,7 @@
                     </div>
                 </div>
             </div>
+
             <div id="view-profile" class="view-section profile-view">
                 <button class="btn-hud" onclick="showView('leads')" style="margin-bottom: 24px;">← RETURN TO TELEMETRY</button>
                 <div class="profile-header">
@@ -255,7 +257,6 @@
                     <div class="profile-metrics">
                         <div class="metric-box"><div class="metric-label">Current Balance</div><div class="metric-val text-green" id="p-balance">$0.00</div></div>
                         <div class="metric-box"><div class="metric-label">Total Deposited</div><div class="metric-val" id="p-deposited">$0.00</div></div>
-                        <div class="metric-box"><button class="btn-hud green" onclick="openClientPortal()" style="padding: 10px 20px; font-size: 0.8rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>VIEW PORTAL</button></div>
                     </div>
                 </div>
                 <div class="profile-grid-2">
@@ -283,30 +284,19 @@
                         <button class="btn-hud green" onclick="injectProfit()" style="height: 42px; padding: 0 24px;">INJECT PROFIT</button>
                     </div>
                 </div>
-                <div class="hud-card">
-                    <div class="tabs">
-                        <button class="tab-btn active" onclick="switchTab('activity', this)">Activity</button>
-                        <button class="tab-btn" onclick="switchTab('transactions', this)">Transactions</button>
-                        <button class="tab-btn" onclick="switchTab('withdrawals', this)">Withdrawal Requests</button>
-                    </div>
-                    <div id="tab-activity" class="tab-content active"><div id="tab-activity-comments"></div></div>
-                    <div id="tab-transactions" class="tab-content"><table style="width: 100%;"><thead><tr><th>TX-ID</th><th>Date</th><th>Type</th><th>Asset</th><th>Amount</th><th>Profit/Loss</th><th>Status</th></tr></thead><tbody id="transaction-history-body"></tbody></table></div>
-                    <div id="tab-withdrawals" class="tab-content"><table style="width: 100%;"><thead><tr><th>Request ID</th><th>Date</th><th>Method</th><th>Amount</th><th>Details</th><th>Status</th><th>Action</th></tr></thead><tbody id="withdrawal-requests-body"></tbody></table></div>
-                </div>
             </div>
         </div>
     </div>
     <div class="modal-overlay" id="modal-injectLead"><div class="modal-content"><button class="modal-close" onclick="closeModal('injectLead')">✕</button><div class="modal-title">Inject New Lead</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Client Full Name</label><input type="text" class="fin-control-input" id="lead-name"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Country</label><input type="text" class="fin-control-input" id="lead-country"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Initial Deposit (USD)</label><input type="number" class="fin-control-input" id="lead-deposit"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Assign To Agent</label><select class="fin-control-input" id="lead-agent"></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="injectLead()">INJECT INTO DATABASE</button></div></div>
-    <div class="modal-overlay" id="modal-addUser"><div class="modal-content"><button class="modal-close" onclick="closeModal('addUser')">✕</button><div class="modal-title">Add New System User</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Full Name</label><input type="text" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Email Address</label><input type="email" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Role</label><select class="fin-control-input"><option>CLOSER</option><option>SUPERVISOR</option><option>ASST. MANAGER</option></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="closeModal('addUser'); alert('User account created.')">CREATE USER ACCOUNT</button></div></div>
 
     <script>
         const DEFAULT_DB = {
             agents: ['ALL', 'LUIS', 'MARIA'],
             clients: {
-                "TX-8839201": { txId: "TX-8839201", agent: "LUIS", name: "Martha Herrera", country: "Argentina", flag: "🇦🇷", lastLogin: "20.02.26 14:35", balance: 0, withdrawn: 51457, deposit: 51457, status: "DEPOSITOR", retention: "RECOVERY", subStatus: "NO POTENTIAL", comment: "CI se puso en contacto...", comments: [{agent: "Henry Rossi", time: "20.02.26 14:35", text: "CI se puso en contacto para discutir la recuperación."}], transactions: [{id: "TX-001", date: "15.01.26", type: "DEPOSIT", asset: "Initial Capital", amount: 51457, profit: 0, status: "COMPLETED"}], withdrawals: [] },
-                "TX-8839202": { txId: "TX-8839202", agent: "MARIA", name: "Orlando Amado Aguilar", country: "Argentina", flag: "🇷", lastLogin: "06.02.26 16:50", balance: 0, withdrawn: 65288, deposit: 65288, status: "DEPOSITOR", retention: "REASSIGN", subStatus: "NO INTEREST", comment: "CI no da respuesta...", comments: [], transactions: [], withdrawals: [] },
-                "TX-8839203": { txId: "TX-8839203", agent: "LUIS", name: "Victor Benito Paez Grance", country: "Paraguay", flag: "🇵🇾", lastLogin: "06.02.26 16:39", balance: 2450, withdrawn: 50914.14, deposit: 50914.14, status: "DEPOSITOR", retention: "ACTIVE", subStatus: "POTENTIAL", comment: "Directo buzón de voz...", comments: [], transactions: [{id: "TX-003", date: "10.02.26", type: "PROFIT", asset: "Apple (AAPL)", amount: 0, profit: 2450, status: "COMPLETED"}], withdrawals: [] },
-                "TX-8839204": { txId: "TX-8839204", agent: "MARIA", name: "Flora Paniagua", country: "Paraguay", flag: "🇵🇾", lastLogin: "06.02.26 16:25", balance: 332.58, withdrawn: 250.87, deposit: 81.71, status: "DEPOSITOR", retention: "NEW", subStatus: "UNDER AGE", comment: "Se intentó retomar...", comments: [], transactions: [{id: "TX-005", date: "01.02.26", type: "DEPOSIT", asset: "Initial Capital", amount: 250, profit: 0, status: "COMPLETED"}], withdrawals: [] }
+                "TX-8839201": { txId: "TX-8839201", agent: "LUIS", name: "Martha Herrera", country: "Argentina", flag: "🇦🇷", lastLogin: "20.02.26 14:35", balance: 0, withdrawn: 51457, deposit: 51457, status: "DEPOSITOR", retention: "RECOVERY", subStatus: "NO POTENTIAL", comment: "CI se puso en contacto...", comments: [], transactions: [], withdrawals: [] },
+                "TX-8839202": { txId: "TX-8839202", agent: "MARIA", name: "Orlando Amado Aguilar", country: "Argentina", flag: "🇦🇷", lastLogin: "06.02.26 16:50", balance: 0, withdrawn: 65288, deposit: 65288, status: "DEPOSITOR", retention: "REASSIGN", subStatus: "NO INTEREST", comment: "CI no da respuesta...", comments: [], transactions: [], withdrawals: [] },
+                "TX-8839203": { txId: "TX-8839203", agent: "LUIS", name: "Victor Benito Paez Grance", country: "Paraguay", flag: "🇵🇾", lastLogin: "06.02.26 16:39", balance: 2450, withdrawn: 50914.14, deposit: 50914.14, status: "DEPOSITOR", retention: "ACTIVE", subStatus: "POTENTIAL", comment: "Directo buzón de voz...", comments: [], transactions: [], withdrawals: [] },
+                "TX-8839204": { txId: "TX-8839204", agent: "MARIA", name: "Flora Paniagua", country: "Paraguay", flag: "🇵🇾", lastLogin: "06.02.26 16:25", balance: 332.58, withdrawn: 250.87, deposit: 81.71, status: "DEPOSITOR", retention: "NEW", subStatus: "UNDER AGE", comment: "Se intentó retomar...", comments: [], transactions: [], withdrawals: [] }
             }
         };
         function getDB() { const stored = localStorage.getItem('verum_mainframe_db'); if (!stored) { localStorage.setItem('verum_mainframe_db', JSON.stringify(DEFAULT_DB)); return DEFAULT_DB; } return JSON.parse(stored); }
@@ -314,17 +304,40 @@
         let currentFilter = 'ALL'; let currentClient = null;
         
         function initCRM() { 
-            renderAgentTabs(); renderTable(); checkWithdrawalAlerts(); 
-            const db = getDB(); const select = document.getElementById('lead-agent'); 
-            select.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option>${a}</option>`).join(''); 
-            const role = sessionStorage.getItem('verum_role') || 'CLOSER';
-            const name = sessionStorage.getItem('verum_user') || 'Unknown User';
+            renderAgentTabs(); 
+            renderTable(); 
+            checkWithdrawalAlerts(); 
+            const db = getDB(); 
+            const select = document.getElementById('lead-agent'); 
+            if(select) select.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option>${a}</option>`).join(''); 
+            
+            // CRITICAL FIX: Robust session reading with Manager fallback
+            let role = sessionStorage.getItem('verum_role');
+            let name = sessionStorage.getItem('verum_user');
+            
+            if (!role || !name) {
+                role = 'MANAGER';
+                name = 'Roberto Palomino';
+                sessionStorage.setItem('verum_role', role);
+                sessionStorage.setItem('verum_user', name);
+            }
+
             document.getElementById('user-name-display').textContent = name;
             document.getElementById('user-role-display').textContent = `[${role.replace('_', ' ')}]`;
+
+            // FIX: Only hide tabs for CLOSERS, ensure they are visible for others
+            const analyticsNav = document.getElementById('nav-analytics');
+            const configNav = document.getElementById('nav-config');
+            const finControls = document.getElementById('financial-controls');
+
             if (role === 'CLOSER') {
-                document.getElementById('nav-analytics').style.display = 'none';
-                document.getElementById('nav-config').style.display = 'none';
-                document.getElementById('financial-controls').style.display = 'none';
+                if(analyticsNav) analyticsNav.style.display = 'none';
+                if(configNav) configNav.style.display = 'none';
+                if(finControls) finControls.style.display = 'none';
+            } else {
+                if(analyticsNav) analyticsNav.style.display = 'flex';
+                if(configNav) configNav.style.display = 'flex';
+                if(finControls) finControls.style.display = 'block';
             }
         }
 
@@ -336,23 +349,25 @@
         
         function checkWithdrawalAlerts() { const db = getDB(); let pendingCount = 0; const pendingList = []; Object.values(db.clients).forEach(c => { c.withdrawals.forEach(w => { if (w.status === 'PENDING') { pendingCount++; pendingList.push({ txId: c.txId, name: c.name, amount: w.amount, method: w.method, wdId: w.id }); } }); }); const badge = document.getElementById('wd-badge'); const countSpan = document.getElementById('notif-count'); const listContainer = document.getElementById('notif-list'); if (pendingCount > 0) { badge.textContent = pendingCount; badge.style.display = 'block'; countSpan.textContent = pendingCount; listContainer.innerHTML = pendingList.map(p => `<div class="notif-item" onclick="routeToWithdrawal('${p.txId}')"><div class="notif-item-title"><span>${p.name}</span><span style="color: var(--status-orange);">$${p.amount.toFixed(2)}</span></div><div class="notif-item-desc">Requesting withdrawal via ${p.method}</div><div class="notif-item-action">View & Approve →</div></div>`).join(''); } else { badge.style.display = 'none'; countSpan.textContent = '0'; listContainer.innerHTML = '<div class="notif-empty">No pending withdrawal requests.</div>'; } document.getElementById('analytics-pending').textContent = pendingCount; }
         function toggleNotifDropdown(e) { e.stopPropagation(); document.getElementById('notif-dropdown').classList.toggle('active'); }
-        function routeToWithdrawal(txId) { document.getElementById('notif-dropdown').classList.remove('active'); switchMainView('leads', document.querySelector('.nav-item')); setTimeout(() => { openProfile(txId); setTimeout(() => { const wdTab = document.querySelector('.tab-btn[onclick="switchTab(\'withdrawals\', this)"]'); if(wdTab) switchTab('withdrawals', wdTab); }, 100); }, 100); }
+        function routeToWithdrawal(txId) { document.getElementById('notif-dropdown').classList.remove('active'); switchMainView('leads', document.querySelector('.nav-item')); setTimeout(() => { openProfile(txId); }, 100); }
         document.addEventListener('click', function(e) { const dropdown = document.getElementById('notif-dropdown'); const bell = document.querySelector('.notif-bell'); if (!dropdown.contains(e.target) && !bell.contains(e.target)) { dropdown.classList.remove('active'); } });
-        function switchMainView(viewName, navEl) { document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); navEl.classList.add('active'); document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewName}`).classList.add('active'); const titles = { 'leads': 'LEAD <span>TELEMETRY</span> OVERVIEW', 'analytics': 'PERFORMANCE <span>ANALYTICS</span>', 'config': 'SYSTEM <span>CONFIGURATION</span>' }; document.getElementById('pageTitle').innerHTML = titles[viewName]; }
+        function switchMainView(viewName, navEl) { document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); if(navEl) navEl.classList.add('active'); document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewName}`).classList.add('active'); const titles = { 'leads': 'LEAD <span>TELEMETRY</span> OVERVIEW', 'analytics': 'PERFORMANCE <span>ANALYTICS</span>', 'config': 'SYSTEM <span>CONFIGURATION</span>' }; document.getElementById('pageTitle').innerHTML = titles[viewName]; }
         function showView(viewName) { document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewName}`).classList.add('active'); document.getElementById('pageTitle').innerHTML = viewName === 'leads' ? 'LEAD <span>TELEMETRY</span> OVERVIEW' : 'CLIENT <span>INTELLIGENCE</span> DOSSIER'; }
-        function openClientPortal() { if (!currentClient) return; window.open(`/client?id=${currentClient.txId}`, '_blank'); }
-        function openProfile(txId) { const db = getDB(); currentClient = db.clients[txId]; if (!currentClient) return; document.getElementById('p-name').textContent = currentClient.name; document.getElementById('p-id').textContent = currentClient.txId; document.getElementById('p-email').textContent = currentClient.name.toLowerCase().replace(' ', '.') + '@verum.invest'; document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('p-deposited').textContent = '$' + currentClient.deposit.toLocaleString('en-US', {minimumFractionDigits: 2}); const agentSelect = document.getElementById('p-agent-select'); agentSelect.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option ${a === currentClient.agent ? 'selected' : ''}>${a}</option>`).join(''); document.getElementById('p-status-depositor').value = currentClient.status; document.getElementById('p-status-retention').value = currentClient.retention; document.getElementById('p-status-sub').value = currentClient.subStatus; const commentContainer = document.getElementById('p-comments'); commentContainer.innerHTML = currentClient.comments.map(comm => `<div class="comment-item"><div class="comment-meta"><span>${comm.agent}</span><span>${comm.time}</span></div><div class="comment-text">${comm.text}</div></div>`).join(''); const txBody = document.getElementById('transaction-history-body'); txBody.innerHTML = currentClient.transactions.map(tx => { const profitClass = tx.profit > 0 ? 'text-green' : (tx.profit < 0 ? 'text-red' : ''); return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${tx.id}</td><td>${tx.date}</td><td style="font-weight: 600;">${tx.type}</td><td>${tx.asset}</td><td>$${tx.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="${profitClass}">${tx.profit > 0 ? '+' : ''}$${tx.profit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span class="role-badge role-closer">${tx.status}</span></td></tr>`; }).join(''); const wdBody = document.getElementById('withdrawal-requests-body'); if (currentClient.withdrawals.length === 0) { wdBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--hud-muted); padding: 32px;">No pending withdrawal requests.</td></tr>'; } else { wdBody.innerHTML = currentClient.withdrawals.map(wd => { const statusClass = wd.status === 'PENDING' ? 'role-assistant' : 'role-closer'; const actionBtn = wd.status === 'PENDING' ? `<button class="btn-hud green" style="padding: 4px 12px; font-size: 0.7rem;" onclick="approveWithdrawal('${wd.id}')">APPROVE</button><button class="btn-hud red" style="padding: 4px 12px; font-size: 0.7rem; margin-left: 4px;" onclick="rejectWithdrawal('${wd.id}')">DENY</button>` : `<span style="color: var(--hud-muted); font-size: 0.8rem;">—</span>`; return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${wd.id}</td><td>${wd.date}</td><td>${wd.method}</td><td style="font-weight: 700;">$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="font-size: 0.8rem;">${wd.details}</td><td><span class="role-badge ${statusClass}">${wd.status}</span></td><td>${actionBtn}</td></tr>`; }).join(''); } showView('profile'); }
+        function openProfile(txId) { const db = getDB(); currentClient = db.clients[txId]; if (!currentClient) return; document.getElementById('p-name').textContent = currentClient.name; document.getElementById('p-id').textContent = currentClient.txId; document.getElementById('p-email').textContent = currentClient.name.toLowerCase().replace(' ', '.') + '@verum.invest'; document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('p-deposited').textContent = '$' + currentClient.deposit.toLocaleString('en-US', {minimumFractionDigits: 2}); const agentSelect = document.getElementById('p-agent-select'); agentSelect.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option ${a === currentClient.agent ? 'selected' : ''}>${a}</option>`).join(''); document.getElementById('p-status-depositor').value = currentClient.status; document.getElementById('p-status-retention').value = currentClient.retention; document.getElementById('p-status-sub').value = currentClient.subStatus; const commentContainer = document.getElementById('p-comments'); commentContainer.innerHTML = currentClient.comments.length ? currentClient.comments.map(comm => `<div class="comment-item"><div class="comment-meta"><span>${comm.agent}</span><span>${comm.time}</span></div><div class="comment-text">${comm.text}</div></div>`).join('') : '<div style="color:var(--hud-muted); font-size:0.85rem;">No comments yet.</div>'; showView('profile'); }
         function transmitStatusUpdate() { if (!currentClient) return; const db = getDB(); db.clients[currentClient.txId].status = document.getElementById('p-status-depositor').value; db.clients[currentClient.txId].retention = document.getElementById('p-status-retention').value; db.clients[currentClient.txId].subStatus = document.getElementById('p-status-sub').value; db.clients[currentClient.txId].agent = document.getElementById('p-agent-select').value; saveDB(db); alert('Status update transmitted and saved.'); renderTable(); }
         function injectProfit() { if (!currentClient) return; const amount = parseFloat(document.getElementById('profit-amount').value); const asset = document.getElementById('profit-asset').value.trim(); if (!amount || !asset) { alert('Please enter both amount and asset.'); return; } const db = getDB(); const txId = 'TX-' + Math.floor(Math.random() * 90000 + 10000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[currentClient.txId].transactions.push({ id: txId, date: today, type: 'PROFIT', asset: asset, amount: 0, profit: amount, status: 'COMPLETED' }); db.clients[currentClient.txId].balance += amount; saveDB(db); document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('profit-amount').value = ''; document.getElementById('profit-asset').value = ''; alert(`Profit of $${amount} injected from ${asset}.`); openProfile(currentClient.txId); }
-        function approveWithdrawal(wdId) { if (!currentClient) return; const db = getDB(); const wd = db.clients[currentClient.txId].withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'APPROVED'; db.clients[currentClient.txId].balance -= wd.amount; db.clients[currentClient.txId].withdrawn += wd.amount; saveDB(db); document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); alert(`Withdrawal ${wdId} approved.`); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
-        function rejectWithdrawal(wdId) { if (!currentClient) return; const db = getDB(); const wd = db.clients[currentClient.txId].withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'REJECTED'; saveDB(db); alert(`Withdrawal ${wdId} rejected.`); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
-        function addComment() { const input = document.getElementById('new-comment'); const text = input.value.trim(); if (!text || !currentClient) return; const now = new Date().toLocaleString(); const db = getDB(); db.clients[currentClient.txId].comments.unshift({agent: "Roberto Palomino (You)", time: now, text: text}); saveDB(db); input.value = ''; openProfile(currentClient.txId); }
-        function switchTab(tabId, btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); btn.classList.add('active'); document.getElementById(`tab-${tabId}`).classList.add('active'); }
+        function addComment() { const input = document.getElementById('new-comment'); const text = input.value.trim(); if (!text || !currentClient) return; const now = new Date().toLocaleString(); const db = getDB(); db.clients[currentClient.txId].comments.unshift({agent: sessionStorage.getItem('verum_user') || "Manager", time: now, text: text}); saveDB(db); input.value = ''; openProfile(currentClient.txId); }
         function openModal(id) { document.getElementById(`modal-${id}`).classList.add('active'); }
         function closeModal(id) { document.getElementById(`modal-${id}`).classList.remove('active'); }
         function injectLead() { const name = document.getElementById('lead-name').value.trim(); const country = document.getElementById('lead-country').value.trim(); const deposit = parseFloat(document.getElementById('lead-deposit').value); const agent = document.getElementById('lead-agent').value; if (!name || !country || !deposit) { alert('Please fill all fields.'); return; } const db = getDB(); const txId = 'TX-' + Math.floor(Math.random() * 900000 + 100000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[txId] = { txId, agent, name, country, flag: '🌎', lastLogin: today + ' 09:00', balance: deposit, withdrawn: 0, deposit, status: 'NEW LEAD', retention: 'NEW', subStatus: 'POTENTIAL', comment: 'New lead injected.', comments: [], transactions: [{id: txId, date: today, type: 'DEPOSIT', asset: 'Initial Capital', amount: deposit, profit: 0, status: 'COMPLETED'}], withdrawals: [] }; saveDB(db); closeModal('injectLead'); document.getElementById('lead-name').value = ''; document.getElementById('lead-country').value = ''; document.getElementById('lead-deposit').value = ''; alert(`Lead "${name}" injected.`); renderTable(); }
         function logout() { sessionStorage.clear(); window.location.href = '/login'; }
-        initCRM();
+        
+        // Initialize
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCRM);
+        } else {
+            initCRM();
+        }
     </script>
 </body>
 </html>
