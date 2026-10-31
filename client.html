@@ -141,7 +141,6 @@
         .tx-table td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; transition: background 0.2s; }
         .tx-table tr:hover { background: rgba(14,165,233,0.05); }
         
-        /* Custom Modal Styles */
         .custom-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 2000; align-items: center; justify-content: center; }
         .custom-modal-overlay.active { display: flex; }
         .custom-modal { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 24px; width: 90%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: modalPop 0.3s ease-out; }
@@ -186,24 +185,19 @@
                 <div class="page-title" id="page-title">Account Overview</div>
             </div>
             <div class="user-info">
-                <select id="manager-switcher" onchange="switchClientView(this.value)" style="background: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border); padding: 6px 10px; border-radius: 4px; font-family: var(--font-data); font-size: 0.8rem; margin-right: 15px; cursor: pointer; outline: none; transition: all 0.3s;">
-                    <option value="TX-8839201" selected>Martha Herrera</option>
-                    <option value="TX-8839202">Orlando Amado Aguilar</option>
-                    <option value="TX-8839203">Victor Benito Paez Grance</option>
-                    <option value="TX-8839204">Flora Paniagua</option>
-                </select>
-                <div class="user-details"><div class="user-name" id="header-name">Martha Herrera</div><div class="user-id" id="header-id">ID: VT-8839201</div></div>
-                <div class="avatar" id="header-avatar">MH</div>
+                <!-- REMOVED THE DROPDOWN HERE -->
+                <div class="user-details"><div class="user-name" id="header-name">Loading...</div><div class="user-id" id="header-id">ID: ...</div></div>
+                <div class="avatar" id="header-avatar">?</div>
             </div>
         </div>
 
         <div id="view-home" class="view-container active">
-            <div class="welcome-banner"><h1 id="welcome-name">Welcome back, Martha.</h1><p>Your portfolio is operating within optimal parameters. Last system sync: <span style="color: var(--accent);">Just now</span>.</p></div>
+            <div class="welcome-banner"><h1 id="welcome-name">Welcome back.</h1><p>Your portfolio is operating within optimal parameters. Last system sync: <span style="color: var(--accent);">Just now</span>.</p></div>
             <div class="metrics-grid">
                 <div class="metric-card"><div class="metric-label">Total Balance</div><div class="metric-value" id="home-balance">$0.00</div><div class="metric-sub">USD</div></div>
                 <div class="metric-card"><div class="metric-label">Available Cash</div><div class="metric-value" id="home-cash">$0.00</div><div class="metric-sub">Ready to deploy</div></div>
-                <div class="metric-card"><div class="metric-label">Total Invested</div><div class="metric-value" id="home-invested">$51,457.00</div><div class="metric-sub" style="color: var(--text-muted);">Initial Capital</div></div>
-                <div class="metric-card"><div class="metric-label">Net Profit / Loss</div><div class="metric-value" style="color: var(--red);" id="home-profit">-$51,457.00</div><div class="metric-sub">-100.00% ROI</div></div>
+                <div class="metric-card"><div class="metric-label">Total Invested</div><div class="metric-value" id="home-invested">$0.00</div><div class="metric-sub" style="color: var(--text-muted);">Initial Capital</div></div>
+                <div class="metric-card"><div class="metric-label">Net Profit / Loss</div><div class="metric-value" style="color: var(--red);" id="home-profit">$0.00</div><div class="metric-sub">0.00% ROI</div></div>
             </div>
             <div class="news-section-title">Global Market Intelligence</div>
             <div class="news-grid">
@@ -214,9 +208,9 @@
             </div>
             <div class="details-card">
                 <h3>Account Intelligence</h3>
-                <div class="detail-row"><span class="detail-label">Full Name</span><span class="detail-value" id="detail-name">Martha Herrera</span></div>
-                <div class="detail-row"><span class="detail-label">Email Address</span><span class="detail-value">m.herrera@verum.invest</span></div>
-                <div class="detail-row"><span class="detail-label">Account ID</span><span class="detail-value" id="detail-id">VT-8839201</span></div>
+                <div class="detail-row"><span class="detail-label">Full Name</span><span class="detail-value" id="detail-name">Loading...</span></div>
+                <div class="detail-row"><span class="detail-label">Email Address</span><span class="detail-value" id="detail-email">...</span></div>
+                <div class="detail-row"><span class="detail-label">Account ID</span><span class="detail-value" id="detail-id">...</span></div>
                 <div class="detail-row"><span class="detail-label">Account Tier</span><span class="detail-value" style="color: var(--accent);">Standard ECN</span></div>
                 <div class="detail-row"><span class="detail-label">Verification Status</span><span class="detail-value" style="color: var(--green);">VERIFIED ✓</span></div>
             </div>
@@ -235,9 +229,6 @@
                             <div class="wl-cat-content show">
                                 <div class="watchlist-item" onclick="changeChart('TVC:SPX', this)"><div class="wl-symbol"><div class="wl-symbol-icon"></div>SPX500</div><div><div class="wl-price">7,722.60</div><div class="wl-change up">+45.83 (0.60%)</div></div></div>
                                 <div class="watchlist-item" onclick="changeChart('CME_MINI:NQ1!', this)"><div class="wl-symbol"><div class="wl-symbol-icon"></div>NDX100</div><div><div class="wl-price">29,651.44</div><div class="wl-change up">+378.04 (1.29%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('TVC:DJI', this)"><div class="wl-symbol"><div class="wl-symbol-icon"></div>DJI30</div><div><div class="wl-price">42,105.80</div><div class="wl-change up">+210.40 (0.50%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('TVC:VIX', this)"><div class="wl-symbol"><div class="wl-symbol-icon"></div>VIX</div><div><div class="wl-price">17.52</div><div class="wl-change down">-0.87 (-4.73%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('TVC:DXY', this)"><div class="wl-symbol"><div class="wl-symbol-icon"></div>DXY</div><div><div class="wl-price">102.365</div><div class="wl-change up">+0.336 (0.33%)</div></div></div>
                             </div>
                         </div>
                         <div class="wl-category">
@@ -245,11 +236,6 @@
                             <div class="wl-cat-content show">
                                 <div class="watchlist-item active" onclick="changeChart('NASDAQ:AAPL', this)"><div class="wl-symbol"><div class="wl-symbol-icon">🍎</div>AAPL</div><div><div class="wl-price">347.10</div><div class="wl-change up">+3.19 (0.93%)</div></div></div>
                                 <div class="watchlist-item" onclick="changeChart('NASDAQ:TSLA', this)"><div class="wl-symbol"><div class="wl-symbol-icon">🚗</div>TSLA</div><div><div class="wl-price">407.46</div><div class="wl-change up">+15.84 (4.04%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('NASDAQ:NFLX', this)"><div class="wl-symbol"><div class="wl-symbol-icon"></div>NFLX</div><div><div class="wl-price">62.52</div><div class="wl-change down">-1.38 (-2.16%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('NYSE:JPM', this)"><div class="wl-symbol"><div class="wl-symbol-icon">🏦</div>JPM</div><div><div class="wl-price">218.45</div><div class="wl-change up">+2.40 (1.12%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('NYSE:MELI', this)"><div class="wl-symbol"><div class="wl-symbol-icon"></div>MELI</div><div><div class="wl-price">1,842.30</div><div class="wl-change up">+41.50 (2.30%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('NYSE:KO', this)"><div class="wl-symbol"><div class="wl-symbol-icon">🥤</div>KO</div><div><div class="wl-price">68.92</div><div class="wl-change up">+0.28 (0.40%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('NYSE:BAYRY', this)"><div class="wl-symbol"><div class="wl-symbol-icon">💊</div>BAYER</div><div><div class="wl-price">5.42</div><div class="wl-change down">-0.05 (-0.85%)</div></div></div>
                             </div>
                         </div>
                         <div class="wl-category">
@@ -257,27 +243,6 @@
                             <div class="wl-cat-content">
                                 <div class="watchlist-item" onclick="changeChart('BINANCE:BTCUSDT', this)"><div class="wl-symbol"><div class="wl-symbol-icon">₿</div>BTC/USD</div><div><div class="wl-price">68,420.00</div><div class="wl-change up">+1,240.00 (1.84%)</div></div></div>
                                 <div class="watchlist-item" onclick="changeChart('BINANCE:ETHUSDT', this)"><div class="wl-symbol"><div class="wl-symbol-icon">Ξ</div>ETH/USD</div><div><div class="wl-price">3,850.50</div><div class="wl-change up">+45.20 (1.18%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('BINANCE:SOLUSDT', this)"><div class="wl-symbol"><div class="wl-symbol-icon">◎</div>SOL/USD</div><div><div class="wl-price">145.20</div><div class="wl-change down">-2.10 (-1.42%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('BINANCE:BNBUSDT', this)"><div class="wl-symbol"><div class="wl-symbol-icon">◆</div>BNB/USD</div><div><div class="wl-price">612.80</div><div class="wl-change up">+5.75 (0.95%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('BINANCE:XRPUSDT', this)"><div class="wl-symbol"><div class="wl-symbol-icon">✕</div>XRP/USD</div><div><div class="wl-price">0.5842</div><div class="wl-change down">-0.0029 (-0.50%)</div></div></div>
-                            </div>
-                        </div>
-                        <div class="wl-category">
-                            <div class="wl-cat-header" onclick="toggleWlCategory(this)">FUTURES / COMMODITIES <span class="arrow">▼</span></div>
-                            <div class="wl-cat-content">
-                                <div class="watchlist-item" onclick="changeChart('TVC:USOIL', this)"><div class="wl-symbol"><div class="wl-symbol-icon">🛢️</div>USOIL</div><div><div class="wl-price">100.04</div><div class="wl-change down">-0.17 (-0.17%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('TVC:GOLD', this)"><div class="wl-symbol"><div class="wl-symbol-icon"></div>GOLD</div><div><div class="wl-price">4,058.31</div><div class="wl-change down">-1.83 (-0.05%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('TVC:SILVER', this)"><div class="wl-symbol"><div class="wl-symbol-icon"></div>SILVER</div><div><div class="wl-price">54.428</div><div class="wl-change up">+0.0224 (0.04%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('TVC:NATGAS', this)"><div class="wl-symbol"><div class="wl-symbol-icon"></div>NATGAS</div><div><div class="wl-price">2.845</div><div class="wl-change down">-0.034 (-1.20%)</div></div></div>
-                            </div>
-                        </div>
-                        <div class="wl-category">
-                            <div class="wl-cat-header" onclick="toggleWlCategory(this)">FOREX <span class="arrow">▼</span></div>
-                            <div class="wl-cat-content">
-                                <div class="watchlist-item" onclick="changeChart('FX:EURUSD', this)"><div class="wl-symbol"><div class="wl-symbol-icon">💶</div>EURUSD</div><div><div class="wl-price">1.11279</div><div class="wl-change up">+0.00034 (0.03%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('FX:GBPUSD', this)"><div class="wl-symbol"><div class="wl-symbol-icon"></div>GBPUSD</div><div><div class="wl-price">1.23056</div><div class="wl-change up">+0.00056 (0.04%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('FX:USDJPY', this)"><div class="wl-symbol"><div class="wl-symbol-icon">¥</div>USDJPY</div><div><div class="wl-price">154.82</div><div class="wl-change down">-0.23 (-0.15%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('FX:USDCHF', this)"><div class="wl-symbol"><div class="wl-symbol-icon">₣</div>USDCHF</div><div><div class="wl-price">0.8845</div><div class="wl-change up">+0.0007 (0.08%)</div></div></div>
                             </div>
                         </div>
                     </div>
@@ -334,8 +299,8 @@
             <div class="settings-card">
                 <h3 style="margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">Security & Credentials</h3>
                 <form onsubmit="event.preventDefault(); alert('Credentials updated successfully!');">
-                    <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-input" value="Martha Herrera"></div>
-                    <div class="form-group"><label class="form-label">Email Address</label><input type="email" class="form-input" value="m.herrera@verum.invest"></div>
+                    <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-input" id="settings-name" readonly></div>
+                    <div class="form-group"><label class="form-label">Email Address</label><input type="email" class="form-input" id="settings-email" readonly></div>
                     <div class="form-group"><label class="form-label">Current Password</label><input type="password" class="form-input" placeholder="Enter current password"></div>
                     <div class="form-group"><label class="form-label">New Password</label><input type="password" class="form-input" placeholder="Enter new password"></div>
                     <button type="submit" class="btn-save">UPDATE CREDENTIALS</button>
@@ -344,7 +309,6 @@
         </div>
     </div>
 
-    <!-- Custom Withdrawal Modal -->
     <div class="custom-modal-overlay" id="wd-modal">
         <div class="custom-modal">
             <h3>✅ Withdrawal request submitted successfully!</h3>
@@ -365,17 +329,69 @@
 
     <script>
         function getDB() { const stored = localStorage.getItem('verum_mainframe_db'); if (!stored) return null; return JSON.parse(stored); }
-        let currentClientId = "TX-8839201"; let clientBalance = 0;
+        let currentClientId = ""; let clientBalance = 0;
         
-        function toggleWatchlist() {
-            const panel = document.getElementById('watchlist-panel');
-            panel.classList.toggle('collapsed');
+        function toggleWatchlist() { document.getElementById('watchlist-panel').classList.toggle('collapsed'); }
+        function toggleWlCategory(header) { header.classList.toggle('active'); const content = header.nextElementSibling; content.classList.toggle('show'); }
+        
+        function switchClientView(clientId) { 
+            currentClientId = clientId; 
+            const db = getDB(); 
+            if (!db || !db.clients[clientId]) return; 
+            const data = db.clients[clientId]; 
+            const initials = data.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase(); 
+            
+            document.getElementById('header-name').textContent = data.name; 
+            document.getElementById('header-id').textContent = `ID: VT-${data.txId.split('-')[1]}`; 
+            document.getElementById('header-avatar').textContent = initials; 
+            document.getElementById('welcome-name').textContent = `Welcome back, ${data.name.split(' ')[0]}.`; 
+            document.getElementById('detail-name').textContent = data.name; 
+            document.getElementById('detail-email').textContent = data.name.toLowerCase().replace(' ', '.') + '@verum.invest';
+            document.getElementById('detail-id').textContent = `VT-${data.txId.split('-')[1]}`; 
+            document.getElementById('settings-name').value = data.name;
+            document.getElementById('settings-email').value = data.name.toLowerCase().replace(' ', '.') + '@verum.invest';
+            
+            document.getElementById('home-balance').textContent = '$' + data.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); 
+            document.getElementById('home-cash').textContent = '$' + data.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); 
+            document.getElementById('home-invested').textContent = '$' + data.deposit.toLocaleString('en-US', {minimumFractionDigits: 2}); 
+            const profit = data.balance - data.deposit; 
+            const profitEl = document.getElementById('home-profit'); 
+            profitEl.textContent = (profit >= 0 ? '+' : '') + '$' + profit.toLocaleString('en-US', {minimumFractionDigits: 2}); 
+            profitEl.style.color = profit >= 0 ? 'var(--green)' : 'var(--red)'; 
+            clientBalance = data.balance; 
+            renderClientTransactions(data); 
         }
 
-        function toggleWlCategory(header) { header.classList.toggle('active'); const content = header.nextElementSibling; content.classList.toggle('show'); }
-        function switchClientView(clientId) { currentClientId = clientId; const db = getDB(); if (!db || !db.clients[clientId]) return; const data = db.clients[clientId]; const initials = data.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase(); document.getElementById('header-name').textContent = data.name; document.getElementById('header-id').textContent = `ID: VT-${data.txId.split('-')[1]}`; document.getElementById('header-avatar').textContent = initials; document.getElementById('welcome-name').textContent = `Welcome back, ${data.name.split(' ')[0]}.`; document.getElementById('detail-name').textContent = data.name; document.getElementById('detail-id').textContent = `VT-${data.txId.split('-')[1]}`; document.getElementById('home-balance').textContent = '$' + data.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('home-cash').textContent = '$' + data.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('home-invested').textContent = '$' + data.deposit.toLocaleString('en-US', {minimumFractionDigits: 2}); const profit = data.balance - data.deposit; const profitEl = document.getElementById('home-profit'); profitEl.textContent = (profit >= 0 ? '+' : '') + '$' + profit.toLocaleString('en-US', {minimumFractionDigits: 2}); profitEl.style.color = profit >= 0 ? 'var(--green)' : 'var(--red)'; clientBalance = data.balance; renderClientTransactions(data); }
-        function renderClientTransactions(data) { const txBody = document.getElementById('client-tx-body'); let html = data.transactions.map(tx => { const profitClass = tx.profit > 0 ? 'text-green' : (tx.profit < 0 ? 'text-red' : ''); return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${tx.id}</td><td>${tx.date}</td><td style="font-weight: 600;">${tx.type}</td><td>${tx.asset}</td><td>$${tx.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="${profitClass}" style="font-weight: 700;">${tx.profit > 0 ? '+' : ''}$${tx.profit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span style="color: var(--green); font-weight: 600;">${tx.status}</span></td></tr>`; }).join(''); data.withdrawals.forEach(wd => { html += `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${wd.id}</td><td>${wd.date}</td><td style="font-weight: 600;">WITHDRAWAL</td><td>${wd.method}</td><td>$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="color: var(--red); font-weight: 700;">-$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span style="color: var(--gold); font-weight: 600;">${wd.status}</span></td></tr>`; }); txBody.innerHTML = html; }
-        window.onload = function() { const urlParams = new URLSearchParams(window.location.search); const clientId = urlParams.get('id'); if (clientId) { currentClientId = clientId; document.getElementById('manager-switcher').value = clientId; } switchClientView(currentClientId); setTimeout(() => { document.getElementById('tv_chart').innerHTML = ''; new TradingView.widget({ "autosize": true, "symbol": "NASDAQ:AAPL", "interval": "1", "timezone": "Etc/UTC", "theme": "dark", "style": "1", "locale": "en", "toolbar_bg": "#0b1120", "enable_publishing": false, "hide_top_toolbar": false, "container_id": "tv_chart" }); }, 100); };
+        function renderClientTransactions(data) { 
+            const txBody = document.getElementById('client-tx-body'); 
+            let html = data.transactions.map(tx => { 
+                const profitClass = tx.profit > 0 ? 'text-green' : (tx.profit < 0 ? 'text-red' : ''); 
+                return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${tx.id}</td><td>${tx.date}</td><td style="font-weight: 600;">${tx.type}</td><td>${tx.asset}</td><td>$${tx.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="${profitClass}" style="font-weight: 700;">${tx.profit > 0 ? '+' : ''}$${tx.profit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span style="color: var(--green); font-weight: 600;">${tx.status}</span></td></tr>`; 
+            }).join(''); 
+            data.withdrawals.forEach(wd => { 
+                html += `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${wd.id}</td><td>${wd.date}</td><td style="font-weight: 600;">WITHDRAWAL</td><td>${wd.method}</td><td>$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="color: var(--red); font-weight: 700;">-$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span style="color: var(--gold); font-weight: 600;">${wd.status}</span></td></tr>`; 
+            }); 
+            txBody.innerHTML = html; 
+        }
+
+        window.onload = function() { 
+            const urlParams = new URLSearchParams(window.location.search); 
+            const clientId = urlParams.get('id'); 
+            
+            if (clientId) { 
+                currentClientId = clientId; 
+                switchClientView(currentClientId); 
+            } else {
+                // Fallback if no ID provided
+                document.getElementById('header-name').textContent = "Guest";
+            }
+
+            setTimeout(() => { 
+                document.getElementById('tv_chart').innerHTML = ''; 
+                new TradingView.widget({ "autosize": true, "symbol": "NASDAQ:AAPL", "interval": "1", "timezone": "Etc/UTC", "theme": "dark", "style": "1", "locale": "en", "toolbar_bg": "#0b1120", "enable_publishing": false, "hide_top_toolbar": false, "container_id": "tv_chart" }); 
+            }, 100); 
+        };
+
         function changeChart(symbol, el) { document.querySelectorAll('.watchlist-item').forEach(i => i.classList.remove('active')); el.classList.add('active'); document.getElementById('tv_chart').innerHTML = ''; new TradingView.widget({ "autosize": true, "symbol": symbol, "interval": "1", "timezone": "Etc/UTC", "theme": "dark", "style": "1", "locale": "en", "toolbar_bg": "#0b1120", "enable_publishing": false, "hide_top_toolbar": false, "container_id": "tv_chart" }); }
         function switchView(viewName, navEl) { if (navEl) { document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); navEl.classList.add('active'); } document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewName}`).classList.add('active'); const titles = { 'home': 'Account Overview', 'markets': 'Live Markets', 'transactions': 'Transaction Ledger', 'settings': 'Account Settings', 'withdrawals': 'Withdrawal Center' }; document.getElementById('page-title').textContent = titles[viewName] || 'Account Overview'; }
         function toggleMenu() { document.getElementById('mainMenu').classList.toggle('active'); }
@@ -395,7 +411,6 @@
             db.clients[currentClientId].withdrawals.push({ id: wdId, date: today, method: method, amount: amount, details: details, status: 'PENDING' }); 
             localStorage.setItem('verum_mainframe_db', JSON.stringify(db)); 
             
-            // Show Custom Modal
             document.getElementById('modal-method').textContent = method;
             document.getElementById('modal-amount').textContent = '$' + amount.toFixed(2);
             document.getElementById('wd-modal').classList.add('active');
@@ -407,7 +422,6 @@
         }
         
         function closeWdModal() { document.getElementById('wd-modal').classList.remove('active'); }
-        
         function toggleChat() { document.getElementById('chatDrawer').classList.toggle('active'); }
         function sendChat() { const input = document.getElementById('chatInput'); const text = input.value.trim(); if (!text) return; const body = document.getElementById('chatBody'); body.innerHTML += `<div class="chat-msg client">${text}</div>`; input.value = ''; body.scrollTop = body.scrollHeight; setTimeout(() => { body.innerHTML += `<div class="chat-msg advisor">Message received in supervisor queue. An advisor will review your request shortly.</div>`; body.scrollTop = body.scrollHeight; }, 1200); }
         function handleChatKey(e) { if (e.key === 'Enter') sendChat(); }

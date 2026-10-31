@@ -324,6 +324,7 @@
         function saveDB(db) { localStorage.setItem('verum_mainframe_db', JSON.stringify(db)); }
         let currentFilter = 'ALL'; let currentClient = null;
         let currentUserRole = 'MANAGER'; let currentUserName = 'Roberto Palomino';
+        let currentStatusFilter = 'ALL'; // For closer status filtering
         
         function initCRM() { 
             renderAgentTabs(); renderTable(); checkWithdrawalAlerts(); 
@@ -358,10 +359,19 @@
             const container = document.getElementById('agent-tabs-container'); 
             
             if (currentUserRole === 'CLOSER') {
-                container.style.display = 'none';
+                // Closers see Status tabs to sort their own database
+                container.style.display = 'flex';
+                container.innerHTML = `
+                    <div class="filter-tab ${currentStatusFilter === 'ALL' ? 'active' : ''}" onclick="filterByStatus('ALL', this)">ALL</div>
+                    <div class="filter-tab ${currentStatusFilter === 'POTENTIAL' ? 'active' : ''}" onclick="filterByStatus('POTENTIAL', this)">POTENTIAL</div>
+                    <div class="filter-tab ${currentStatusFilter === 'ACTIVE' ? 'active' : ''}" onclick="filterByStatus('ACTIVE', this)">ACTIVE</div>
+                    <div class="filter-tab ${currentStatusFilter === 'RECOVERY' ? 'active' : ''}" onclick="filterByStatus('RECOVERY', this)">RECOVERY</div>
+                    <div class="filter-tab ${currentStatusFilter === 'NEW' ? 'active' : ''}" onclick="filterByStatus('NEW', this)">NEW</div>
+                `;
                 return;
             }
             
+            // Managers see Agent tabs and Add Agent button
             container.style.display = 'flex';
             container.innerHTML = `<div class="filter-tab add-btn" onclick="addFilter()">+ ADD AGENT</div>`; 
             db.agents.forEach((agent, index) => { 
@@ -369,6 +379,13 @@
                 const deleteBtn = agent !== 'ALL' ? `<span class="delete-agent" onclick="deleteAgent(${index}, event)">✕</span>` : ''; 
                 container.innerHTML += `<div class="filter-tab ${isActive}" onclick="filterTable('${agent}', this)">${agent}${deleteBtn}</div>`; 
             }); 
+        }
+
+        // New function for Closers to filter by status
+        function filterByStatus(status, el) {
+            currentStatusFilter = status;
+            renderAgentTabs(); // Re-render to update active tab styling
+            renderTable();
         }
         
         function deleteAgent(index, event) { event.stopPropagation(); const db = getDB(); const removed = db.agents[index]; if (confirm(`Remove agent "${removed}" from the filter list?`)) { db.agents.splice(index, 1); saveDB(db); if (currentFilter === removed) currentFilter = 'ALL'; renderAgentTabs(); renderTable(); } }
@@ -379,6 +396,7 @@
             tbody.innerHTML = ''; 
             let clients = Object.values(db.clients); 
             
+            // 1. Closers ONLY see their own clients
             if (currentUserRole === 'CLOSER') {
                 const nameToAgent = {
                     'Sandro Kevin Jaeger': 'SANDRO', 'Jessica Margaret Davis': 'JESSICA',
@@ -390,12 +408,20 @@
                 };
                 const myAgent = nameToAgent[currentUserName] || currentUserName.toUpperCase().split(' ')[0];
                 clients = clients.filter(c => c.agent === myAgent);
+
+                // 2. Apply Status Filter for Closers
+                if (currentStatusFilter !== 'ALL') {
+                    // Check both Retention and SubStatus for the filter
+                    clients = clients.filter(c => c.retention === currentStatusFilter || c.subStatus === currentStatusFilter);
+                }
+            } else {
+                // Managers filter by Agent
+                clients = currentFilter === 'ALL' ? clients : clients.filter(c => c.agent === currentFilter); 
             }
             
-            const filteredClients = currentFilter === 'ALL' ? clients : clients.filter(c => c.agent === currentFilter); 
             const canModifyDepositor = currentUserRole !== 'CLOSER';
             
-            filteredClients.forEach((c) => { 
+            clients.forEach((c) => { 
                 const tr = document.createElement('tr'); tr.onclick = () => openProfile(c.txId); 
                 tr.innerHTML = `<td><input type="checkbox" onclick="event.stopPropagation()"></td>
                 <td><a href="#" class="client-link" onclick="event.preventDefault(); openProfile('${c.txId}')">${c.name}</a><div class="client-id">${c.txId}</div></td>
