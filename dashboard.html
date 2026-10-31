@@ -46,6 +46,7 @@
         .filter-tab.active { background: rgba(14,165,233,0.1); border-color: var(--hud-glow); color: var(--hud-glow); box-shadow: 0 0 15px rgba(14,165,233,0.2); }
         .filter-tab.add-btn { color: var(--status-orange); border-color: rgba(249,115,22,0.3); }
         .filter-tab.add-btn:hover { background: rgba(249,115,22,0.1); box-shadow: 0 0 10px rgba(249,115,22,0.2); }
+        .filter-section-label { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); text-transform: uppercase; letter-spacing: 1px; margin-right: 8px; }
         .delete-agent { color: var(--hud-muted); font-size: 1rem; margin-left: 4px; transition: color 0.2s; }
         .delete-agent:hover { color: var(--hud-red); text-shadow: 0 0 5px var(--hud-red); }
         .data-table-container { background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: all 0.3s; }
@@ -322,23 +323,70 @@
         };
         function getDB() { const stored = localStorage.getItem('verum_mainframe_db'); if (!stored) { localStorage.setItem('verum_mainframe_db', JSON.stringify(DEFAULT_DB)); return DEFAULT_DB; } return JSON.parse(stored); }
         function saveDB(db) { localStorage.setItem('verum_mainframe_db', JSON.stringify(db)); }
-        let currentFilter = 'ALL'; let currentClient = null;
-        let currentUserRole = 'MANAGER'; let currentUserName = 'Roberto Palomino';
-        let currentStatusFilter = 'ALL'; // For closer status filtering
+        let currentFilter = 'ALL'; 
+        let currentClient = null;
+        let currentUserRole = 'MANAGER'; 
+        let currentUserName = 'Roberto Palomino';
+        let currentStatusFilter = 'ALL';
+        
+        // Map email to agent code - this is the KEY fix for closer filtering
+        const EMAIL_TO_AGENT = {
+            's.jaeger@verum.invest': 'SANDRO',
+            'j.davis@verum.invest': 'JESSICA',
+            'd.balmer@verum.invest': 'DAVID',
+            'm.cohen@verum.invest': 'MARC',
+            'n.lucas@verum.invest': 'NICOLAS',
+            'p.gonzales@verum.invest': 'PATRICIA',
+            'j.frederick@verum.invest': 'JOE',
+            'a.merlano@verum.invest': 'ANA',
+            'j.briceno@verum.invest': 'JUAN',
+            'f.villari@verum.invest': 'FIORELLA',
+            'a.morales@verum.invest': 'ANDRES',
+            'f.brauer@verum.invest': 'FERNANDO'
+        };
+
+        function getMyAgentCode() {
+            // Try email first (most reliable)
+            const email = sessionStorage.getItem('verum_email');
+            if (email && EMAIL_TO_AGENT[email.toLowerCase()]) {
+                return EMAIL_TO_AGENT[email.toLowerCase()];
+            }
+            // Fallback to name mapping
+            const nameToAgent = {
+                'Sandro Kevin Jaeger': 'SANDRO', 'Jessica Margaret Davis': 'JESSICA',
+                'David James Balmer': 'DAVID', 'Marc Benjamin Cohen': 'MARC',
+                'Nicolas Augusto Lucas': 'NICOLAS', 'Patricia Gonzales': 'PATRICIA',
+                'Joe Henry Frederick': 'JOE', 'Ana Maria Merlano': 'ANA',
+                'Juan Diego Briceño': 'JUAN', 'Fiorella Villari': 'FIORELLA',
+                'Andres Morales': 'ANDRES', 'Fernando Brauer': 'FERNANDO'
+            };
+            const name = currentUserName;
+            if (nameToAgent[name]) return nameToAgent[name];
+            // Last resort: first name uppercase
+            return name.toUpperCase().split(' ')[0];
+        }
         
         function initCRM() { 
-            renderAgentTabs(); renderTable(); checkWithdrawalAlerts(); 
-            const db = getDB(); const select = document.getElementById('lead-agent'); 
+            const db = getDB(); 
+            const select = document.getElementById('lead-agent'); 
             if(select) select.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option>${a}</option>`).join(''); 
             
-            let role = sessionStorage.getItem('verum_role'); let name = sessionStorage.getItem('verum_user');
-            if (!role || !name) { role = 'MANAGER'; name = 'Roberto Palomino'; sessionStorage.setItem('verum_role', role); sessionStorage.setItem('verum_user', name); }
-            currentUserRole = role; currentUserName = name;
+            let role = sessionStorage.getItem('verum_role'); 
+            let name = sessionStorage.getItem('verum_user');
+            let email = sessionStorage.getItem('verum_email');
+            
+            if (!role || !name) { role = 'MANAGER'; name = 'Roberto Palomino'; }
+            currentUserRole = role; 
+            currentUserName = name;
+
+            console.log('CRM Init - Role:', role, 'Name:', name, 'Email:', email, 'Agent Code:', getMyAgentCode());
 
             document.getElementById('user-name-display').textContent = name;
             document.getElementById('user-role-display').textContent = `[${role.replace('_', ' ').toUpperCase()}]`;
 
-            const analyticsNav = document.getElementById('nav-analytics'); const configNav = document.getElementById('nav-config'); const finControls = document.getElementById('financial-controls');
+            const analyticsNav = document.getElementById('nav-analytics'); 
+            const configNav = document.getElementById('nav-config'); 
+            const finControls = document.getElementById('financial-controls');
             const injectBtn = document.getElementById('inject-lead-btn');
             
             if (role === 'CLOSER') { 
@@ -352,39 +400,46 @@
                 if(finControls) finControls.style.display = 'block';
                 if(injectBtn) injectBtn.style.display = 'inline-flex';
             }
+
+            renderAgentTabs(); 
+            renderTable(); 
+            checkWithdrawalAlerts(); 
         }
 
         function renderAgentTabs() { 
             const db = getDB(); 
             const container = document.getElementById('agent-tabs-container'); 
-            
-            if (currentUserRole === 'CLOSER') {
-                // Closers see Status tabs to sort their own database
-                container.style.display = 'flex';
-                container.innerHTML = `
-                    <div class="filter-tab ${currentStatusFilter === 'ALL' ? 'active' : ''}" onclick="filterByStatus('ALL', this)">ALL</div>
-                    <div class="filter-tab ${currentStatusFilter === 'POTENTIAL' ? 'active' : ''}" onclick="filterByStatus('POTENTIAL', this)">POTENTIAL</div>
-                    <div class="filter-tab ${currentStatusFilter === 'ACTIVE' ? 'active' : ''}" onclick="filterByStatus('ACTIVE', this)">ACTIVE</div>
-                    <div class="filter-tab ${currentStatusFilter === 'RECOVERY' ? 'active' : ''}" onclick="filterByStatus('RECOVERY', this)">RECOVERY</div>
-                    <div class="filter-tab ${currentStatusFilter === 'NEW' ? 'active' : ''}" onclick="filterByStatus('NEW', this)">NEW</div>
-                `;
-                return;
-            }
-            
-            // Managers see Agent tabs and Add Agent button
             container.style.display = 'flex';
-            container.innerHTML = `<div class="filter-tab add-btn" onclick="addFilter()">+ ADD AGENT</div>`; 
-            db.agents.forEach((agent, index) => { 
-                const isActive = currentFilter === agent ? 'active' : ''; 
-                const deleteBtn = agent !== 'ALL' ? `<span class="delete-agent" onclick="deleteAgent(${index}, event)">✕</span>` : ''; 
-                container.innerHTML += `<div class="filter-tab ${isActive}" onclick="filterTable('${agent}', this)">${agent}${deleteBtn}</div>`; 
-            }); 
+            
+            let html = '';
+
+            // STATUS FILTER TABS - Available for ALL roles
+            html += `<span class="filter-section-label">Status:</span>`;
+            const statuses = ['ALL', 'POTENTIAL', 'ACTIVE', 'RECOVERY', 'NEW', 'REASSIGN'];
+            statuses.forEach(s => {
+                html += `<div class="filter-tab ${currentStatusFilter === s ? 'active' : ''}" onclick="filterByStatus('${s}', this)">${s}</div>`;
+            });
+
+            // AGENT FILTER TABS - Only for Managers/Assistants (not closers)
+            if (currentUserRole !== 'CLOSER') {
+                html += `<span class="filter-section-label" style="margin-left: 20px;">Agent:</span>`;
+                html += `<div class="filter-tab add-btn" onclick="addFilter()">+ ADD AGENT</div>`; 
+                db.agents.forEach((agent, index) => { 
+                    const isActive = currentFilter === agent ? 'active' : ''; 
+                    const deleteBtn = agent !== 'ALL' ? `<span class="delete-agent" onclick="deleteAgent(${index}, event)">✕</span>` : ''; 
+                    html += `<div class="filter-tab ${isActive}" onclick="filterTable('${agent}', this)">${agent}${deleteBtn}</div>`; 
+                });
+            } else {
+                // Show which agent the closer is viewing
+                html += `<span class="filter-section-label" style="margin-left: 20px; color: var(--hud-green);">My Database: ${getMyAgentCode()}</span>`;
+            }
+
+            container.innerHTML = html;
         }
 
-        // New function for Closers to filter by status
         function filterByStatus(status, el) {
             currentStatusFilter = status;
-            renderAgentTabs(); // Re-render to update active tab styling
+            renderAgentTabs();
             renderTable();
         }
         
@@ -396,27 +451,28 @@
             tbody.innerHTML = ''; 
             let clients = Object.values(db.clients); 
             
-            // 1. Closers ONLY see their own clients
+            console.log('RenderTable - Role:', currentUserRole, 'Name:', currentUserName, 'AgentCode:', getMyAgentCode());
+            
+            // Closers ONLY see their own clients - filtered by agent code
             if (currentUserRole === 'CLOSER') {
-                const nameToAgent = {
-                    'Sandro Kevin Jaeger': 'SANDRO', 'Jessica Margaret Davis': 'JESSICA',
-                    'David James Balmer': 'DAVID', 'Marc Benjamin Cohen': 'MARC',
-                    'Nicolas Augusto Lucas': 'NICOLAS', 'Patricia Gonzales': 'PATRICIA',
-                    'Joe Henry Frederick': 'JOE', 'Ana Maria Merlano': 'ANA',
-                    'Juan Diego Briceño': 'JUAN', 'Fiorella Villari': 'FIORELLA',
-                    'Andres Morales': 'ANDRES', 'Fernando Brauer': 'FERNANDO'
-                };
-                const myAgent = nameToAgent[currentUserName] || currentUserName.toUpperCase().split(' ')[0];
+                const myAgent = getMyAgentCode();
+                console.log('Filtering clients for agent:', myAgent);
                 clients = clients.filter(c => c.agent === myAgent);
-
-                // 2. Apply Status Filter for Closers
-                if (currentStatusFilter !== 'ALL') {
-                    // Check both Retention and SubStatus for the filter
-                    clients = clients.filter(c => c.retention === currentStatusFilter || c.subStatus === currentStatusFilter);
-                }
-            } else {
-                // Managers filter by Agent
-                clients = currentFilter === 'ALL' ? clients : clients.filter(c => c.agent === currentFilter); 
+                console.log('Filtered count:', clients.length);
+            }
+            
+            // Apply status filter (for ALL roles)
+            if (currentStatusFilter !== 'ALL') {
+                clients = clients.filter(c => 
+                    c.retention === currentStatusFilter || 
+                    c.subStatus === currentStatusFilter ||
+                    c.status === currentStatusFilter
+                );
+            }
+            
+            // Apply agent filter (for managers only)
+            if (currentUserRole !== 'CLOSER' && currentFilter !== 'ALL') {
+                clients = clients.filter(c => c.agent === currentFilter);
             }
             
             const canModifyDepositor = currentUserRole !== 'CLOSER';
@@ -436,6 +492,10 @@
                 <td><div class="comment-preview">${c.comment}</div></td>`; 
                 tbody.appendChild(tr); 
             }); 
+
+            if (clients.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding: 40px; color: var(--hud-muted);">No clients found matching current filters.</td></tr>';
+            }
         }
         
         function updateStatus(txId, field, value) { const db = getDB(); if (db.clients[txId]) { db.clients[txId][field] = value; saveDB(db); } }
