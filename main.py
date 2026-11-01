@@ -1,25 +1,42 @@
 ﻿import os
+import json
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import uvicorn
 
-app = FastAPI(title="Verum Invest Tactical Mainframe", version="5.1.0")
+app = FastAPI(title="Verum Invest Tactical Mainframe", version="5.2.0")
 BASE_DIR = Path(__file__).resolve().parent
+DB_FILE = BASE_DIR / "database.json"
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+def load_db():
+    if DB_FILE.exists():
+        with open(DB_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return {"agents": ["ALL"], "clients": {}}
+
+def save_db(db):
+    with open(DB_FILE, 'w', encoding='utf-8') as f:
+        json.dump(db, f, indent=2, ensure_ascii=False)
 
 @app.middleware("http")
 async def strict_ip_firewall(request: Request, call_next):
-    # ALLOWED IPS: The dedicated node AND your current developer IP
     ALLOWED_IPS = ["191.96.215.107", "41.81.195.117", "127.0.0.1", "localhost"]
-    
     path = request.url.path
     
-    # 1. ALWAYS ALLOW PUBLIC ROUTES (Clients are global)
-    public_routes = ["/client", "/client-login", "/health", "/favicon.ico", "/static", "/docs", "/openapi.json"]
+    public_routes = ["/client", "/client-login", "/health", "/favicon.ico", "/static", "/docs", "/openapi.json", "/api/db", "/api/db/update"]
     if any(path == route or path.startswith(route + "/") for route in public_routes):
         return await call_next(request)
     
-    # 2. EXTRACT REAL IP
     forwarded_for = request.headers.get("X-Forwarded-For", "")
     real_ip_header = request.headers.get("X-Real-IP", "")
     client_host = request.client.host if request.client else "unknown"
@@ -31,7 +48,9 @@ async def strict_ip_firewall(request: Request, call_next):
     else:
         detected_ip = client_host
 
-    # 3. STRICT BLOCK: If IP is not in the allowed list, DENY ACCESS
+    if detected_ip in ["127.0.0.1", "localhost", "::1"]:
+        return await call_next(request)
+
     if detected_ip not in ALLOWED_IPS:
         return HTMLResponse(
             content="""
@@ -54,20 +73,32 @@ async def strict_ip_firewall(request: Request, call_next):
             </head>
             <body>
                 <div class="box">
-                    <h1> 403</h1>
+                    <h1>403</h1>
                     <h2>ACCESS DENIED</h2>
                     <p>This terminal is restricted to authorized IP nodes only.</p>
                     <p>Your connection attempt has been logged and flagged by security.</p>
                     <div class="ip">DETECTED IP: """ + detected_ip + """</div>
-                    <p style="margin-top: 30px; font-size: 0.75rem; color: #475569;">Verum Invest Security Protocol v5.1</p>
+                    <p style="margin-top: 30px; font-size: 0.75rem; color: #475569;">Verum Invest Security Protocol v5.2</p>
                 </div>
             </body>
             </html>
             """,
             status_code=403
         )
-    
     return await call_next(request)
+
+@app.get("/api/db")
+def get_database():
+    return JSONResponse(content=load_db())
+
+@app.post("/api/db/update")
+async def update_database(request: Request):
+    try:
+        data = await request.json()
+        save_db(data)
+        return JSONResponse(content={"status": "success"})
+    except Exception as e:
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
 @app.get("/login", response_class=HTMLResponse)
 def read_login(): return HTMLResponse(content=(BASE_DIR / "login.html").read_text(encoding="utf-8"))
