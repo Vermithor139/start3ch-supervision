@@ -57,8 +57,10 @@
             const pass = document.getElementById('password').value;
             const user = staffDB[email];
             if (user && user.pass === pass) {
-                sessionStorage.setItem('verum_role', user.role);
-                sessionStorage.setItem('verum_user', user.name);
+                // FIX: Use localStorage so it persists after browser close
+                localStorage.setItem('verum_role', user.role);
+                localStorage.setItem('verum_user', user.name);
+                localStorage.setItem('verum_email', email);
                 window.location.href = '/';
             } else { document.getElementById('error').style.display = 'block'; }
         }

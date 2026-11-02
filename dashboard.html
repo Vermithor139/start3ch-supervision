@@ -192,7 +192,7 @@
                 <div class="filter-tabs" id="agent-tabs-container"></div>
                 <div class="data-table-container">
                     <table>
-                        <thead><tr><th style="width: 40px;"><input type="checkbox"></th><th>IDENTITY / CONTACT</th><th>ORIGIN</th><th>LAST SYNC</th><th>CURRENT BAL</th><th>WITHDRAWN / COMM</th><th>DEPOSIT / PROFIT</th><th>STATUS</th><th>RETENTION</th><th>SUB-STATUS</th><th>AGENT LOG</th></tr></thead>
+                        <thead><tr><th style="width: 40px;"><input type="checkbox"></th><th>IDENTITY / CONTACT</th><th>ORIGIN</th><th>SOURCE</th><th>LAST SYNC</th><th>CURRENT BAL</th><th>WITHDRAWN / COMM</th><th>DEPOSIT / PROFIT</th><th>STATUS</th><th>RETENTION</th><th>SUB-STATUS</th><th>AGENT LOG</th></tr></thead>
                         <tbody id="lead-table-body"></tbody>
                     </table>
                 </div>
@@ -272,6 +272,7 @@
                         <div class="info-row"><div class="info-label">Phone</div><div class="info-val" id="p-phone">+1 234 567 890</div></div>
                         <div class="info-row"><div class="info-label">Country</div><div class="info-val" id="p-country">Argentina 🇦🇷</div></div>
                         <div class="info-row"><div class="info-label">Email</div><div class="info-val" id="p-email">client@email.com</div></div>
+                        <div class="info-row"><div class="info-label">Lead Source</div><div class="info-val" id="p-source" style="color: var(--hud-glow);">Unknown</div></div>
                         <div class="info-row"><div class="info-label">Assigned Agent</div><div class="info-val"><select id="p-agent-select" class="status-control-select blue" style="padding: 6px 10px; font-size: 0.8rem;"></select></div></div>
                         <div class="status-control-group">
                             <div class="status-control-row"><div class="status-control-label orange">Depositor Status</div><select class="status-control-select orange" id="p-status-depositor"><option>DEPOSITOR</option><option>NEW LEAD</option></select></div>
@@ -308,7 +309,7 @@
             </div>
         </div>
     </div>
-    <div class="modal-overlay" id="modal-injectLead"><div class="modal-content"><button class="modal-close" onclick="closeModal('injectLead')">✕</button><div class="modal-title">Inject New Lead</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Client Full Name</label><input type="text" class="fin-control-input" id="lead-name"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Country</label><input type="text" class="fin-control-input" id="lead-country"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Initial Deposit (USD)</label><input type="number" class="fin-control-input" id="lead-deposit"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Assign To Agent</label><select class="fin-control-input" id="lead-agent"></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="injectLead()">INJECT INTO DATABASE</button></div></div>
+    <div class="modal-overlay" id="modal-injectLead"><div class="modal-content"><button class="modal-close" onclick="closeModal('injectLead')">✕</button><div class="modal-title">Inject New Lead</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Client Full Name</label><input type="text" class="fin-control-input" id="lead-name"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Country</label><input type="text" class="fin-control-input" id="lead-country"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Initial Deposit (USD)</label><input type="number" class="fin-control-input" id="lead-deposit"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Lead Source</label><select class="fin-control-input" id="lead-source"><option>Facebook Ads</option><option>Instagram</option><option>TikTok</option><option>Referral</option><option>Cold Call</option><option>Website</option></select></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Assign To Agent</label><select class="fin-control-input" id="lead-agent"></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="injectLead()">INJECT INTO DATABASE</button></div></div>
     <div class="modal-overlay" id="modal-addUser"><div class="modal-content"><button class="modal-close" onclick="closeModal('addUser')">✕</button><div class="modal-title">Add New System User</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Full Name</label><input type="text" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Email Address</label><input type="email" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Role</label><select class="fin-control-input"><option>CLOSER</option><option>SUPERVISOR</option><option>ASST. MANAGER</option></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="closeModal('addUser'); alert('User account created.')">CREATE USER ACCOUNT</button></div></div>
 
     <script>
@@ -329,18 +330,9 @@
         };
 
         function getMyAgentCode() {
-            const email = sessionStorage.getItem('verum_email');
-            if (email && EMAIL_TO_AGENT[email.toLowerCase()]) {
-                return EMAIL_TO_AGENT[email.toLowerCase()];
-            }
-            const nameToAgent = {
-                'Sandro Kevin Jaeger': 'SANDRO', 'Jessica Margaret Davis': 'JESSICA',
-                'David James Balmer': 'DAVID', 'Marc Benjamin Cohen': 'MARC',
-                'Nicolas Augusto Lucas': 'NICOLAS', 'Patricia Gonzales': 'PATRICIA',
-                'Joe Henry Frederick': 'JOE', 'Ana Maria Merlano': 'ANA',
-                'Juan Diego Briceño': 'JUAN', 'Fiorella Villari': 'FIORELLA',
-                'Andres Morales': 'ANDRES', 'Fernando Brauer': 'FERNANDO'
-            };
+            const email = localStorage.getItem('verum_email');
+            if (email && EMAIL_TO_AGENT[email.toLowerCase()]) return EMAIL_TO_AGENT[email.toLowerCase()];
+            const nameToAgent = { 'Sandro Kevin Jaeger': 'SANDRO', 'Jessica Margaret Davis': 'JESSICA', 'David James Balmer': 'DAVID', 'Marc Benjamin Cohen': 'MARC', 'Nicolas Augusto Lucas': 'NICOLAS', 'Patricia Gonzales': 'PATRICIA', 'Joe Henry Frederick': 'JOE', 'Ana Maria Merlano': 'ANA', 'Juan Diego Briceño': 'JUAN', 'Fiorella Villari': 'FIORELLA', 'Andres Morales': 'ANDRES', 'Fernando Brauer': 'FERNANDO' };
             if (nameToAgent[currentUserName]) return nameToAgent[currentUserName];
             return currentUserName.toUpperCase().split(' ')[0];
         }
@@ -349,23 +341,12 @@
             try {
                 const response = await fetch('/api/db');
                 db = await response.json();
-                console.log('Database fetched from server:', Object.keys(db.clients).length, 'clients');
-            } catch (error) {
-                console.error('Failed to fetch database:', error);
-            }
+            } catch (error) { console.error('Failed to fetch database:', error); }
         }
 
         async function saveDatabase() {
-            try {
-                await fetch('/api/db/update', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(db)
-                });
-                console.log('Database saved to server');
-            } catch (error) {
-                console.error('Failed to save database:', error);
-            }
+            try { await fetch('/api/db/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(db) }); } 
+            catch (error) { console.error('Failed to save database:', error); }
         }
         
         async function initCRM() { 
@@ -374,14 +355,18 @@
             const select = document.getElementById('lead-agent'); 
             if(select) select.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option>${a}</option>`).join(''); 
             
-            let role = sessionStorage.getItem('verum_role'); 
-            let name = sessionStorage.getItem('verum_user');
+            // FIX: Use localStorage and force login if empty
+            let role = localStorage.getItem('verum_role'); 
+            let name = localStorage.getItem('verum_user');
+            let email = localStorage.getItem('verum_email');
             
-            if (!role || !name) { role = 'MANAGER'; name = 'Roberto Palomino'; }
+            if (!role || !name) {
+                window.location.href = '/login'; // Force login instead of defaulting to Roberto
+                return;
+            }
+            
             currentUserRole = role; 
             currentUserName = name;
-
-            console.log('CRM Init - Role:', role, 'Name:', name, 'Agent Code:', getMyAgentCode());
 
             document.getElementById('user-name-display').textContent = name;
             document.getElementById('user-role-display').textContent = `[${role.replace('_', ' ').toUpperCase()}]`;
@@ -411,17 +396,12 @@
         function renderAgentTabs() { 
             const container = document.getElementById('agent-tabs-container'); 
             container.style.display = 'flex';
-            
-            let html = '';
-            html += `<span class="filter-section-label">Status:</span>`;
-            const statuses = ['ALL', 'POTENTIAL', 'ACTIVE', 'RECOVERY', 'NEW', 'REASSIGN'];
-            statuses.forEach(s => {
+            let html = `<span class="filter-section-label">Status:</span>`;
+            ['ALL', 'POTENTIAL', 'ACTIVE', 'RECOVERY', 'NEW', 'REASSIGN'].forEach(s => {
                 html += `<div class="filter-tab ${currentStatusFilter === s ? 'active' : ''}" onclick="filterByStatus('${s}', this)">${s}</div>`;
             });
-
             if (currentUserRole !== 'CLOSER') {
-                html += `<span class="filter-section-label" style="margin-left: 20px;">Agent:</span>`;
-                html += `<div class="filter-tab add-btn" onclick="addFilter()">+ ADD AGENT</div>`; 
+                html += `<span class="filter-section-label" style="margin-left: 20px;">Agent:</span><div class="filter-tab add-btn" onclick="addFilter()">+ ADD AGENT</div>`; 
                 db.agents.forEach((agent, index) => { 
                     const isActive = currentFilter === agent ? 'active' : ''; 
                     const deleteBtn = agent !== 'ALL' ? `<span class="delete-agent" onclick="deleteAgent(${index}, event)">✕</span>` : ''; 
@@ -430,40 +410,23 @@
             } else {
                 html += `<span class="filter-section-label" style="margin-left: 20px; color: var(--hud-green);">My Database: ${getMyAgentCode()}</span>`;
             }
-
             container.innerHTML = html;
         }
 
-        function filterByStatus(status, el) {
-            currentStatusFilter = status;
-            renderAgentTabs();
-            renderTable();
-        }
-        
-        function deleteAgent(index, event) { event.stopPropagation(); const removed = db.agents[index]; if (confirm(`Remove agent "${removed}" from the filter list?`)) { db.agents.splice(index, 1); saveDatabase(); if (currentFilter === removed) currentFilter = 'ALL'; renderAgentTabs(); renderTable(); } }
+        function filterByStatus(status, el) { currentStatusFilter = status; renderAgentTabs(); renderTable(); }
+        function deleteAgent(index, event) { event.stopPropagation(); const removed = db.agents[index]; if (confirm(`Remove agent "${removed}"?`)) { db.agents.splice(index, 1); saveDatabase(); if (currentFilter === removed) currentFilter = 'ALL'; renderAgentTabs(); renderTable(); } }
         
         function renderTable() { 
             const tbody = document.getElementById('lead-table-body'); 
             tbody.innerHTML = ''; 
             let clients = Object.values(db.clients); 
             
-            console.log('RenderTable - Role:', currentUserRole, 'Name:', currentUserName, 'AgentCode:', getMyAgentCode());
-            
             if (currentUserRole === 'CLOSER') {
-                const myAgent = getMyAgentCode();
-                console.log('Filtering clients for agent:', myAgent);
-                clients = clients.filter(c => c.agent === myAgent);
-                console.log('Filtered count:', clients.length);
+                clients = clients.filter(c => c.agent === getMyAgentCode());
             }
-            
             if (currentStatusFilter !== 'ALL') {
-                clients = clients.filter(c => 
-                    c.retention === currentStatusFilter || 
-                    c.subStatus === currentStatusFilter ||
-                    c.status === currentStatusFilter
-                );
+                clients = clients.filter(c => c.retention === currentStatusFilter || c.subStatus === currentStatusFilter || c.status === currentStatusFilter);
             }
-            
             if (currentUserRole !== 'CLOSER' && currentFilter !== 'ALL') {
                 clients = clients.filter(c => c.agent === currentFilter);
             }
@@ -475,20 +438,18 @@
                 tr.innerHTML = `<td><input type="checkbox" onclick="event.stopPropagation()"></td>
                 <td><a href="#" class="client-link" onclick="event.preventDefault(); openProfile('${c.txId}')">${c.name}</a><div class="client-id">${c.txId}</div></td>
                 <td>${c.country} ${c.flag}</td>
+                <td><span class="role-badge" style="background: rgba(255,255,255,0.1); color: var(--hud-muted); font-size: 0.65rem;">${c.source || 'Unknown'}</span></td>
                 <td style="font-family: var(--font-data); font-size: 0.8rem;">${c.lastLogin}</td>
                 <td style="font-weight: 700;">$${c.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
                 <td class="text-red">-$${c.withdrawn.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
                 <td style="font-weight: 700;">$${c.deposit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                <td><select class="status-select status-depositor" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'status', this.value)" ${!canModifyDepositor ? 'disabled title="Reserved for openers/management"' : ''}><option selected>${c.status}</option></select></td>
+                <td><select class="status-select status-depositor" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'status', this.value)" ${!canModifyDepositor ? 'disabled' : ''}><option selected>${c.status}</option></select></td>
                 <td><select class="status-select status-retention" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'retention', this.value)"><option selected>${c.retention}</option></select></td>
                 <td><select class="status-select status-sub" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'subStatus', this.value)"><option selected>${c.subStatus}</option></select></td>
                 <td><div class="comment-preview">${c.comment}</div></td>`; 
                 tbody.appendChild(tr); 
             }); 
-
-            if (clients.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding: 40px; color: var(--hud-muted);">No clients found matching current filters.</td></tr>';
-            }
+            if (clients.length === 0) tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding: 40px; color: var(--hud-muted);">No clients found.</td></tr>';
         }
         
         function updateStatus(txId, field, value) { if (db.clients[txId]) { db.clients[txId][field] = value; saveDatabase(); } }
@@ -507,39 +468,35 @@
             const domain = window.location.origin;
             const email = currentClient.name.toLowerCase().replace(' ', '.') + '@verum.invest';
             const link = `${domain}/client-login?email=${encodeURIComponent(email)}&name=${encodeURIComponent(currentClient.name)}&id=${currentClient.txId}`;
-            navigator.clipboard.writeText(link).then(() => {
-                alert('✅ Client Portal Link Copied!\n\nSend this link to the client. They will use the default password: Verum2026');
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-                prompt("Copy this link manually:", link);
-            });
+            navigator.clipboard.writeText(link).then(() => alert('✅ Link Copied!')).catch(err => prompt("Copy manually:", link));
         }
 
         function openProfile(txId) { 
             currentClient = db.clients[txId]; if (!currentClient) return; 
             document.getElementById('p-name').textContent = currentClient.name; document.getElementById('p-id').textContent = currentClient.txId; 
             document.getElementById('p-phone').textContent = currentClient.phone || 'N/A'; document.getElementById('p-country').textContent = currentClient.country + ' ' + currentClient.flag;
-            document.getElementById('p-email').textContent = currentClient.name.toLowerCase().replace(' ', '.') + '@verum.invest'; 
+            document.getElementById('p-email').textContent = currentClient.email || currentClient.name.toLowerCase().replace(' ', '.') + '@verum.invest'; 
+            document.getElementById('p-source').textContent = currentClient.source || 'Unknown';
             document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('p-deposited').textContent = '$' + currentClient.deposit.toLocaleString('en-US', {minimumFractionDigits: 2}); 
             const agentSelect = document.getElementById('p-agent-select'); agentSelect.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option ${a === currentClient.agent ? 'selected' : ''}>${a}</option>`).join(''); 
-            if (currentUserRole === 'CLOSER') { agentSelect.disabled = true; agentSelect.title = 'Agent reassignment restricted to management'; } else { agentSelect.disabled = false; }
+            if (currentUserRole === 'CLOSER') { agentSelect.disabled = true; } else { agentSelect.disabled = false; }
             document.getElementById('p-status-depositor').value = currentClient.status; document.getElementById('p-status-retention').value = currentClient.retention; document.getElementById('p-status-sub').value = currentClient.subStatus; 
-            const depositorSelect = document.getElementById('p-status-depositor'); if (currentUserRole === 'CLOSER') { depositorSelect.disabled = true; depositorSelect.title = 'Depositor status reserved for openers/management'; } else { depositorSelect.disabled = false; }
+            const depositorSelect = document.getElementById('p-status-depositor'); if (currentUserRole === 'CLOSER') { depositorSelect.disabled = true; } else { depositorSelect.disabled = false; }
             const commentContainer = document.getElementById('p-comments'); commentContainer.innerHTML = currentClient.comments.length ? currentClient.comments.map(comm => `<div class="comment-item"><div class="comment-meta"><span>${comm.agent}</span><span>${comm.time}</span></div><div class="comment-text">${comm.text}</div></div>`).join('') : '<div style="color:var(--hud-muted); font-size:0.85rem;">No comments yet.</div>'; 
             const txBody = document.getElementById('transaction-history-body'); txBody.innerHTML = currentClient.transactions.length ? currentClient.transactions.map(tx => { const profitClass = tx.profit > 0 ? 'text-green' : (tx.profit < 0 ? 'text-red' : ''); return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${tx.id}</td><td>${tx.date}</td><td style="font-weight: 600;">${tx.type}</td><td>${tx.asset}</td><td>$${tx.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="${profitClass}">${tx.profit > 0 ? '+' : ''}$${tx.profit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span class="role-badge role-closer">${tx.status}</span></td></tr>`; }).join('') : '<tr><td colspan="7" style="text-align:center; color:var(--hud-muted); padding:20px;">No transactions yet.</td></tr>';
             const wdBody = document.getElementById('withdrawal-requests-body'); if (currentClient.withdrawals.length === 0) { wdBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--hud-muted); padding: 32px;">No pending withdrawal requests.</td></tr>'; } else { wdBody.innerHTML = currentClient.withdrawals.map(wd => { const statusClass = wd.status === 'PENDING' ? 'role-assistant' : 'role-closer'; const actionBtn = wd.status === 'PENDING' ? `<button class="btn-hud green" style="padding: 4px 12px; font-size: 0.7rem;" onclick="approveWithdrawal('${wd.id}')">APPROVE</button><button class="btn-hud red" style="padding: 4px 12px; font-size: 0.7rem; margin-left: 4px;" onclick="rejectWithdrawal('${wd.id}')">DENY</button>` : `<span style="color: var(--hud-muted); font-size: 0.8rem;">—</span>`; return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${wd.id}</td><td>${wd.date}</td><td>${wd.method}</td><td style="font-weight: 700;">$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="font-size: 0.8rem;">${wd.details}</td><td><span class="role-badge ${statusClass}">${wd.status}</span></td><td>${actionBtn}</td></tr>`; }).join(''); } 
             showView('profile'); 
         }
         function transmitStatusUpdate() { if (!currentClient) return; db.clients[currentClient.txId].status = document.getElementById('p-status-depositor').value; db.clients[currentClient.txId].retention = document.getElementById('p-status-retention').value; db.clients[currentClient.txId].subStatus = document.getElementById('p-status-sub').value; db.clients[currentClient.txId].agent = document.getElementById('p-agent-select').value; saveDatabase(); alert('Status update transmitted and saved.'); renderTable(); }
-        function injectProfit() { if (!currentClient) return; const amount = parseFloat(document.getElementById('profit-amount').value); const asset = document.getElementById('profit-asset').value.trim(); if (!amount || !asset) { alert('Please enter both amount and asset.'); return; } const txId = 'TX-' + Math.floor(Math.random() * 90000 + 10000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[currentClient.txId].transactions.push({ id: txId, date: today, type: 'PROFIT', asset: asset, amount: 0, profit: amount, status: 'COMPLETED' }); db.clients[currentClient.txId].balance += amount; saveDatabase(); document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('profit-amount').value = ''; document.getElementById('profit-asset').value = ''; alert(`Profit of $${amount} injected from ${asset}.`); openProfile(currentClient.txId); }
+        function injectProfit() { if (!currentClient) return; const amount = parseFloat(document.getElementById('profit-amount').value); const asset = document.getElementById('profit-asset').value.trim(); if (!amount || !asset) { alert('Please enter both amount and asset.'); return; } const txId = 'TX-' + Math.floor(Math.random() * 90000 + 10000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[currentClient.txId].transactions.push({ id: txId, date: today, type: 'PROFIT', asset: asset, amount: 0, profit: amount, status: 'COMPLETED' }); db.clients[currentClient.txId].balance += amount; saveDatabase(); document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('profit-amount').value = ''; document.getElementById('profit-asset').value = ''; alert(`Profit of $${amount} injected.`); openProfile(currentClient.txId); }
         function approveWithdrawal(wdId) { if (!currentClient) return; const wd = db.clients[currentClient.txId].withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'APPROVED'; db.clients[currentClient.txId].balance -= wd.amount; db.clients[currentClient.txId].withdrawn += wd.amount; saveDatabase(); document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); alert(`Withdrawal ${wdId} approved.`); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
         function rejectWithdrawal(wdId) { if (!currentClient) return; const wd = db.clients[currentClient.txId].withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'REJECTED'; saveDatabase(); alert(`Withdrawal ${wdId} rejected.`); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
-        function addComment() { const input = document.getElementById('new-comment'); const text = input.value.trim(); if (!text || !currentClient) return; const now = new Date().toLocaleString(); db.clients[currentClient.txId].comments.unshift({agent: sessionStorage.getItem('verum_user') || "Manager", time: now, text: text}); saveDatabase(); input.value = ''; openProfile(currentClient.txId); }
+        function addComment() { const input = document.getElementById('new-comment'); const text = input.value.trim(); if (!text || !currentClient) return; const now = new Date().toLocaleString(); db.clients[currentClient.txId].comments.unshift({agent: localStorage.getItem('verum_user') || "Manager", time: now, text: text}); saveDatabase(); input.value = ''; openProfile(currentClient.txId); }
         function switchTab(tabId, btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); btn.classList.add('active'); document.getElementById(`tab-${tabId}`).classList.add('active'); }
         function openModal(id) { document.getElementById(`modal-${id}`).classList.add('active'); }
         function closeModal(id) { document.getElementById(`modal-${id}`).classList.remove('active'); }
-        function injectLead() { const name = document.getElementById('lead-name').value.trim(); const country = document.getElementById('lead-country').value.trim(); const deposit = parseFloat(document.getElementById('lead-deposit').value); const agent = document.getElementById('lead-agent').value; if (!name || !country || !deposit) { alert('Please fill all fields.'); return; } const txId = 'TX-' + Math.floor(Math.random() * 900000 + 100000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[txId] = { txId, agent, name, country, flag: '🌎', phone: '+1 234 567 899', lastLogin: today + ' 09:00', balance: deposit, withdrawn: 0, deposit, status: 'NEW LEAD', retention: 'NEW', subStatus: 'POTENTIAL', comment: 'New lead injected.', comments: [], transactions: [{id: txId, date: today, type: 'DEPOSIT', asset: 'Initial Capital', amount: deposit, profit: 0, status: 'COMPLETED'}], withdrawals: [] }; saveDatabase(); closeModal('injectLead'); document.getElementById('lead-name').value = ''; document.getElementById('lead-country').value = ''; document.getElementById('lead-deposit').value = ''; alert(`Lead "${name}" injected.`); renderTable(); }
-        function logout() { sessionStorage.clear(); window.location.href = '/login'; }
+        function injectLead() { const name = document.getElementById('lead-name').value.trim(); const country = document.getElementById('lead-country').value.trim(); const deposit = parseFloat(document.getElementById('lead-deposit').value); const agent = document.getElementById('lead-agent').value; const source = document.getElementById('lead-source').value; if (!name || !country || !deposit) { alert('Please fill all fields.'); return; } const txId = 'TX-' + Math.floor(Math.random() * 900000 + 100000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[txId] = { txId, agent, name, country, flag: '🌎', phone: '+1 234 567 899', email: name.toLowerCase().replace(' ', '.') + '@verum.invest', lastLogin: today + ' 09:00', balance: deposit, withdrawn: 0, deposit, status: 'NEW LEAD', retention: 'NEW', subStatus: 'POTENTIAL', source: source, comment: 'New lead injected.', comments: [], transactions: [{id: txId, date: today, type: 'DEPOSIT', asset: 'Initial Capital', amount: deposit, profit: 0, status: 'COMPLETED'}], withdrawals: [] }; saveDatabase(); closeModal('injectLead'); document.getElementById('lead-name').value = ''; document.getElementById('lead-country').value = ''; document.getElementById('lead-deposit').value = ''; alert(`Lead "${name}" injected.`); renderTable(); }
+        function logout() { localStorage.clear(); window.location.href = '/login'; }
         if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initCRM); } else { initCRM(); }
     </script>
 </body>
