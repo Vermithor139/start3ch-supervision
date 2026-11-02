@@ -140,7 +140,6 @@
         .tx-table th { background: var(--bg-dark); color: var(--text-muted); font-family: var(--font-data); font-size: 0.7rem; text-transform: uppercase; padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
         .tx-table td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; transition: background 0.2s; }
         .tx-table tr:hover { background: rgba(14,165,233,0.05); }
-        
         .custom-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 2000; align-items: center; justify-content: center; }
         .custom-modal-overlay.active { display: flex; }
         .custom-modal { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 24px; width: 90%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: modalPop 0.3s ease-out; }
@@ -185,7 +184,6 @@
                 <div class="page-title" id="page-title">Account Overview</div>
             </div>
             <div class="user-info">
-                <!-- REMOVED THE DROPDOWN HERE -->
                 <div class="user-details"><div class="user-name" id="header-name">Loading...</div><div class="user-id" id="header-id">ID: ...</div></div>
                 <div class="avatar" id="header-avatar">?</div>
             </div>
@@ -328,17 +326,30 @@
     </div>
 
     <script>
-        function getDB() { const stored = localStorage.getItem('verum_mainframe_db'); if (!stored) return null; return JSON.parse(stored); }
-        let currentClientId = ""; let clientBalance = 0;
-        
+        let serverDB = null;
+        let currentClientId = "";
+        let clientBalance = 0;
+
+        async function fetchServerDB() {
+            try {
+                const response = await fetch('/api/db');
+                serverDB = await response.json();
+                console.log('Client portal: Database fetched from server');
+            } catch (error) {
+                console.error('Failed to fetch database:', error);
+            }
+        }
+
         function toggleWatchlist() { document.getElementById('watchlist-panel').classList.toggle('collapsed'); }
         function toggleWlCategory(header) { header.classList.toggle('active'); const content = header.nextElementSibling; content.classList.toggle('show'); }
         
         function switchClientView(clientId) { 
             currentClientId = clientId; 
-            const db = getDB(); 
-            if (!db || !db.clients[clientId]) return; 
-            const data = db.clients[clientId]; 
+            if (!serverDB || !serverDB.clients[clientId]) {
+                console.log('Client not found:', clientId);
+                return;
+            }
+            const data = serverDB.clients[clientId]; 
             const initials = data.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase(); 
             
             document.getElementById('header-name').textContent = data.name; 
@@ -346,10 +357,10 @@
             document.getElementById('header-avatar').textContent = initials; 
             document.getElementById('welcome-name').textContent = `Welcome back, ${data.name.split(' ')[0]}.`; 
             document.getElementById('detail-name').textContent = data.name; 
-            document.getElementById('detail-email').textContent = data.name.toLowerCase().replace(' ', '.') + '@verum.invest';
+            document.getElementById('detail-email').textContent = data.email || data.name.toLowerCase().replace(' ', '.') + '@verum.invest';
             document.getElementById('detail-id').textContent = `VT-${data.txId.split('-')[1]}`; 
             document.getElementById('settings-name').value = data.name;
-            document.getElementById('settings-email').value = data.name.toLowerCase().replace(' ', '.') + '@verum.invest';
+            document.getElementById('settings-email').value = data.email || data.name.toLowerCase().replace(' ', '.') + '@verum.invest';
             
             document.getElementById('home-balance').textContent = '$' + data.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); 
             document.getElementById('home-cash').textContent = '$' + data.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); 
@@ -374,16 +385,22 @@
             txBody.innerHTML = html; 
         }
 
-        window.onload = function() { 
+        window.onload = async function() { 
+            await fetchServerDB();
+            
             const urlParams = new URLSearchParams(window.location.search); 
             const clientId = urlParams.get('id'); 
             
-            if (clientId) { 
+            if (clientId && serverDB && serverDB.clients[clientId]) { 
                 currentClientId = clientId; 
                 switchClientView(currentClientId); 
+            } else if (serverDB && Object.keys(serverDB.clients).length > 0) {
+                // Fallback: show first client
+                const firstId = Object.keys(serverDB.clients)[0];
+                currentClientId = firstId;
+                switchClientView(firstId);
             } else {
-                // Fallback if no ID provided
-                document.getElementById('header-name').textContent = "Guest";
+                document.getElementById('header-name').textContent = "No Account";
             }
 
             setTimeout(() => { 
@@ -398,18 +415,21 @@
         document.addEventListener('click', function(event) { const menu = document.getElementById('mainMenu'); const btn = document.querySelector('.menu-btn'); if (!menu.contains(event.target) && !btn.contains(event.target)) { menu.classList.remove('active'); } });
         function selectWithdrawalMethod(method, el) { document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active')); el.classList.add('active'); document.querySelectorAll('.withdrawal-form').forEach(f => f.classList.remove('active')); document.getElementById(`form-${method}`).classList.add('active'); }
         
-        function submitWithdrawal(method) { 
+        async function submitWithdrawal(method) { 
             let amount = 0; let details = ''; 
             if (method === 'CRYPTO') { amount = parseFloat(document.getElementById('crypto-amount').value); const crypto = document.getElementById('crypto-type').value; const wallet = document.getElementById('crypto-wallet').value.trim(); if (!amount || !wallet) { alert('Please enter amount and wallet address.'); return; } details = `${crypto} via ${document.getElementById('crypto-network').value}`; } 
             else if (method === 'BANK TRANSFER') { amount = parseFloat(document.getElementById('bank-amount').value); if (!amount) { alert('Please enter amount.'); return; } details = 'Bank Transfer'; } 
             else if (method === 'CREDIT CARD') { amount = parseFloat(document.getElementById('card-amount').value); if (!amount) { alert('Please enter amount.'); return; } details = 'Credit Card'; } 
             if (amount > clientBalance) { alert('Insufficient funds. Your available balance is $' + clientBalance.toFixed(2)); return; } 
             
-            const db = getDB(); 
             const wdId = 'WD-' + Math.floor(Math.random() * 90000 + 10000); 
             const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); 
-            db.clients[currentClientId].withdrawals.push({ id: wdId, date: today, method: method, amount: amount, details: details, status: 'PENDING' }); 
-            localStorage.setItem('verum_mainframe_db', JSON.stringify(db)); 
+            serverDB.clients[currentClientId].withdrawals.push({ id: wdId, date: today, method: method, amount: amount, details: details, status: 'PENDING' }); 
+            
+            // Save to server
+            try {
+                await fetch('/api/db/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(serverDB) });
+            } catch (error) { console.error('Failed to save:', error); }
             
             document.getElementById('modal-method').textContent = method;
             document.getElementById('modal-amount').textContent = '$' + amount.toFixed(2);
@@ -426,7 +446,7 @@
         function sendChat() { const input = document.getElementById('chatInput'); const text = input.value.trim(); if (!text) return; const body = document.getElementById('chatBody'); body.innerHTML += `<div class="chat-msg client">${text}</div>`; input.value = ''; body.scrollTop = body.scrollHeight; setTimeout(() => { body.innerHTML += `<div class="chat-msg advisor">Message received in supervisor queue. An advisor will review your request shortly.</div>`; body.scrollTop = body.scrollHeight; }, 1200); }
         function handleChatKey(e) { if (e.key === 'Enter') sendChat(); }
         document.addEventListener('keydown', function(event) { if (event.key === 'Escape') { document.getElementById('chatDrawer').classList.remove('active'); document.getElementById('wd-modal').classList.remove('active'); } });
-        function clientLogout() { sessionStorage.clear(); window.location.href = '/client-login'; }
+        function clientLogout() { window.location.href = '/client-login'; }
     </script>
 </body>
 </html>
