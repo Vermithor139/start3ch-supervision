@@ -309,7 +309,23 @@
             </div>
         </div>
     </div>
-    <div class="modal-overlay" id="modal-injectLead"><div class="modal-content"><button class="modal-close" onclick="closeModal('injectLead')">✕</button><div class="modal-title">Inject New Lead</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Client Full Name</label><input type="text" class="fin-control-input" id="lead-name"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Country</label><input type="text" class="fin-control-input" id="lead-country"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Initial Deposit (USD)</label><input type="number" class="fin-control-input" id="lead-deposit"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Lead Source</label><select class="fin-control-input" id="lead-source"><option>Facebook Ads</option><option>Instagram</option><option>TikTok</option><option>Referral</option><option>Cold Call</option><option>Website</option></select></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Assign To Agent</label><select class="fin-control-input" id="lead-agent"></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="injectLead()">INJECT INTO DATABASE</button></div></div>
+    
+    <!-- UPDATED MODAL: Added Phone, Email, changed Source to text input -->
+    <div class="modal-overlay" id="modal-injectLead">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('injectLead')">✕</button>
+            <div class="modal-title">Inject New Lead</div>
+            <div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Client Full Name</label><input type="text" class="fin-control-input" id="lead-name"></div>
+            <div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Country</label><input type="text" class="fin-control-input" id="lead-country"></div>
+            <div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Phone Number</label><input type="text" class="fin-control-input" id="lead-phone" placeholder="+1 234..."></div>
+            <div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Initial Deposit (USD)</label><input type="number" class="fin-control-input" id="lead-deposit"></div>
+            <div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Email Address</label><input type="email" class="fin-control-input" id="lead-email" placeholder="client@gmail.com"></div>
+            <div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Lead Source</label><input type="text" class="fin-control-input" id="lead-source" placeholder="e.g. Facebook, Evo App"></div>
+            <div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Assign To Agent</label><select class="fin-control-input" id="lead-agent"></select></div>
+            <button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="injectLead()">INJECT INTO DATABASE</button>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="modal-addUser"><div class="modal-content"><button class="modal-close" onclick="closeModal('addUser')">✕</button><div class="modal-title">Add New System User</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Full Name</label><input type="text" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Email Address</label><input type="email" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Role</label><select class="fin-control-input"><option>CLOSER</option><option>SUPERVISOR</option><option>ASST. MANAGER</option></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="closeModal('addUser'); alert('User account created.')">CREATE USER ACCOUNT</button></div></div>
 
     <script>
@@ -355,13 +371,12 @@
             const select = document.getElementById('lead-agent'); 
             if(select) select.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option>${a}</option>`).join(''); 
             
-            // FIX: Use localStorage and force login if empty
             let role = localStorage.getItem('verum_role'); 
             let name = localStorage.getItem('verum_user');
             let email = localStorage.getItem('verum_email');
             
             if (!role || !name) {
-                window.location.href = '/login'; // Force login instead of defaulting to Roberto
+                window.location.href = '/login';
                 return;
             }
             
@@ -475,7 +490,7 @@
             currentClient = db.clients[txId]; if (!currentClient) return; 
             document.getElementById('p-name').textContent = currentClient.name; document.getElementById('p-id').textContent = currentClient.txId; 
             document.getElementById('p-phone').textContent = currentClient.phone || 'N/A'; document.getElementById('p-country').textContent = currentClient.country + ' ' + currentClient.flag;
-            document.getElementById('p-email').textContent = currentClient.email || currentClient.name.toLowerCase().replace(' ', '.') + '@verum.invest'; 
+            document.getElementById('p-email').textContent = currentClient.email || 'N/A'; 
             document.getElementById('p-source').textContent = currentClient.source || 'Unknown';
             document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('p-deposited').textContent = '$' + currentClient.deposit.toLocaleString('en-US', {minimumFractionDigits: 2}); 
             const agentSelect = document.getElementById('p-agent-select'); agentSelect.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option ${a === currentClient.agent ? 'selected' : ''}>${a}</option>`).join(''); 
@@ -495,7 +510,47 @@
         function switchTab(tabId, btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); btn.classList.add('active'); document.getElementById(`tab-${tabId}`).classList.add('active'); }
         function openModal(id) { document.getElementById(`modal-${id}`).classList.add('active'); }
         function closeModal(id) { document.getElementById(`modal-${id}`).classList.remove('active'); }
-        function injectLead() { const name = document.getElementById('lead-name').value.trim(); const country = document.getElementById('lead-country').value.trim(); const deposit = parseFloat(document.getElementById('lead-deposit').value); const agent = document.getElementById('lead-agent').value; const source = document.getElementById('lead-source').value; if (!name || !country || !deposit) { alert('Please fill all fields.'); return; } const txId = 'TX-' + Math.floor(Math.random() * 900000 + 100000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[txId] = { txId, agent, name, country, flag: '🌎', phone: '+1 234 567 899', email: name.toLowerCase().replace(' ', '.') + '@verum.invest', lastLogin: today + ' 09:00', balance: deposit, withdrawn: 0, deposit, status: 'NEW LEAD', retention: 'NEW', subStatus: 'POTENTIAL', source: source, comment: 'New lead injected.', comments: [], transactions: [{id: txId, date: today, type: 'DEPOSIT', asset: 'Initial Capital', amount: deposit, profit: 0, status: 'COMPLETED'}], withdrawals: [] }; saveDatabase(); closeModal('injectLead'); document.getElementById('lead-name').value = ''; document.getElementById('lead-country').value = ''; document.getElementById('lead-deposit').value = ''; alert(`Lead "${name}" injected.`); renderTable(); }
+        
+        // UPDATED INJECT LEAD FUNCTION
+        function injectLead() { 
+            const name = document.getElementById('lead-name').value.trim(); 
+            const country = document.getElementById('lead-country').value.trim(); 
+            const phone = document.getElementById('lead-phone').value.trim();
+            const deposit = parseFloat(document.getElementById('lead-deposit').value); 
+            const email = document.getElementById('lead-email').value.trim();
+            const source = document.getElementById('lead-source').value.trim();
+            const agent = document.getElementById('lead-agent').value; 
+            
+            if (!name || !country || !deposit) { alert('Please fill Name, Country, and Deposit.'); return; } 
+            
+            const txId = 'TX-' + Math.floor(Math.random() * 900000 + 100000); 
+            const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); 
+            
+            db.clients[txId] = { 
+                txId, agent, name, country, flag: '🌎', 
+                phone: phone, 
+                email: email, // Uses real email now
+                lastLogin: today + ' 09:00', 
+                balance: deposit, withdrawn: 0, deposit, 
+                status: 'NEW LEAD', retention: 'NEW', subStatus: 'POTENTIAL', 
+                source: source || 'Manual Entry', 
+                comment: 'New lead injected.', comments: [], 
+                transactions: [{id: txId, date: today, type: 'DEPOSIT', asset: 'Initial Capital', amount: deposit, profit: 0, status: 'COMPLETED'}], 
+                withdrawals: [] 
+            }; 
+            
+            saveDatabase(); 
+            closeModal('injectLead'); 
+            document.getElementById('lead-name').value = ''; 
+            document.getElementById('lead-country').value = ''; 
+            document.getElementById('lead-phone').value = '';
+            document.getElementById('lead-deposit').value = ''; 
+            document.getElementById('lead-email').value = '';
+            document.getElementById('lead-source').value = '';
+            alert(`Lead "${name}" injected.`); 
+            renderTable(); 
+        }
+
         function logout() { localStorage.clear(); window.location.href = '/login'; }
         if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initCRM); } else { initCRM(); }
     </script>
