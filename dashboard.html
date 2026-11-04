@@ -94,7 +94,7 @@
         .hud-card { background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; padding: 24px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .hud-card:hover { border-color: rgba(14,165,233,0.3); box-shadow: 0 0 20px rgba(14,165,233,0.05); transform: translateY(-2px); }
         .card-title { font-family: var(--font-data); font-size: 0.75rem; color: var(--hud-glow); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid var(--hud-border); padding-bottom: 10px; }
-        .info-row { display: flex; margin-bottom: 12px; font-size: 0.9rem; }
+        .info-row { display: flex; margin-bottom: 12px; font-size: 0.9rem; align-items: center; }
         .info-label { width: 140px; color: var(--hud-muted); font-weight: 500; }
         .info-val { flex: 1; font-weight: 600; }
         .status-control-group { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--hud-border); }
@@ -126,6 +126,7 @@
         .fin-control-label { display: block; font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); text-transform: uppercase; margin-bottom: 6px; }
         .fin-control-input { width: 100%; background: var(--hud-bg); border: 1px solid var(--hud-border); border-radius: 4px; padding: 10px; color: var(--hud-text); font-family: var(--font-data); font-size: 0.85rem; outline: none; transition: all 0.3s; }
         .fin-control-input:focus { border-color: var(--hud-glow); box-shadow: 0 0 10px rgba(14,165,233,0.2); }
+        .fin-control-input:disabled { opacity: 0.7; cursor: not-allowed; color: var(--hud-muted); }
         .role-badge { padding: 4px 10px; border-radius: 4px; font-family: var(--font-data); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
         .role-closer { background: rgba(16,185,129,0.2); color: var(--hud-green); }
         .role-assistant { background: rgba(59,130,246,0.2); color: var(--status-blue); }
@@ -192,7 +193,7 @@
                 <div class="filter-tabs" id="agent-tabs-container"></div>
                 <div class="data-table-container">
                     <table>
-                        <thead><tr><th style="width: 40px;"><input type="checkbox"></th><th>IDENTITY / CONTACT</th><th>ORIGIN</th><th>SOURCE</th><th>LAST SYNC</th><th>CURRENT BAL</th><th>WITHDRAWN / COMM</th><th>DEPOSIT / PROFIT</th><th>STATUS</th><th>RETENTION</th><th>SUB-STATUS</th><th>AGENT LOG</th></tr></thead>
+                        <thead><tr><th style="width: 40px;"><input type="checkbox"></th><th>IDENTITY / CONTACT</th><th>ORIGIN</th><th>SOURCE</th><th>LAST SYNC</th><th>CURRENT BAL</th><th>WITHDRAWN / COMM</th><th>DEPOSIT / PROFIT</th><th>STATUS</th><th>RETENTION</th><th>SUB-STATUS</th><th>AGENT LOG</th><th>ACTIONS</th></tr></thead>
                         <tbody id="lead-table-body"></tbody>
                     </table>
                 </div>
@@ -269,16 +270,19 @@
                 <div class="profile-grid-2">
                     <div class="hud-card">
                         <div class="card-title">Client Intelligence & Status Control</div>
-                        <div class="info-row"><div class="info-label">Phone</div><div class="info-val" id="p-phone">+1 234 567 890</div></div>
-                        <div class="info-row"><div class="info-label">Country</div><div class="info-val" id="p-country">Argentina 🇦🇷</div></div>
-                        <div class="info-row"><div class="info-label">Email</div><div class="info-val" id="p-email">client@email.com</div></div>
-                        <div class="info-row"><div class="info-label">Lead Source</div><div class="info-val" id="p-source" style="color: var(--hud-glow);">Unknown</div></div>
-                        <div class="info-row"><div class="info-label">Assigned Agent</div><div class="info-val"><select id="p-agent-select" class="status-control-select blue" style="padding: 6px 10px; font-size: 0.8rem;"></select></div></div>
+                        <div class="info-row"><div class="info-label">Phone</div><div class="info-val"><input type="text" id="p-phone" class="fin-control-input" style="width: 100%;"></div></div>
+                        <div class="info-row"><div class="info-label">Country</div><div class="info-val"><input type="text" id="p-country" class="fin-control-input" style="width: 100%;"></div></div>
+                        <div class="info-row"><div class="info-label">Email</div><div class="info-val"><input type="email" id="p-email" class="fin-control-input" style="width: 100%;"></div></div>
+                        <div class="info-row"><div class="info-label">Lead Source</div><div class="info-val"><input type="text" id="p-source" class="fin-control-input" style="width: 100%;"></div></div>
+                        <div class="info-row"><div class="info-label">Assigned Agent</div><div class="info-val"><select id="p-agent-select" class="status-control-select blue" style="padding: 6px 10px; font-size: 0.8rem; width: 100%;"></select></div></div>
                         <div class="status-control-group">
                             <div class="status-control-row"><div class="status-control-label orange">Depositor Status</div><select class="status-control-select orange" id="p-status-depositor"><option>DEPOSITOR</option><option>NEW LEAD</option></select></div>
                             <div class="status-control-row"><div class="status-control-label blue">Retention Phase</div><select class="status-control-select blue" id="p-status-retention"><option>NEW</option><option>ACTIVE</option><option>REASSIGN</option><option>RECOVERY</option></select></div>
                             <div class="status-control-row"><div class="status-control-label green">Closer Sub-Status</div><select class="status-control-select green" id="p-status-sub"><option>NO POTENTIAL</option><option>POTENTIAL</option><option>NO INTEREST</option></select></div>
-                            <button class="btn-hud" style="width: 100%; margin-top: 16px; justify-content: center;" onclick="transmitStatusUpdate()">TRANSMIT STATUS UPDATE</button>
+                            <div style="display: flex; gap: 10px; margin-top: 16px;">
+                                <button class="btn-hud" style="flex: 1; justify-content: center;" onclick="transmitStatusUpdate()">TRANSMIT STATUS</button>
+                                <button class="btn-hud green" id="btn-save-profile" style="flex: 1; justify-content: center;" onclick="saveProfileData()">SAVE DATA</button>
+                            </div>
                         </div>
                     </div>
                     <div class="hud-card" style="display: flex; flex-direction: column;">
@@ -310,7 +314,6 @@
         </div>
     </div>
     
-    <!-- UPDATED MODAL: Added Phone, Email, changed Source to text input -->
     <div class="modal-overlay" id="modal-injectLead">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('injectLead')">✕</button>
@@ -390,17 +393,20 @@
             const configNav = document.getElementById('nav-config'); 
             const finControls = document.getElementById('financial-controls');
             const injectBtn = document.getElementById('inject-lead-btn');
+            const saveProfileBtn = document.getElementById('btn-save-profile');
             
             if (role === 'CLOSER') { 
                 if(analyticsNav) analyticsNav.style.display = 'none'; 
                 if(configNav) configNav.style.display = 'none'; 
                 if(finControls) finControls.style.display = 'none';
                 if(injectBtn) injectBtn.style.display = 'none';
+                if(saveProfileBtn) saveProfileBtn.style.display = 'none'; // Hide save button for closers
             } else { 
                 if(analyticsNav) analyticsNav.style.display = 'flex'; 
                 if(configNav) configNav.style.display = 'flex'; 
                 if(finControls) finControls.style.display = 'block';
                 if(injectBtn) injectBtn.style.display = 'inline-flex';
+                if(saveProfileBtn) saveProfileBtn.style.display = 'inline-flex';
             }
 
             renderAgentTabs(); 
@@ -447,9 +453,18 @@
             }
             
             const canModifyDepositor = currentUserRole !== 'CLOSER';
+            const canDelete = currentUserRole !== 'CLOSER'; // Only Manager/Asst can delete
             
             clients.forEach((c) => { 
                 const tr = document.createElement('tr'); tr.onclick = () => openProfile(c.txId); 
+                
+                let actionCell = '';
+                if (canDelete) {
+                    actionCell = `<td><button class="btn-hud red" style="padding: 4px 8px; font-size: 0.7rem;" onclick="event.stopPropagation(); deleteClient('${c.txId}')">DELETE</button></td>`;
+                } else {
+                    actionCell = `<td></td>`;
+                }
+
                 tr.innerHTML = `<td><input type="checkbox" onclick="event.stopPropagation()"></td>
                 <td><a href="#" class="client-link" onclick="event.preventDefault(); openProfile('${c.txId}')">${c.name}</a><div class="client-id">${c.txId}</div></td>
                 <td>${c.country} ${c.flag}</td>
@@ -461,10 +476,22 @@
                 <td><select class="status-select status-depositor" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'status', this.value)" ${!canModifyDepositor ? 'disabled' : ''}><option selected>${c.status}</option></select></td>
                 <td><select class="status-select status-retention" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'retention', this.value)"><option selected>${c.retention}</option></select></td>
                 <td><select class="status-select status-sub" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'subStatus', this.value)"><option selected>${c.subStatus}</option></select></td>
-                <td><div class="comment-preview">${c.comment}</div></td>`; 
+                <td><div class="comment-preview">${c.comment}</div></td>
+                ${actionCell}`; 
                 tbody.appendChild(tr); 
             }); 
-            if (clients.length === 0) tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding: 40px; color: var(--hud-muted);">No clients found.</td></tr>';
+            if (clients.length === 0) tbody.innerHTML = '<tr><td colspan="13" style="text-align:center; padding: 40px; color: var(--hud-muted);">No clients found.</td></tr>';
+        }
+
+        // NEW: Delete Function
+        function deleteClient(txId) {
+            if (currentUserRole === 'CLOSER') return;
+            if (confirm('Are you sure you want to permanently delete this lead? This cannot be undone.')) {
+                delete db.clients[txId];
+                saveDatabase();
+                renderTable();
+                showView('leads');
+            }
         }
         
         function updateStatus(txId, field, value) { if (db.clients[txId]) { db.clients[txId][field] = value; saveDatabase(); } }
@@ -489,19 +516,46 @@
         function openProfile(txId) { 
             currentClient = db.clients[txId]; if (!currentClient) return; 
             document.getElementById('p-name').textContent = currentClient.name; document.getElementById('p-id').textContent = currentClient.txId; 
-            document.getElementById('p-phone').textContent = currentClient.phone || 'N/A'; document.getElementById('p-country').textContent = currentClient.country + ' ' + currentClient.flag;
-            document.getElementById('p-email').textContent = currentClient.email || 'N/A'; 
-            document.getElementById('p-source').textContent = currentClient.source || 'Unknown';
+            
+            // Set values for editable fields
+            document.getElementById('p-phone').value = currentClient.phone || '';
+            document.getElementById('p-country').value = currentClient.country || '';
+            document.getElementById('p-email').value = currentClient.email || '';
+            document.getElementById('p-source').value = currentClient.source || '';
+
+            // Disable fields for Closers
+            const isCloser = currentUserRole === 'CLOSER';
+            document.getElementById('p-phone').disabled = isCloser;
+            document.getElementById('p-country').disabled = isCloser;
+            document.getElementById('p-email').disabled = isCloser;
+            document.getElementById('p-source').disabled = isCloser;
+
             document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('p-deposited').textContent = '$' + currentClient.deposit.toLocaleString('en-US', {minimumFractionDigits: 2}); 
             const agentSelect = document.getElementById('p-agent-select'); agentSelect.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option ${a === currentClient.agent ? 'selected' : ''}>${a}</option>`).join(''); 
-            if (currentUserRole === 'CLOSER') { agentSelect.disabled = true; } else { agentSelect.disabled = false; }
+            if (isCloser) { agentSelect.disabled = true; } else { agentSelect.disabled = false; }
             document.getElementById('p-status-depositor').value = currentClient.status; document.getElementById('p-status-retention').value = currentClient.retention; document.getElementById('p-status-sub').value = currentClient.subStatus; 
-            const depositorSelect = document.getElementById('p-status-depositor'); if (currentUserRole === 'CLOSER') { depositorSelect.disabled = true; } else { depositorSelect.disabled = false; }
+            const depositorSelect = document.getElementById('p-status-depositor'); if (isCloser) { depositorSelect.disabled = true; } else { depositorSelect.disabled = false; }
             const commentContainer = document.getElementById('p-comments'); commentContainer.innerHTML = currentClient.comments.length ? currentClient.comments.map(comm => `<div class="comment-item"><div class="comment-meta"><span>${comm.agent}</span><span>${comm.time}</span></div><div class="comment-text">${comm.text}</div></div>`).join('') : '<div style="color:var(--hud-muted); font-size:0.85rem;">No comments yet.</div>'; 
             const txBody = document.getElementById('transaction-history-body'); txBody.innerHTML = currentClient.transactions.length ? currentClient.transactions.map(tx => { const profitClass = tx.profit > 0 ? 'text-green' : (tx.profit < 0 ? 'text-red' : ''); return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${tx.id}</td><td>${tx.date}</td><td style="font-weight: 600;">${tx.type}</td><td>${tx.asset}</td><td>$${tx.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="${profitClass}">${tx.profit > 0 ? '+' : ''}$${tx.profit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span class="role-badge role-closer">${tx.status}</span></td></tr>`; }).join('') : '<tr><td colspan="7" style="text-align:center; color:var(--hud-muted); padding:20px;">No transactions yet.</td></tr>';
             const wdBody = document.getElementById('withdrawal-requests-body'); if (currentClient.withdrawals.length === 0) { wdBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--hud-muted); padding: 32px;">No pending withdrawal requests.</td></tr>'; } else { wdBody.innerHTML = currentClient.withdrawals.map(wd => { const statusClass = wd.status === 'PENDING' ? 'role-assistant' : 'role-closer'; const actionBtn = wd.status === 'PENDING' ? `<button class="btn-hud green" style="padding: 4px 12px; font-size: 0.7rem;" onclick="approveWithdrawal('${wd.id}')">APPROVE</button><button class="btn-hud red" style="padding: 4px 12px; font-size: 0.7rem; margin-left: 4px;" onclick="rejectWithdrawal('${wd.id}')">DENY</button>` : `<span style="color: var(--hud-muted); font-size: 0.8rem;">—</span>`; return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${wd.id}</td><td>${wd.date}</td><td>${wd.method}</td><td style="font-weight: 700;">$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="font-size: 0.8rem;">${wd.details}</td><td><span class="role-badge ${statusClass}">${wd.status}</span></td><td>${actionBtn}</td></tr>`; }).join(''); } 
             showView('profile'); 
         }
+
+        // NEW: Save Profile Data Function
+        function saveProfileData() {
+            if (!currentClient) return;
+            if (currentUserRole === 'CLOSER') { alert('Permission denied. Only Managers can edit lead data.'); return; }
+            
+            db.clients[currentClient.txId].phone = document.getElementById('p-phone').value;
+            db.clients[currentClient.txId].country = document.getElementById('p-country').value;
+            db.clients[currentClient.txId].email = document.getElementById('p-email').value;
+            db.clients[currentClient.txId].source = document.getElementById('p-source').value;
+            
+            saveDatabase();
+            alert('✅ Profile data updated successfully.');
+            renderTable(); // Refresh table to show changes
+        }
+
         function transmitStatusUpdate() { if (!currentClient) return; db.clients[currentClient.txId].status = document.getElementById('p-status-depositor').value; db.clients[currentClient.txId].retention = document.getElementById('p-status-retention').value; db.clients[currentClient.txId].subStatus = document.getElementById('p-status-sub').value; db.clients[currentClient.txId].agent = document.getElementById('p-agent-select').value; saveDatabase(); alert('Status update transmitted and saved.'); renderTable(); }
         function injectProfit() { if (!currentClient) return; const amount = parseFloat(document.getElementById('profit-amount').value); const asset = document.getElementById('profit-asset').value.trim(); if (!amount || !asset) { alert('Please enter both amount and asset.'); return; } const txId = 'TX-' + Math.floor(Math.random() * 90000 + 10000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[currentClient.txId].transactions.push({ id: txId, date: today, type: 'PROFIT', asset: asset, amount: 0, profit: amount, status: 'COMPLETED' }); db.clients[currentClient.txId].balance += amount; saveDatabase(); document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('profit-amount').value = ''; document.getElementById('profit-asset').value = ''; alert(`Profit of $${amount} injected.`); openProfile(currentClient.txId); }
         function approveWithdrawal(wdId) { if (!currentClient) return; const wd = db.clients[currentClient.txId].withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'APPROVED'; db.clients[currentClient.txId].balance -= wd.amount; db.clients[currentClient.txId].withdrawn += wd.amount; saveDatabase(); document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); alert(`Withdrawal ${wdId} approved.`); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
@@ -511,7 +565,6 @@
         function openModal(id) { document.getElementById(`modal-${id}`).classList.add('active'); }
         function closeModal(id) { document.getElementById(`modal-${id}`).classList.remove('active'); }
         
-        // UPDATED INJECT LEAD FUNCTION
         function injectLead() { 
             const name = document.getElementById('lead-name').value.trim(); 
             const country = document.getElementById('lead-country').value.trim(); 
@@ -529,7 +582,7 @@
             db.clients[txId] = { 
                 txId, agent, name, country, flag: '🌎', 
                 phone: phone, 
-                email: email, // Uses real email now
+                email: email, 
                 lastLogin: today + ' 09:00', 
                 balance: deposit, withdrawn: 0, deposit, 
                 status: 'NEW LEAD', retention: 'NEW', subStatus: 'POTENTIAL', 
