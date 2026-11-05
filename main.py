@@ -1,15 +1,23 @@
 ﻿import os
 import json
 import random
+import requests
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import uvicorn
 
-app = FastAPI(title="Verum Invest Tactical Mainframe", version="5.3.0")
+app = FastAPI(title="Verum Invest Tactical Mainframe", version="5.4.0")
 BASE_DIR = Path(__file__).resolve().parent
-DB_FILE = BASE_DIR / "database.json"
+
+# --- CLOUD DATABASE CONFIGURATION ---
+JSONBIN_BIN_ID = "6aec5042ac6210605a6e90dd" 
+JSONBIN_API_KEY = "$2a$10$QGSNKJ15elRBp8tFd/fBWeJXuX/SMb6lyKj/YL84XxJsGIU9XXA2." 
+# ------------------------------------
+
+JSONBIN_URL = f"https://api.jsonbin.io/v3/b/{JSONBIN_BIN_ID}"
+HEADERS = {'X-Master-Key': JSONBIN_API_KEY, 'Content-Type': 'application/json'}
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,21 +28,30 @@ app.add_middleware(
 )
 
 def load_db():
-    if DB_FILE.exists():
-        with open(DB_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {"agents": ["ALL"], "clients": {}}
+    try:
+        response = requests.get(JSONBIN_URL + "/latest", headers=HEADERS)
+        response.raise_for_status()
+        data = response.json()
+        # JSONBin v3 wraps data in a 'record' key
+        return data.get('record', {"agents": ["ALL"], "clients": {}}) 
+    except Exception as e:
+        print(f"Error loading DB from cloud: {e}")
+        return {"agents": ["ALL"], "clients": {}}
 
 def save_db(db):
-    with open(DB_FILE, 'w', encoding='utf-8') as f:
-        json.dump(db, f, indent=2, ensure_ascii=False)
+    try:
+        response = requests.put(JSONBIN_URL, json=db, headers=HEADERS)
+        response.raise_for_status()
+        return True
+    except Exception as e:
+        print(f"Error saving DB to cloud: {e}")
+        return False
 
 @app.middleware("http")
 async def strict_ip_firewall(request: Request, call_next):
     ALLOWED_IPS = ["191.96.215.107", "41.81.195.117", "127.0.0.1", "localhost"]
     path = request.url.path
     
-    # Public routes (No IP check)
     public_routes = ["/client", "/client-login", "/health", "/favicon.ico", "/static", "/docs", "/openapi.json", "/api/db", "/api/db/update", "/api/leads/submit", "/lead-capture"]
     if any(path == route or path.startswith(route + "/") for route in public_routes):
         return await call_next(request)
@@ -57,7 +74,8 @@ async def strict_ip_firewall(request: Request, call_next):
     return await call_next(request)
 
 @app.get("/api/db")
-def get_database(): return JSONResponse(content=load_db())
+def get_database(): 
+    return JSONResponse(content=load_db())
 
 @app.post("/api/db/update")
 async def update_database(request: Request):
@@ -76,20 +94,13 @@ async def submit_lead(request: Request):
         tx_id = 'TX-' + str(random.randint(100000, 999999))
         
         new_client = {
-            "txId": tx_id,
-            "agent": "UNASSIGNED",
-            "name": data.get('name', 'Unknown'),
-            "country": data.get('country', 'Unknown'),
-            "flag": "🌎",
-            "phone": data.get('phone', ''),
-            "email": data.get('email', ''),
-            "lastLogin": "Just now",
-            "balance": 0, "withdrawn": 0, "deposit": 0,
-            "status": "NEW LEAD",
-            "retention": "NEW",
-            "subStatus": "POTENTIAL",
+            "txId": tx_id, "agent": "UNASSIGNED", "name": data.get('name', 'Unknown'),
+            "country": data.get('country', 'Unknown'), "flag": "🌎",
+            "phone": data.get('phone', ''), "email": data.get('email', ''),
+            "lastLogin": "Just now", "balance": 0, "withdrawn": 0, "deposit": 0,
+            "status": "NEW LEAD", "retention": "NEW", "subStatus": "POTENTIAL",
             "source": data.get('source', 'Website Landing Page'),
-            "comment": f"Lead captured via Landing Page. Source: {data.get('source', 'Direct')}",
+            "comment": f"Lead captured via Landing Page.",
             "comments": [], "transactions": [], "withdrawals": []
         }
         db['clients'][tx_id] = new_client
