@@ -1,0 +1,8 @@
+$null
+/git
+/main
+/workspace
+__pycache__/
+.venv/
+.env
+database.json
