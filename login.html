@@ -38,6 +38,7 @@
             'r.palomino@verum.invest': { pass: 'Vrm_Mgr_2026!Alpha', role: 'MANAGER', name: 'Roberto Palomino' },
             'd.costa@verum.invest': { pass: 'FamiliaToreto', role: 'ASST_MANAGER', name: 'Dominick Charles Costa' },
             'k.dean@verum.invest': { pass: 'Vrm_Ast_2026!Bravo', role: 'ASST_MANAGER', name: 'Kenet James Dean' },
+            'm.gomez@verum.invest': { pass: 'Vrm_Ast_2026!Mauricio', role: 'ASST_MANAGER', name: 'Mauricio Gomez' },
             's.jaeger@verum.invest': { pass: 'Vrm_Cls_2026!Sandro', role: 'CLOSER', name: 'Sandro Kevin Jaeger' },
             'j.davis@verum.invest': { pass: 'Vrm_Cls_2026!Jessica', role: 'CLOSER', name: 'Jessica Margaret Davis' },
             'd.balmer@verum.invest': { pass: 'Vrm_Cls_2026!David', role: 'CLOSER', name: 'David James Balmer' },
@@ -49,7 +50,8 @@
             'j.briceno@verum.invest': { pass: 'Vrm_Cls_2026!Juan', role: 'CLOSER', name: 'Juan Diego Briceño' },
             'f.villari@verum.invest': { pass: 'Vrm_Cls_2026!Fiorella', role: 'CLOSER', name: 'Fiorella Villari' },
             'a.morales@verum.invest': { pass: 'Vrm_Cls_2026!Andres', role: 'CLOSER', name: 'Andres Morales' },
-            'f.brauer@verum.invest': { pass: 'Vrm_Cls_2026!Fernando', role: 'CLOSER', name: 'Fernando Brauer' }
+            'f.brauer@verum.invest': { pass: 'Vrm_Cls_2026!Fernando', role: 'CLOSER', name: 'Fernando Brauer' },
+            'a.medina@verum.invest': { pass: 'Vrm_Cls_2026!Adriano', role: 'CLOSER', name: 'Adriano Medina' }
         };
         function handleLogin(e) {
             e.preventDefault();
@@ -57,7 +59,6 @@
             const pass = document.getElementById('password').value;
             const user = staffDB[email];
             if (user && user.pass === pass) {
-                // FIX: Use localStorage so it persists after browser close
                 localStorage.setItem('verum_role', user.role);
                 localStorage.setItem('verum_user', user.name);
                 localStorage.setItem('verum_email', email);
