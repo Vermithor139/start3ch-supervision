@@ -157,6 +157,25 @@
         .ip-display { background: rgba(14,165,233,0.05); border: 1px solid rgba(14,165,233,0.2); padding: 8px 12px; border-radius: 4px; font-family: var(--font-data); font-size: 0.8rem; color: var(--hud-glow); margin-top: 12px; display: inline-block; }
         .lead-counter { background: rgba(14,165,233,0.1); border: 1px solid var(--hud-glow); padding: 12px 20px; border-radius: 8px; font-family: var(--font-data); font-size: 0.9rem; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .lead-counter .count { color: var(--hud-glow); font-weight: 700; font-size: 1.2rem; }
+        .markets-layout { display: flex; height: 100%; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .watchlist-panel { width: 320px; background: var(--hud-card); display: flex; flex-direction: column; overflow: hidden; }
+        .watchlist-header { padding: 16px; border-bottom: 1px solid var(--hud-border); font-weight: 600; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
+        .watchlist-content { flex: 1; overflow-y: auto; }
+        .wl-category { border-bottom: 1px solid var(--hud-border); }
+        .wl-cat-header { padding: 12px 16px; font-family: var(--font-data); font-size: 0.75rem; color: var(--hud-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); }
+        .wl-cat-header:hover { background: rgba(14,165,233,0.05); color: var(--hud-glow); }
+        .wl-cat-content { display: none; background: var(--hud-card); }
+        .wl-cat-content.show { display: block; }
+        .watchlist-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; cursor: pointer; transition: all 0.2s; border-bottom: 1px solid rgba(255,255,255,0.02); }
+        .watchlist-item:hover { background: rgba(14,165,233,0.05); }
+        .watchlist-item.active { background: rgba(14,165,233,0.1); border-left: 3px solid var(--hud-glow); }
+        .wl-symbol { font-weight: 600; font-size: 0.9rem; }
+        .wl-price { font-family: var(--font-data); font-size: 0.85rem; font-weight: 600; text-align: right; }
+        .wl-change { font-family: var(--font-data); font-size: 0.75rem; text-align: right; margin-top: 2px; }
+        .wl-change.up { color: var(--hud-green); }
+        .wl-change.down { color: var(--hud-red); }
+        .chart-panel { flex: 1; background: var(--hud-bg); position: relative; }
+        .chart-container { width: 100%; height: 100%; }
     </style>
 </head>
 <body>
@@ -167,6 +186,7 @@
         </div>
         <div class="nav-item active" onclick="switchMainView('leads', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>LEAD TELEMETRY</div>
         <div class="nav-item" id="nav-analytics" onclick="switchMainView('analytics', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>ANALYTICS</div>
+        <div class="nav-item" id="nav-markets" onclick="switchMainView('markets', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>LIVE MARKETS</div>
         <div class="nav-item" id="nav-config" onclick="switchMainView('config', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>SYSTEM CONFIG</div>
         <div class="user-card"><div class="user-name" id="user-name-display">Loading...</div><div class="user-role" id="user-role-display">[ACCESSING]</div></div>
     </div>
@@ -225,6 +245,38 @@
                 </div>
             </div>
 
+            <div id="view-markets" class="view-section" style="padding: 0; height: 100%;">
+                <div class="markets-layout">
+                    <div class="watchlist-panel">
+                        <div class="watchlist-header"><span>Live Markets</span></div>
+                        <div class="watchlist-content">
+                            <div class="wl-category">
+                                <div class="wl-cat-header" onclick="toggleWlCategory(this)">FOREX MAJORS <span>▼</span></div>
+                                <div class="wl-cat-content show">
+                                    <div class="watchlist-item" onclick="changeChart('FX:EURUSD', this)"><div class="wl-symbol">EURUSD</div><div><div class="wl-price">1.0842</div><div class="wl-change up">+0.15%</div></div></div>
+                                    <div class="watchlist-item" onclick="changeChart('FX:USDJPY', this)"><div class="wl-symbol">USDJPY</div><div><div class="wl-price">154.32</div><div class="wl-change down">-0.08%</div></div></div>
+                                    <div class="watchlist-item" onclick="changeChart('FX:GBPUSD', this)"><div class="wl-symbol">GBPUSD</div><div><div class="wl-price">1.2654</div><div class="wl-change up">+0.22%</div></div></div>
+                                </div>
+                            </div>
+                            <div class="wl-category">
+                                <div class="wl-cat-header" onclick="toggleWlCategory(this)">COMMODITIES <span>▼</span></div>
+                                <div class="wl-cat-content show">
+                                    <div class="watchlist-item active" onclick="changeChart('TVC:GOLD', this)"><div class="wl-symbol">XAUUSD</div><div><div class="wl-price">2,342.50</div><div class="wl-change up">+1.24%</div></div></div>
+                                    <div class="watchlist-item" onclick="changeChart('TVC:USOIL', this)"><div class="wl-symbol">WTI OIL</div><div><div class="wl-price">78.45</div><div class="wl-change down">-0.52%</div></div></div>
+                                </div>
+                            </div>
+                            <div class="wl-category">
+                                <div class="wl-cat-header" onclick="toggleWlCategory(this)">CRYPTO <span>▼</span></div>
+                                <div class="wl-cat-content show">
+                                    <div class="watchlist-item" onclick="changeChart('BINANCE:BTCUSDT', this)"><div class="wl-symbol">BTCUSD</div><div><div class="wl-price">68,420.00</div><div class="wl-change up">+1.84%</div></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-panel"><div class="chart-container" id="tv_chart"></div></div>
+                </div>
+            </div>
+
             <div id="view-config" class="view-section">
                 <div class="config-grid">
                     <div class="hud-card">
@@ -254,7 +306,7 @@
                         </div>
                         <div class="system-log" style="margin-top: 20px;">
                             > <span>System initialized...</span><br>
-                            > <span>Connected to Render cluster...</span><br>
+                            > <span>Connected to Firebase cluster...</span><br>
                             > <span>Local storage synced...</span><br>
                             > <span>Waiting for operator input...</span>
                         </div>
@@ -358,6 +410,7 @@
 
     <div class="modal-overlay" id="modal-addUser"><div class="modal-content"><button class="modal-close" onclick="closeModal('addUser')">✕</button><div class="modal-title">Add New System User</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Full Name</label><input type="text" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Email Address</label><input type="email" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Role</label><select class="fin-control-input"><option>CLOSER</option><option>SUPERVISOR</option><option>ASST. MANAGER</option></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="closeModal('addUser'); alert('User account created.')">CREATE USER ACCOUNT</button></div></div>
 
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
         let db = { agents: ["ALL"], clients: {} };
         let currentFilter = 'ALL'; 
@@ -365,6 +418,7 @@
         let currentUserRole = 'MANAGER'; 
         let currentUserName = 'Roberto Palomino';
         let currentStatusFilter = 'ALL';
+        let tvWidget = null;
         
         const EMAIL_TO_AGENT = {
             's.jaeger@verum.invest': 'SANDRO', 'j.davis@verum.invest': 'JESSICA',
@@ -396,11 +450,15 @@
             try {
                 const response = await fetch('/api/db');
                 db = await response.json();
+                if (!db.clients) db.clients = {};
+                if (!db.agents) db.agents = ["ALL"];
                 console.log('Database loaded:', Object.keys(db.clients).length, 'clients');
-            } catch (error) { console.error('Failed to fetch database:', error); }
+            } catch (error) { 
+                console.error('Failed to fetch database:', error);
+                db = { agents: ["ALL"], clients: {} };
+            }
         }
 
-        // NEW: Compacts database by removing empty arrays to save JSONBin space
         function compactDBData(data) {
             const clean = JSON.parse(JSON.stringify(data));
             if (clean.clients) {
@@ -422,7 +480,7 @@
                 const response = await fetch('/api/db/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const result = await response.json();
                 if (result.status === 'error') {
-                    alert('⚠️ SAVE FAILED: ' + result.message + '\n\nDatabase is likely full (100KB limit). Please use "COMPACT DATABASE" or delete old leads.');
+                    alert('⚠️ SAVE FAILED: ' + result.message);
                     return false;
                 }
                 return true;
@@ -433,21 +491,17 @@
             }
         }
 
-        // NEW: Button function to compact and save
         async function compactDatabase() {
             if (currentUserRole === 'CLOSER') { alert('Permission denied.'); return; }
             const btn = event.target;
             btn.textContent = '⚡ COMPACTING...';
             btn.disabled = true;
-            
             const saved = await saveDatabase();
-            
             if (saved) {
-                alert('✅ Database compacted successfully! Empty arrays removed to save space.');
+                alert('✅ Database compacted successfully!');
             } else {
-                alert('❌ Compaction failed. Database may be too large. Please delete old leads manually.');
+                alert('❌ Compaction failed.');
             }
-            
             btn.textContent = '⚡ COMPACT DATABASE';
             btn.disabled = false;
         }
@@ -474,6 +528,7 @@
             document.getElementById('user-role-display').textContent = `[${role.replace('_', ' ').toUpperCase()}]`;
 
             const analyticsNav = document.getElementById('nav-analytics'); 
+            const marketsNav = document.getElementById('nav-markets');
             const configNav = document.getElementById('nav-config'); 
             const finControls = document.getElementById('financial-controls');
             const injectBtn = document.getElementById('inject-lead-btn');
@@ -481,12 +536,14 @@
             
             if (role === 'CLOSER') { 
                 if(analyticsNav) analyticsNav.style.display = 'none'; 
+                if(marketsNav) marketsNav.style.display = 'none';
                 if(configNav) configNav.style.display = 'none'; 
                 if(finControls) finControls.style.display = 'none';
                 if(injectBtn) injectBtn.style.display = 'none';
                 if(saveProfileBtn) saveProfileBtn.style.display = 'none';
             } else { 
                 if(analyticsNav) analyticsNav.style.display = 'flex'; 
+                if(marketsNav) marketsNav.style.display = 'flex';
                 if(configNav) configNav.style.display = 'flex'; 
                 if(finControls) finControls.style.display = 'block';
                 if(injectBtn) injectBtn.style.display = 'inline-flex';
@@ -546,7 +603,8 @@
             const canDelete = currentUserRole !== 'CLOSER';
             
             clients.forEach((c) => { 
-                const tr = document.createElement('tr'); tr.onclick = () => openProfile(c.txId); 
+                const tr = document.createElement('tr'); 
+                tr.onclick = () => openProfile(c.txId); 
                 
                 let actionCell = '';
                 if (canDelete) {
@@ -556,16 +614,16 @@
                 }
 
                 tr.innerHTML = `<td><input type="checkbox" onclick="event.stopPropagation()"></td>
-                <td><a href="#" class="client-link" onclick="event.preventDefault(); openProfile('${c.txId}')">${c.name}</a><div class="client-id">${c.txId}</div></td>
-                <td>${c.country} ${c.flag || '🌎'}</td>
+                <td><a href="#" class="client-link" onclick="event.preventDefault(); openProfile('${c.txId}')">${c.name || 'Unknown'}</a><div class="client-id">${c.txId}</div></td>
+                <td>${c.country || 'Unknown'} ${c.flag || '🌎'}</td>
                 <td><span class="role-badge" style="background: rgba(255,255,255,0.1); color: var(--hud-muted); font-size: 0.65rem;">${c.source || 'Unknown'}</span></td>
-                <td style="font-family: var(--font-data); font-size: 0.8rem;">${c.lastLogin}</td>
-                <td style="font-weight: 700;">$${c.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                <td class="text-red">-$${c.withdrawn.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                <td style="font-weight: 700;">$${c.deposit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                <td><select class="status-select status-depositor" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'status', this.value)" ${!canModifyDepositor ? 'disabled' : ''}><option selected>${c.status}</option></select></td>
-                <td><select class="status-select status-retention" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'retention', this.value)"><option selected>${c.retention}</option></select></td>
-                <td><select class="status-select status-sub" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'subStatus', this.value)"><option selected>${c.subStatus}</option></select></td>
+                <td style="font-family: var(--font-data); font-size: 0.8rem;">${c.lastLogin || 'N/A'}</td>
+                <td style="font-weight: 700;">$${(c.balance || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td class="text-red">-$${(c.withdrawn || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td style="font-weight: 700;">$${(c.deposit || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                <td><select class="status-select status-depositor" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'status', this.value)" ${!canModifyDepositor ? 'disabled' : ''}><option selected>${c.status || 'NEW LEAD'}</option></select></td>
+                <td><select class="status-select status-retention" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'retention', this.value)"><option selected>${c.retention || 'NEW'}</option></select></td>
+                <td><select class="status-select status-sub" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'subStatus', this.value)"><option selected>${c.subStatus || 'POTENTIAL'}</option></select></td>
                 <td><div class="comment-preview">${c.comment || ''}</div></td>
                 ${actionCell}`; 
                 tbody.appendChild(tr); 
@@ -587,7 +645,7 @@
         function clearTestLeads() {
             if (currentUserRole === 'CLOSER') { alert('Permission denied.'); return; }
             if (confirm('⚠️ This will delete ALL leads with "Test" in their name. Continue?')) {
-                const testLeads = Object.keys(db.clients).filter(id => db.clients[id].name.toLowerCase().includes('test'));
+                const testLeads = Object.keys(db.clients).filter(id => db.clients[id].name && db.clients[id].name.toLowerCase().includes('test'));
                 testLeads.forEach(id => delete db.clients[id]);
                 saveDatabase();
                 renderTable();
@@ -600,12 +658,51 @@
         function filterTable(agent, el) { currentFilter = agent; renderAgentTabs(); renderTable(); }
         function addFilter() { const name = prompt("Enter Agent Name:").trim().toUpperCase(); if (name) { if(!db.agents.includes(name)) { db.agents.push(name); saveDatabase(); } currentFilter = name; renderAgentTabs(); renderTable(); } }
         
-        function checkWithdrawalAlerts() { let pendingCount = 0; const pendingList = []; Object.values(db.clients).forEach(c => { c.withdrawals.forEach(w => { if (w.status === 'PENDING') { pendingCount++; pendingList.push({ txId: c.txId, name: c.name, amount: w.amount, method: w.method, wdId: w.id }); } }); }); const badge = document.getElementById('wd-badge'); const countSpan = document.getElementById('notif-count'); const listContainer = document.getElementById('notif-list'); if (pendingCount > 0) { badge.textContent = pendingCount; badge.style.display = 'block'; countSpan.textContent = pendingCount; listContainer.innerHTML = pendingList.map(p => `<div class="notif-item" onclick="routeToWithdrawal('${p.txId}')"><div class="notif-item-title"><span>${p.name}</span><span style="color: var(--status-orange);">$${p.amount.toFixed(2)}</span></div><div class="notif-item-desc">Requesting withdrawal via ${p.method}</div><div class="notif-item-action">View & Approve →</div></div>`).join(''); } else { badge.style.display = 'none'; countSpan.textContent = '0'; listContainer.innerHTML = '<div class="notif-empty">No pending withdrawal requests.</div>'; } document.getElementById('analytics-pending').textContent = pendingCount; }
+        function checkWithdrawalAlerts() { 
+            let pendingCount = 0; 
+            const pendingList = []; 
+            Object.values(db.clients).forEach(c => { 
+                if (c.withdrawals) {
+                    c.withdrawals.forEach(w => { 
+                        if (w.status === 'PENDING') { 
+                            pendingCount++; 
+                            pendingList.push({ txId: c.txId, name: c.name, amount: w.amount, method: w.method, wdId: w.id }); 
+                        } 
+                    });
+                }
+            }); 
+            const badge = document.getElementById('wd-badge'); 
+            const countSpan = document.getElementById('notif-count'); 
+            const listContainer = document.getElementById('notif-list'); 
+            if (pendingCount > 0) { 
+                badge.textContent = pendingCount; 
+                badge.style.display = 'block'; 
+                countSpan.textContent = pendingCount; 
+                listContainer.innerHTML = pendingList.map(p => `<div class="notif-item" onclick="routeToWithdrawal('${p.txId}')"><div class="notif-item-title"><span>${p.name}</span><span style="color: var(--status-orange);">$${p.amount.toFixed(2)}</span></div><div class="notif-item-desc">Requesting withdrawal via ${p.method}</div><div class="notif-item-action">View & Approve →</div></div>`).join(''); 
+            } else { 
+                badge.style.display = 'none'; 
+                countSpan.textContent = '0'; 
+                listContainer.innerHTML = '<div class="notif-empty">No pending withdrawal requests.</div>'; 
+            } 
+            document.getElementById('analytics-pending').textContent = pendingCount; 
+        }
         function toggleNotifDropdown(e) { e.stopPropagation(); document.getElementById('notif-dropdown').classList.toggle('active'); }
         function routeToWithdrawal(txId) { document.getElementById('notif-dropdown').classList.remove('active'); switchMainView('leads', document.querySelector('.nav-item')); setTimeout(() => { openProfile(txId); }, 100); }
         document.addEventListener('click', function(e) { const dropdown = document.getElementById('notif-dropdown'); const bell = document.querySelector('.notif-bell'); if (!dropdown.contains(e.target) && !bell.contains(e.target)) { dropdown.classList.remove('active'); } });
-        function switchMainView(viewName, navEl) { document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); if(navEl) navEl.classList.add('active'); document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewName}`).classList.add('active'); const titles = { 'leads': 'LEAD <span>TELEMETRY</span> OVERVIEW', 'analytics': 'PERFORMANCE <span>ANALYTICS</span>', 'config': 'SYSTEM <span>CONFIGURATION</span>' }; document.getElementById('pageTitle').innerHTML = titles[viewName]; }
-        function showView(viewName) { document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewName}`).classList.add('active'); document.getElementById('pageTitle').innerHTML = viewName === 'leads' ? 'LEAD <span>TELEMETRY</span> OVERVIEW' : 'CLIENT <span>INTELLIGENCE</span> DOSSIER'; }
+        function switchMainView(viewName, navEl) { 
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); 
+            if(navEl) navEl.classList.add('active'); 
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); 
+            document.getElementById(`view-${viewName}`).classList.add('active'); 
+            const titles = { 'leads': 'LEAD <span>TELEMETRY</span> OVERVIEW', 'analytics': 'PERFORMANCE <span>ANALYTICS</span>', 'markets': 'LIVE <span>MARKETS</span>', 'config': 'SYSTEM <span>CONFIGURATION</span>' }; 
+            document.getElementById('pageTitle').innerHTML = titles[viewName];
+            if (viewName === 'markets') initTradingView();
+        }
+        function showView(viewName) { 
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); 
+            document.getElementById(`view-${viewName}`).classList.add('active'); 
+            document.getElementById('pageTitle').innerHTML = viewName === 'leads' ? 'LEAD <span>TELEMETRY</span> OVERVIEW' : 'CLIENT <span>INTELLIGENCE</span> DOSSIER'; 
+        }
         
         function copyClientLink() {
             if (!currentClient) return;
@@ -616,8 +713,13 @@
         }
 
         function openProfile(txId) { 
-            currentClient = db.clients[txId]; if (!currentClient) return; 
-            document.getElementById('p-name').textContent = currentClient.name; document.getElementById('p-id').textContent = currentClient.txId; 
+            currentClient = db.clients[txId]; 
+            if (!currentClient) {
+                alert('Client data not found. Please refresh the page.');
+                return;
+            }
+            document.getElementById('p-name').textContent = currentClient.name || 'Unknown'; 
+            document.getElementById('p-id').textContent = currentClient.txId; 
             
             document.getElementById('p-phone').value = currentClient.phone || '';
             document.getElementById('p-country').value = currentClient.country || '';
@@ -630,16 +732,37 @@
             document.getElementById('p-email').disabled = isCloser;
             document.getElementById('p-source').disabled = isCloser;
 
-            document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('p-deposited').textContent = '$' + currentClient.deposit.toLocaleString('en-US', {minimumFractionDigits: 2}); 
-            const agentSelect = document.getElementById('p-agent-select'); agentSelect.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option ${a === currentClient.agent ? 'selected' : ''}>${a}</option>`).join(''); 
+            document.getElementById('p-balance').textContent = '$' + (currentClient.balance || 0).toLocaleString('en-US', {minimumFractionDigits: 2}); 
+            document.getElementById('p-deposited').textContent = '$' + (currentClient.deposit || 0).toLocaleString('en-US', {minimumFractionDigits: 2}); 
+            
+            const agentSelect = document.getElementById('p-agent-select'); 
+            agentSelect.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option ${a === currentClient.agent ? 'selected' : ''}>${a}</option>`).join(''); 
             if (isCloser) { agentSelect.disabled = true; } else { agentSelect.disabled = false; }
-            document.getElementById('p-status-depositor').value = currentClient.status; document.getElementById('p-status-retention').value = currentClient.retention; document.getElementById('p-status-sub').value = currentClient.subStatus; 
-            const depositorSelect = document.getElementById('p-status-depositor'); if (isCloser) { depositorSelect.disabled = true; } else { depositorSelect.disabled = false; }
-            const commentContainer = document.getElementById('p-comments'); commentContainer.innerHTML = currentClient.comments.length ? currentClient.comments.map(comm => `<div class="comment-item"><div class="comment-meta"><span>${comm.agent}</span><span>${comm.time}</span></div><div class="comment-text">${comm.text}</div></div>`).join('') : '<div style="color:var(--hud-muted); font-size:0.85rem;">No comments yet.</div>'; 
+            
+            document.getElementById('p-status-depositor').value = currentClient.status || 'NEW LEAD'; 
+            document.getElementById('p-status-retention').value = currentClient.retention || 'NEW'; 
+            document.getElementById('p-status-sub').value = currentClient.subStatus || 'POTENTIAL'; 
+            
+            const depositorSelect = document.getElementById('p-status-depositor'); 
+            if (isCloser) { depositorSelect.disabled = true; } else { depositorSelect.disabled = false; }
+            
+            const commentContainer = document.getElementById('p-comments'); 
+            const comments = currentClient.comments || [];
+            commentContainer.innerHTML = comments.length ? comments.map(comm => `<div class="comment-item"><div class="comment-meta"><span>${comm.agent}</span><span>${comm.time}</span></div><div class="comment-text">${comm.text}</div></div>`).join('') : '<div style="color:var(--hud-muted); font-size:0.85rem;">No comments yet.</div>'; 
             
             renderTransactionsForManager();
 
-            const wdBody = document.getElementById('withdrawal-requests-body'); if (currentClient.withdrawals.length === 0) { wdBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--hud-muted); padding: 32px;">No pending withdrawal requests.</td></tr>'; } else { wdBody.innerHTML = currentClient.withdrawals.map(wd => { const statusClass = wd.status === 'PENDING' ? 'role-assistant' : 'role-closer'; const actionBtn = wd.status === 'PENDING' ? `<button class="btn-hud green" style="padding: 4px 12px; font-size: 0.7rem;" onclick="approveWithdrawal('${wd.id}')">APPROVE</button><button class="btn-hud red" style="padding: 4px 12px; font-size: 0.7rem; margin-left: 4px;" onclick="rejectWithdrawal('${wd.id}')">DENY</button>` : `<span style="color: var(--hud-muted); font-size: 0.8rem;">—</span>`; return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${wd.id}</td><td>${wd.date}</td><td>${wd.method}</td><td style="font-weight: 700;">$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="font-size: 0.8rem;">${wd.details}</td><td><span class="role-badge ${statusClass}">${wd.status}</span></td><td>${actionBtn}</td></tr>`; }).join(''); } 
+            const wdBody = document.getElementById('withdrawal-requests-body'); 
+            const withdrawals = currentClient.withdrawals || [];
+            if (withdrawals.length === 0) { 
+                wdBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--hud-muted); padding: 32px;">No pending withdrawal requests.</td></tr>'; 
+            } else { 
+                wdBody.innerHTML = withdrawals.map(wd => { 
+                    const statusClass = wd.status === 'PENDING' ? 'role-assistant' : 'role-closer'; 
+                    const actionBtn = wd.status === 'PENDING' ? `<button class="btn-hud green" style="padding: 4px 12px; font-size: 0.7rem;" onclick="approveWithdrawal('${wd.id}')">APPROVE</button><button class="btn-hud red" style="padding: 4px 12px; font-size: 0.7rem; margin-left: 4px;" onclick="rejectWithdrawal('${wd.id}')">DENY</button>` : `<span style="color: var(--hud-muted); font-size: 0.8rem;">—</span>`; 
+                    return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${wd.id}</td><td>${wd.date}</td><td>${wd.method}</td><td style="font-weight: 700;">$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="font-size: 0.8rem;">${wd.details || ''}</td><td><span class="role-badge ${statusClass}">${wd.status}</span></td><td>${actionBtn}</td></tr>`; 
+                }).join(''); 
+            } 
             showView('profile'); 
         }
 
@@ -653,17 +776,18 @@
             }
             const txBody = document.getElementById('transaction-history-body');
             const editSelect = document.getElementById('edit-tx-select');
-            if (currentClient.transactions.length === 0) {
+            const transactions = currentClient.transactions || [];
+            if (transactions.length === 0) {
                 txBody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--hud-muted); padding:20px;">No transactions yet.</td></tr>';
                 editSelect.innerHTML = '<option value="">-- No Transactions --</option>';
                 return;
             }
-            txBody.innerHTML = currentClient.transactions.map(tx => {
+            txBody.innerHTML = transactions.map(tx => {
                 const profitClass = tx.profit > 0 ? 'text-green' : (tx.profit < 0 ? 'text-red' : '');
-                return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${tx.id}</td><td>${tx.date}</td><td style="font-weight: 600;">${tx.type}</td><td>${tx.asset}</td><td>$${tx.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="${profitClass}" style="font-weight: 700;">${tx.profit > 0 ? '+' : ''}$${tx.profit.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span class="role-badge role-closer">${tx.status}</span></td></tr>`;
+                return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${tx.id}</td><td>${tx.date}</td><td style="font-weight: 600;">${tx.type}</td><td>${tx.asset}</td><td>$${(tx.amount || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td class="${profitClass}" style="font-weight: 700;">${tx.profit > 0 ? '+' : ''}$${(tx.profit || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td><span class="role-badge role-closer">${tx.status}</span></td></tr>`;
             }).join('');
             editSelect.innerHTML = '<option value="">-- Select Transaction --</option>' +
-                currentClient.transactions.map(tx => `<option value="${tx.id}">${tx.id} - ${tx.asset} (${tx.profit > 0 ? '+' : ''}$${tx.profit.toFixed(2)})</option>`).join('');
+                transactions.map(tx => `<option value="${tx.id}">${tx.id} - ${tx.asset} (${tx.profit > 0 ? '+' : ''}$${(tx.profit || 0).toFixed(2)})</option>`).join('');
         }
 
         function editTransactionProfit() {
@@ -673,10 +797,10 @@
             if (!txId || isNaN(newProfit)) { alert('Please select a transaction and enter a value.'); return; }
             const tx = currentClient.transactions.find(t => t.id === txId);
             if (!tx) return;
-            const oldProfit = tx.profit;
+            const oldProfit = tx.profit || 0;
             const profitChange = newProfit - oldProfit;
             tx.profit = newProfit;
-            currentClient.balance += profitChange;
+            currentClient.balance = (currentClient.balance || 0) + profitChange;
             db.clients[currentClient.txId] = currentClient;
             saveDatabase();
             alert(`✅ Transaction updated!\nOld: $${oldProfit.toFixed(2)}\nNew: $${newProfit.toFixed(2)}\nBalance adjusted by: $${profitChange.toFixed(2)}`);
@@ -698,28 +822,84 @@
             renderTable();
         }
 
-        function transmitStatusUpdate() { if (!currentClient) return; db.clients[currentClient.txId].status = document.getElementById('p-status-depositor').value; db.clients[currentClient.txId].retention = document.getElementById('p-status-retention').value; db.clients[currentClient.txId].subStatus = document.getElementById('p-status-sub').value; db.clients[currentClient.txId].agent = document.getElementById('p-agent-select').value; saveDatabase(); alert('Status update transmitted and saved.'); renderTable(); }
-        function injectProfit() { if (!currentClient) return; const amount = parseFloat(document.getElementById('profit-amount').value); const asset = document.getElementById('profit-asset').value.trim(); if (!amount || !asset) { alert('Please enter both amount and asset.'); return; } const txId = 'TX-' + Math.floor(Math.random() * 90000 + 10000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[currentClient.txId].transactions.push({ id: txId, date: today, type: 'PROFIT', asset: asset, amount: 0, profit: amount, status: 'COMPLETED' }); db.clients[currentClient.txId].balance += amount; saveDatabase(); document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('profit-amount').value = ''; document.getElementById('profit-asset').value = ''; alert(`Profit of $${amount} injected.`); openProfile(currentClient.txId); }
-        function approveWithdrawal(wdId) { if (!currentClient) return; const wd = db.clients[currentClient.txId].withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'APPROVED'; db.clients[currentClient.txId].balance -= wd.amount; db.clients[currentClient.txId].withdrawn += wd.amount; saveDatabase(); document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); alert(`Withdrawal ${wdId} approved.`); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
-        function rejectWithdrawal(wdId) { if (!currentClient) return; const wd = db.clients[currentClient.txId].withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'REJECTED'; saveDatabase(); alert(`Withdrawal ${wdId} rejected.`); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
+        function transmitStatusUpdate() { 
+            if (!currentClient) return; 
+            db.clients[currentClient.txId].status = document.getElementById('p-status-depositor').value; 
+            db.clients[currentClient.txId].retention = document.getElementById('p-status-retention').value; 
+            db.clients[currentClient.txId].subStatus = document.getElementById('p-status-sub').value; 
+            db.clients[currentClient.txId].agent = document.getElementById('p-agent-select').value; 
+            saveDatabase(); 
+            alert('Status update transmitted and saved.'); 
+            renderTable(); 
+        }
+        
+        function injectProfit() { 
+            if (!currentClient) return; 
+            const amount = parseFloat(document.getElementById('profit-amount').value); 
+            const asset = document.getElementById('profit-asset').value.trim(); 
+            if (!amount || !asset) { alert('Please enter both amount and asset.'); return; } 
+            const txId = 'TX-' + Math.floor(Math.random() * 90000 + 10000); 
+            const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); 
+            if (!currentClient.transactions) currentClient.transactions = [];
+            currentClient.transactions.push({ id: txId, date: today, type: 'PROFIT', asset: asset, amount: 0, profit: amount, status: 'COMPLETED' }); 
+            currentClient.balance = (currentClient.balance || 0) + amount; 
+            saveDatabase(); 
+            document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); 
+            document.getElementById('profit-amount').value = ''; 
+            document.getElementById('profit-asset').value = ''; 
+            alert(`Profit of $${amount} injected.`); 
+            openProfile(currentClient.txId); 
+        }
+        
+        function approveWithdrawal(wdId) { 
+            if (!currentClient) return; 
+            const wd = currentClient.withdrawals.find(w => w.id === wdId); 
+            if (!wd) return; 
+            wd.status = 'APPROVED'; 
+            currentClient.balance = (currentClient.balance || 0) - wd.amount; 
+            currentClient.withdrawn = (currentClient.withdrawn || 0) + wd.amount; 
+            saveDatabase(); 
+            document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); 
+            alert(`Withdrawal ${wdId} approved.`); 
+            openProfile(currentClient.txId); 
+            checkWithdrawalAlerts(); 
+        }
+        
+        function rejectWithdrawal(wdId) { 
+            if (!currentClient) return; 
+            const wd = currentClient.withdrawals.find(w => w.id === wdId); 
+            if (!wd) return; 
+            wd.status = 'REJECTED'; 
+            saveDatabase(); 
+            alert(`Withdrawal ${wdId} rejected.`); 
+            openProfile(currentClient.txId); 
+            checkWithdrawalAlerts(); 
+        }
         
         async function addComment() { 
             const input = document.getElementById('new-comment'); 
             const text = input.value.trim(); 
             if (!text || !currentClient) return; 
             const now = new Date().toLocaleString(); 
-            db.clients[currentClient.txId].comments.unshift({agent: localStorage.getItem('verum_user') || "Manager", time: now, text: text}); 
+            if (!currentClient.comments) currentClient.comments = [];
+            currentClient.comments.unshift({agent: localStorage.getItem('verum_user') || "Manager", time: now, text: text}); 
             const saved = await saveDatabase();
             if (saved) {
                 input.value = ''; 
                 openProfile(currentClient.txId);
             } else {
-                db.clients[currentClient.txId].comments.shift();
+                currentClient.comments.shift();
                 alert('Comment was not saved. Please try again.');
             }
         }
 
-        function switchTab(tabId, btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); btn.classList.add('active'); document.getElementById(`tab-${tabId}`).classList.add('active'); }
+        function switchTab(tabId, btn) { 
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); 
+            btn.classList.add('active'); 
+            document.getElementById(`tab-${tabId}`).classList.add('active'); 
+        }
+        
         function openModal(id) { document.getElementById(`modal-${id}`).classList.add('active'); }
         function closeModal(id) { document.getElementById(`modal-${id}`).classList.remove('active'); }
         
@@ -763,8 +943,54 @@
             updateLeadCounter();
         }
 
+        function toggleWlCategory(header) { 
+            const content = header.nextElementSibling; 
+            content.classList.toggle('show'); 
+            const arrow = header.querySelector('span');
+            arrow.textContent = content.classList.contains('show') ? '▼' : '▶';
+        }
+
+        function changeChart(symbol, el) { 
+            document.querySelectorAll('.watchlist-item').forEach(i => i.classList.remove('active')); 
+            el.classList.add('active'); 
+            initTradingView(symbol);
+        }
+
+        function initTradingView(symbol = 'TVC:GOLD') {
+            if (tvWidget) {
+                tvWidget.remove();
+                tvWidget = null;
+            }
+            const container = document.getElementById('tv_chart');
+            if (!container) return;
+            container.innerHTML = '';
+            try {
+                tvWidget = new TradingView.widget({
+                    "autosize": true,
+                    "symbol": symbol,
+                    "interval": "1",
+                    "timezone": "Etc/UTC",
+                    "theme": "dark",
+                    "style": "1",
+                    "locale": "en",
+                    "toolbar_bg": "#0b1120",
+                    "enable_publishing": false,
+                    "hide_top_toolbar": false,
+                    "container_id": "tv_chart"
+                });
+            } catch (e) {
+                console.error('TradingView init error:', e);
+                container.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--hud-muted);">Chart loading...</div>';
+            }
+        }
+
         function logout() { localStorage.clear(); window.location.href = '/login'; }
-        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initCRM); } else { initCRM(); }
+        
+        if (document.readyState === 'loading') { 
+            document.addEventListener('DOMContentLoaded', initCRM); 
+        } else { 
+            initCRM(); 
+        }
     </script>
 </body>
 </html>
