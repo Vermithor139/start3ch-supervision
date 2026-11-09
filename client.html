@@ -218,29 +218,43 @@
             <div class="markets-layout">
                 <div class="watchlist-panel" id="watchlist-panel">
                     <div class="watchlist-header">
-                        <span>Watchlist</span>
+                        <span>Live Markets</span>
                         <svg class="watchlist-toggle" onclick="toggleWatchlist()" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg>
                     </div>
                     <div class="watchlist-content">
                         <div class="wl-category">
-                            <div class="wl-cat-header" onclick="toggleWlCategory(this)">INDICES <span class="arrow">▼</span></div>
+                            <div class="wl-cat-header" onclick="toggleWlCategory(this)">FOREX MAJORS <span class="arrow">▼</span></div>
                             <div class="wl-cat-content show">
-                                <div class="watchlist-item" onclick="changeChart('TVC:SPX', this)"><div class="wl-symbol"><div class="wl-symbol-icon"></div>SPX500</div><div><div class="wl-price">7,722.60</div><div class="wl-change up">+45.83 (0.60%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('CME_MINI:NQ1!', this)"><div class="wl-symbol"><div class="wl-symbol-icon"></div>NDX100</div><div><div class="wl-price">29,651.44</div><div class="wl-change up">+378.04 (1.29%)</div></div></div>
+                                <div class="watchlist-item" onclick="changeChart('FX:EURUSD', this)"><div class="wl-symbol"><div class="wl-symbol-icon">€</div>EURUSD</div><div><div class="wl-price">1.0842</div><div class="wl-change up">+0.15%</div></div></div>
+                                <div class="watchlist-item" onclick="changeChart('FX:USDJPY', this)"><div class="wl-symbol"><div class="wl-symbol-icon">¥</div>USDJPY</div><div><div class="wl-price">154.32</div><div class="wl-change down">-0.08%</div></div></div>
+                                <div class="watchlist-item" onclick="changeChart('FX:GBPUSD', this)"><div class="wl-symbol"><div class="wl-symbol-icon">£</div>GBPUSD</div><div><div class="wl-price">1.2654</div><div class="wl-change up">+0.22%</div></div></div>
+                                <div class="watchlist-item" onclick="changeChart('FX:AUDUSD', this)"><div class="wl-symbol"><div class="wl-symbol-icon">A$</div>AUDUSD</div><div><div class="wl-price">0.6523</div><div class="wl-change down">-0.12%</div></div></div>
+                                <div class="watchlist-item" onclick="changeChart('FX:USDCAD', this)"><div class="wl-symbol"><div class="wl-symbol-icon">C$</div>USDCAD</div><div><div class="wl-price">1.3845</div><div class="wl-change up">+0.05%</div></div></div>
+                                <div class="watchlist-item" onclick="changeChart('FX:USDCHF', this)"><div class="wl-symbol"><div class="wl-symbol-icon">Fr</div>USDCHF</div><div><div class="wl-price">0.8923</div><div class="wl-change down">-0.18%</div></div></div>
+                                <div class="watchlist-item" onclick="changeChart('FX:NZDUSD', this)"><div class="wl-symbol"><div class="wl-symbol-icon">NZ$</div>NZDUSD</div><div><div class="wl-price">0.6012</div><div class="wl-change up">+0.09%</div></div></div>
                             </div>
                         </div>
                         <div class="wl-category">
-                            <div class="wl-cat-header" onclick="toggleWlCategory(this)">STOCKS <span class="arrow">▼</span></div>
+                            <div class="wl-cat-header" onclick="toggleWlCategory(this)">COMMODITIES <span class="arrow">▼</span></div>
                             <div class="wl-cat-content show">
-                                <div class="watchlist-item active" onclick="changeChart('NASDAQ:AAPL', this)"><div class="wl-symbol"><div class="wl-symbol-icon">🍎</div>AAPL</div><div><div class="wl-price">347.10</div><div class="wl-change up">+3.19 (0.93%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('NASDAQ:TSLA', this)"><div class="wl-symbol"><div class="wl-symbol-icon">🚗</div>TSLA</div><div><div class="wl-price">407.46</div><div class="wl-change up">+15.84 (4.04%)</div></div></div>
+                                <div class="watchlist-item active" onclick="changeChart('TVC:GOLD', this)"><div class="wl-symbol"><div class="wl-symbol-icon">🥇</div>XAUUSD</div><div><div class="wl-price">2,342.50</div><div class="wl-change up">+1.24%</div></div></div>
+                                <div class="watchlist-item" onclick="changeChart('TVC:SILVER', this)"><div class="wl-symbol"><div class="wl-symbol-icon">🥈</div>XAGUSD</div><div><div class="wl-price">29.85</div><div class="wl-change up">+0.87%</div></div></div>
+                                <div class="watchlist-item" onclick="changeChart('TVC:USOIL', this)"><div class="wl-symbol"><div class="wl-symbol-icon">🛢️</div>WTI OIL</div><div><div class="wl-price">78.45</div><div class="wl-change down">-0.52%</div></div></div>
+                            </div>
+                        </div>
+                        <div class="wl-category">
+                            <div class="wl-cat-header" onclick="toggleWlCategory(this)">INDICES <span class="arrow">▼</span></div>
+                            <div class="wl-cat-content show">
+                                <div class="watchlist-item" onclick="changeChart('TVC:DJI', this)"><div class="wl-symbol"><div class="wl-symbol-icon">📊</div>US30</div><div><div class="wl-price">39,845.20</div><div class="wl-change up">+0.68%</div></div></div>
+                                <div class="watchlist-item" onclick="changeChart('NASDAQ:NDX', this)"><div class="wl-symbol"><div class="wl-symbol-icon">📈</div>NAS100</div><div><div class="wl-price">18,234.50</div><div class="wl-change up">+1.12%</div></div></div>
+                                <div class="watchlist-item" onclick="changeChart('TVC:SPX', this)"><div class="wl-symbol"><div class="wl-symbol-icon">📉</div>SPX500</div><div><div class="wl-price">5,234.80</div><div class="wl-change up">+0.45%</div></div></div>
                             </div>
                         </div>
                         <div class="wl-category">
                             <div class="wl-cat-header" onclick="toggleWlCategory(this)">CRYPTOCURRENCIES <span class="arrow">▼</span></div>
-                            <div class="wl-cat-content">
-                                <div class="watchlist-item" onclick="changeChart('BINANCE:BTCUSDT', this)"><div class="wl-symbol"><div class="wl-symbol-icon">₿</div>BTC/USD</div><div><div class="wl-price">68,420.00</div><div class="wl-change up">+1,240.00 (1.84%)</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('BINANCE:ETHUSDT', this)"><div class="wl-symbol"><div class="wl-symbol-icon">Ξ</div>ETH/USD</div><div><div class="wl-price">3,850.50</div><div class="wl-change up">+45.20 (1.18%)</div></div></div>
+                            <div class="wl-cat-content show">
+                                <div class="watchlist-item" onclick="changeChart('BINANCE:BTCUSDT', this)"><div class="wl-symbol"><div class="wl-symbol-icon">₿</div>BTCUSD</div><div><div class="wl-price">68,420.00</div><div class="wl-change up">+1.84%</div></div></div>
+                                <div class="watchlist-item" onclick="changeChart('BINANCE:ETHUSDT', this)"><div class="wl-symbol"><div class="wl-symbol-icon">Ξ</div>ETHUSD</div><div><div class="wl-price">3,850.50</div><div class="wl-change up">+1.18%</div></div></div>
                             </div>
                         </div>
                     </div>
@@ -395,7 +409,6 @@
                 currentClientId = clientId; 
                 switchClientView(currentClientId); 
             } else if (serverDB && Object.keys(serverDB.clients).length > 0) {
-                // Fallback: show first client
                 const firstId = Object.keys(serverDB.clients)[0];
                 currentClientId = firstId;
                 switchClientView(firstId);
@@ -405,7 +418,7 @@
 
             setTimeout(() => { 
                 document.getElementById('tv_chart').innerHTML = ''; 
-                new TradingView.widget({ "autosize": true, "symbol": "NASDAQ:AAPL", "interval": "1", "timezone": "Etc/UTC", "theme": "dark", "style": "1", "locale": "en", "toolbar_bg": "#0b1120", "enable_publishing": false, "hide_top_toolbar": false, "container_id": "tv_chart" }); 
+                new TradingView.widget({ "autosize": true, "symbol": "TVC:GOLD", "interval": "1", "timezone": "Etc/UTC", "theme": "dark", "style": "1", "locale": "en", "toolbar_bg": "#0b1120", "enable_publishing": false, "hide_top_toolbar": false, "container_id": "tv_chart" }); 
             }, 100); 
         };
 
@@ -426,7 +439,6 @@
             const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); 
             serverDB.clients[currentClientId].withdrawals.push({ id: wdId, date: today, method: method, amount: amount, details: details, status: 'PENDING' }); 
             
-            // Save to server
             try {
                 await fetch('/api/db/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(serverDB) });
             } catch (error) { console.error('Failed to save:', error); }
