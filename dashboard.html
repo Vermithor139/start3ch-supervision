@@ -405,10 +405,13 @@
                 const result = await response.json();
                 if (result.status === 'error') {
                     alert('⚠️ SAVE FAILED: ' + result.message + '\n\nPlease check your JSONBin account size limit or create a new Bin.');
+                    return false;
                 }
+                return true;
             } catch (error) { 
                 console.error('Failed to save database:', error);
                 alert('⚠️ Network error saving database.');
+                return false;
             }
         }
         
@@ -662,7 +665,23 @@
         function injectProfit() { if (!currentClient) return; const amount = parseFloat(document.getElementById('profit-amount').value); const asset = document.getElementById('profit-asset').value.trim(); if (!amount || !asset) { alert('Please enter both amount and asset.'); return; } const txId = 'TX-' + Math.floor(Math.random() * 90000 + 10000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[currentClient.txId].transactions.push({ id: txId, date: today, type: 'PROFIT', asset: asset, amount: 0, profit: amount, status: 'COMPLETED' }); db.clients[currentClient.txId].balance += amount; saveDatabase(); document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('profit-amount').value = ''; document.getElementById('profit-asset').value = ''; alert(`Profit of $${amount} injected.`); openProfile(currentClient.txId); }
         function approveWithdrawal(wdId) { if (!currentClient) return; const wd = db.clients[currentClient.txId].withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'APPROVED'; db.clients[currentClient.txId].balance -= wd.amount; db.clients[currentClient.txId].withdrawn += wd.amount; saveDatabase(); document.getElementById('p-balance').textContent = '$' + db.clients[currentClient.txId].balance.toLocaleString('en-US', {minimumFractionDigits: 2}); alert(`Withdrawal ${wdId} approved.`); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
         function rejectWithdrawal(wdId) { if (!currentClient) return; const wd = db.clients[currentClient.txId].withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'REJECTED'; saveDatabase(); alert(`Withdrawal ${wdId} rejected.`); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
-        function addComment() { const input = document.getElementById('new-comment'); const text = input.value.trim(); if (!text || !currentClient) return; const now = new Date().toLocaleString(); db.clients[currentClient.txId].comments.unshift({agent: localStorage.getItem('verum_user') || "Manager", time: now, text: text}); saveDatabase(); input.value = ''; openProfile(currentClient.txId); }
+        
+        async function addComment() { 
+            const input = document.getElementById('new-comment'); 
+            const text = input.value.trim(); 
+            if (!text || !currentClient) return; 
+            const now = new Date().toLocaleString(); 
+            db.clients[currentClient.txId].comments.unshift({agent: localStorage.getItem('verum_user') || "Manager", time: now, text: text}); 
+            const saved = await saveDatabase();
+            if (saved) {
+                input.value = ''; 
+                openProfile(currentClient.txId);
+            } else {
+                db.clients[currentClient.txId].comments.shift();
+                alert('Comment was not saved. Please try again.');
+            }
+        }
+
         function switchTab(tabId, btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); btn.classList.add('active'); document.getElementById(`tab-${tabId}`).classList.add('active'); }
         function openModal(id) { document.getElementById(`modal-${id}`).classList.add('active'); }
         function closeModal(id) { document.getElementById(`modal-${id}`).classList.remove('active'); }
