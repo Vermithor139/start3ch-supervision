@@ -404,11 +404,11 @@
                 const response = await fetch('/api/db/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(db) });
                 const result = await response.json();
                 if (result.status === 'error') {
-                    alert('⚠️ Database save failed: ' + result.message);
+                    alert('⚠️ SAVE FAILED: ' + result.message + '\n\nPlease check your JSONBin account size limit or create a new Bin.');
                 }
             } catch (error) { 
                 console.error('Failed to save database:', error);
-                alert('⚠️ Failed to save to database. Check console for details.');
+                alert('⚠️ Network error saving database.');
             }
         }
         

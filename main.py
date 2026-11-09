@@ -32,7 +32,6 @@ def load_db():
         response = requests.get(JSONBIN_URL + "/latest", headers=HEADERS)
         response.raise_for_status()
         data = response.json()
-        # JSONBin v3 wraps data in a 'record' key
         return data.get('record', {"agents": ["ALL"], "clients": {}}) 
     except Exception as e:
         print(f"Error loading DB from cloud: {e}")
@@ -42,7 +41,9 @@ def save_db(db):
     try:
         response = requests.put(JSONBIN_URL, json=db, headers=HEADERS)
         response.raise_for_status()
-        return True
+        if response.status_code == 200:
+            return True
+        return False
     except Exception as e:
         print(f"Error saving DB to cloud: {e}")
         return False
@@ -81,8 +82,11 @@ def get_database():
 async def update_database(request: Request):
     try:
         data = await request.json()
-        save_db(data)
-        return JSONResponse(content={"status": "success"})
+        success = save_db(data)
+        if success:
+            return JSONResponse(content={"status": "success"})
+        else:
+            return JSONResponse(content={"status": "error", "message": "Cloud database rejected the save (likely size limit reached)."}, status_code=500)
     except Exception as e:
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
