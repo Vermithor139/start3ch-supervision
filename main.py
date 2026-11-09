@@ -8,16 +8,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import uvicorn
 
-app = FastAPI(title="Verum Invest Tactical Mainframe", version="5.4.0")
+app = FastAPI(title="Verum Invest Tactical Mainframe", version="6.0.0")
 BASE_DIR = Path(__file__).resolve().parent
 
-# --- CLOUD DATABASE CONFIGURATION ---
-JSONBIN_BIN_ID = "6aec5042ac6210605a6e90dd" 
-JSONBIN_API_KEY = "$2a$10$QGSNKJ15elRBp8tFd/fBWeJXuX/SMb6lyKj/YL84XxJsGIU9XXA2." 
-# ------------------------------------
-
-JSONBIN_URL = f"https://api.jsonbin.io/v3/b/{JSONBIN_BIN_ID}"
-HEADERS = {'X-Master-Key': JSONBIN_API_KEY, 'Content-Type': 'application/json'}
+# --- GOOGLE FIREBASE CONFIGURATION (INFINITE FREE TIER) ---
+FIREBASE_URL = "https://verumcrm-default-rtdb.firebaseio.com/" 
+# ---------------------------------------------------------
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,23 +25,23 @@ app.add_middleware(
 
 def load_db():
     try:
-        response = requests.get(JSONBIN_URL + "/latest", headers=HEADERS)
+        response = requests.get(FIREBASE_URL + "verum_data.json")
         response.raise_for_status()
         data = response.json()
-        return data.get('record', {"agents": ["ALL"], "clients": {}}) 
+        if data is None:
+            return {"agents": ["ALL", "LUIS", "MARIA", "SANDRO", "JESSICA", "DAVID", "MARC", "NICOLAS", "PATRICIA", "JOE", "ANA", "JUAN", "FIORELLA", "ANDRES", "FERNANDO", "UNASSIGNED", "ADRIANO", "MAURICIO"], "clients": {}}
+        return data
     except Exception as e:
-        print(f"Error loading DB from cloud: {e}")
+        print(f"Error loading DB from Firebase: {e}")
         return {"agents": ["ALL"], "clients": {}}
 
 def save_db(db):
     try:
-        response = requests.put(JSONBIN_URL, json=db, headers=HEADERS)
+        response = requests.put(FIREBASE_URL + "verum_data.json", json=db)
         response.raise_for_status()
-        if response.status_code == 200:
-            return True
-        return False
+        return True
     except Exception as e:
-        print(f"Error saving DB to cloud: {e}")
+        print(f"Error saving DB to Firebase: {e}")
         return False
 
 @app.middleware("http")
@@ -86,7 +82,7 @@ async def update_database(request: Request):
         if success:
             return JSONResponse(content={"status": "success"})
         else:
-            return JSONResponse(content={"status": "error", "message": "Cloud database rejected the save (likely size limit reached)."}, status_code=500)
+            return JSONResponse(content={"status": "error", "message": "Firebase rejected the save."}, status_code=500)
     except Exception as e:
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
