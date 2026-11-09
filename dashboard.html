@@ -155,6 +155,8 @@
         .system-log { font-family: var(--font-data); font-size: 0.75rem; color: var(--hud-muted); line-height: 1.8; }
         .system-log span { color: var(--hud-green); }
         .ip-display { background: rgba(14,165,233,0.05); border: 1px solid rgba(14,165,233,0.2); padding: 8px 12px; border-radius: 4px; font-family: var(--font-data); font-size: 0.8rem; color: var(--hud-glow); margin-top: 12px; display: inline-block; }
+        .lead-counter { background: rgba(14,165,233,0.1); border: 1px solid var(--hud-glow); padding: 12px 20px; border-radius: 8px; font-family: var(--font-data); font-size: 0.9rem; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .lead-counter .count { color: var(--hud-glow); font-weight: 700; font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -190,6 +192,10 @@
         </div>
         <div class="content-area">
             <div id="view-leads" class="view-section active">
+                <div class="lead-counter">
+                    <span>ACTIVE LEADS IN DATABASE:</span>
+                    <span class="count" id="lead-count-display">0</span>
+                </div>
                 <div class="filter-tabs" id="agent-tabs-container"></div>
                 <div class="data-table-container">
                     <table>
@@ -242,6 +248,7 @@
                             <div class="card-title" style="margin-bottom: 12px;">Quick Actions</div>
                             <button class="btn-hud" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="alert('System backup initiated.')">BACKUP DATABASE</button>
                             <button class="btn-hud orange" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="alert('Audit log exported.')">EXPORT AUDIT LOG</button>
+                            <button class="btn-hud red" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="clearTestLeads()">CLEAR TEST LEADS</button>
                             <button class="btn-hud red" style="width: 100%; justify-content: center;" onclick="alert('Cache cleared successfully.')">CLEAR SYSTEM CACHE</button>
                         </div>
                         <div class="system-log" style="margin-top: 20px;">
@@ -308,7 +315,6 @@
                     <div id="tab-activity" class="tab-content active"><div style="color: var(--hud-muted); font-size: 0.85rem; padding: 20px;">Client portal login history and activity logs will appear here.</div></div>
                     <div id="tab-kyc" class="tab-content"><div style="color: var(--hud-muted); font-size: 0.85rem; padding: 20px;">KYC documents and opener intelligence data.</div></div>
                     
-                    <!-- UPDATED TRANSACTIONS TAB WITH MANAGER OVERRIDE -->
                     <div id="tab-transactions" class="tab-content">
                         <div id="manager-edit-controls" style="display: none; margin-bottom: 16px; padding: 16px; background: rgba(249,115,22,0.1); border: 1px solid var(--status-orange); border-radius: 8px;">
                             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
@@ -389,12 +395,21 @@
             try {
                 const response = await fetch('/api/db');
                 db = await response.json();
+                console.log('Database loaded:', Object.keys(db.clients).length, 'clients');
             } catch (error) { console.error('Failed to fetch database:', error); }
         }
 
         async function saveDatabase() {
-            try { await fetch('/api/db/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(db) }); } 
-            catch (error) { console.error('Failed to save database:', error); }
+            try { 
+                const response = await fetch('/api/db/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(db) });
+                const result = await response.json();
+                if (result.status === 'error') {
+                    alert('⚠️ Database save failed: ' + result.message);
+                }
+            } catch (error) { 
+                console.error('Failed to save database:', error);
+                alert('⚠️ Failed to save to database. Check console for details.');
+            }
         }
         
         async function initCRM() { 
@@ -441,6 +456,12 @@
             renderAgentTabs(); 
             renderTable(); 
             checkWithdrawalAlerts(); 
+            updateLeadCounter();
+        }
+
+        function updateLeadCounter() {
+            const count = Object.keys(db.clients).length;
+            document.getElementById('lead-count-display').textContent = count;
         }
 
         function renderAgentTabs() { 
@@ -518,7 +539,20 @@
                 delete db.clients[txId];
                 saveDatabase();
                 renderTable();
+                updateLeadCounter();
                 showView('leads');
+            }
+        }
+
+        function clearTestLeads() {
+            if (currentUserRole === 'CLOSER') { alert('Permission denied.'); return; }
+            if (confirm('⚠️ This will delete ALL leads with "Test" in their name. Continue?')) {
+                const testLeads = Object.keys(db.clients).filter(id => db.clients[id].name.toLowerCase().includes('test'));
+                testLeads.forEach(id => delete db.clients[id]);
+                saveDatabase();
+                renderTable();
+                updateLeadCounter();
+                alert(`✅ Cleared ${testLeads.length} test leads.`);
             }
         }
         
@@ -563,14 +597,12 @@
             const depositorSelect = document.getElementById('p-status-depositor'); if (isCloser) { depositorSelect.disabled = true; } else { depositorSelect.disabled = false; }
             const commentContainer = document.getElementById('p-comments'); commentContainer.innerHTML = currentClient.comments.length ? currentClient.comments.map(comm => `<div class="comment-item"><div class="comment-meta"><span>${comm.agent}</span><span>${comm.time}</span></div><div class="comment-text">${comm.text}</div></div>`).join('') : '<div style="color:var(--hud-muted); font-size:0.85rem;">No comments yet.</div>'; 
             
-            // Call the new transaction renderer
             renderTransactionsForManager();
 
             const wdBody = document.getElementById('withdrawal-requests-body'); if (currentClient.withdrawals.length === 0) { wdBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--hud-muted); padding: 32px;">No pending withdrawal requests.</td></tr>'; } else { wdBody.innerHTML = currentClient.withdrawals.map(wd => { const statusClass = wd.status === 'PENDING' ? 'role-assistant' : 'role-closer'; const actionBtn = wd.status === 'PENDING' ? `<button class="btn-hud green" style="padding: 4px 12px; font-size: 0.7rem;" onclick="approveWithdrawal('${wd.id}')">APPROVE</button><button class="btn-hud red" style="padding: 4px 12px; font-size: 0.7rem; margin-left: 4px;" onclick="rejectWithdrawal('${wd.id}')">DENY</button>` : `<span style="color: var(--hud-muted); font-size: 0.8rem;">—</span>`; return `<tr><td style="font-family: var(--font-data); font-size: 0.8rem;">${wd.id}</td><td>${wd.date}</td><td>${wd.method}</td><td style="font-weight: 700;">$${wd.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}</td><td style="font-size: 0.8rem;">${wd.details}</td><td><span class="role-badge ${statusClass}">${wd.status}</span></td><td>${actionBtn}</td></tr>`; }).join(''); } 
             showView('profile'); 
         }
 
-        // NEW: Manager Override Transaction Logic
         function renderTransactionsForManager() {
             if (!currentClient) return;
             const managerControls = document.getElementById('manager-edit-controls');
@@ -644,7 +676,7 @@
             const source = document.getElementById('lead-source').value.trim();
             const agent = document.getElementById('lead-agent').value; 
             
-            if (!name || !country || !deposit) { alert('Please fill Name, Country, and Deposit.'); return; } 
+            if (!name || !country || !deposit) { alert('⚠️ Please fill Name, Country, and Deposit.'); return; } 
             
             const txId = 'TX-' + Math.floor(Math.random() * 900000 + 100000); 
             const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); 
@@ -670,8 +702,9 @@
             document.getElementById('lead-deposit').value = ''; 
             document.getElementById('lead-email').value = '';
             document.getElementById('lead-source').value = '';
-            alert(`Lead "${name}" injected.`); 
-            renderTable(); 
+            alert(`✅ Lead "${name}" injected successfully.`); 
+            renderTable();
+            updateLeadCounter();
         }
 
         function logout() { localStorage.clear(); window.location.href = '/login'; }
