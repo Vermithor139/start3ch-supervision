@@ -249,6 +249,7 @@
                             <button class="btn-hud" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="alert('System backup initiated.')">BACKUP DATABASE</button>
                             <button class="btn-hud orange" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="alert('Audit log exported.')">EXPORT AUDIT LOG</button>
                             <button class="btn-hud red" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="clearTestLeads()">CLEAR TEST LEADS</button>
+                            <button class="btn-hud green" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="compactDatabase()">⚡ COMPACT DATABASE</button>
                             <button class="btn-hud red" style="width: 100%; justify-content: center;" onclick="alert('Cache cleared successfully.')">CLEAR SYSTEM CACHE</button>
                         </div>
                         <div class="system-log" style="margin-top: 20px;">
@@ -399,12 +400,29 @@
             } catch (error) { console.error('Failed to fetch database:', error); }
         }
 
+        // NEW: Compacts database by removing empty arrays to save JSONBin space
+        function compactDBData(data) {
+            const clean = JSON.parse(JSON.stringify(data));
+            if (clean.clients) {
+                for (let id in clean.clients) {
+                    let c = clean.clients[id];
+                    if (c.comments && c.comments.length === 0) delete c.comments;
+                    if (c.transactions && c.transactions.length === 0) delete c.transactions;
+                    if (c.withdrawals && c.withdrawals.length === 0) delete c.withdrawals;
+                    if (c.phone === '') delete c.phone;
+                    if (c.email === '') delete c.email;
+                }
+            }
+            return clean;
+        }
+
         async function saveDatabase() {
             try { 
-                const response = await fetch('/api/db/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(db) });
+                const payload = compactDBData(db);
+                const response = await fetch('/api/db/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const result = await response.json();
                 if (result.status === 'error') {
-                    alert('⚠️ SAVE FAILED: ' + result.message + '\n\nPlease check your JSONBin account size limit or create a new Bin.');
+                    alert('⚠️ SAVE FAILED: ' + result.message + '\n\nDatabase is likely full (100KB limit). Please use "COMPACT DATABASE" or delete old leads.');
                     return false;
                 }
                 return true;
@@ -413,6 +431,25 @@
                 alert('⚠️ Network error saving database.');
                 return false;
             }
+        }
+
+        // NEW: Button function to compact and save
+        async function compactDatabase() {
+            if (currentUserRole === 'CLOSER') { alert('Permission denied.'); return; }
+            const btn = event.target;
+            btn.textContent = '⚡ COMPACTING...';
+            btn.disabled = true;
+            
+            const saved = await saveDatabase();
+            
+            if (saved) {
+                alert('✅ Database compacted successfully! Empty arrays removed to save space.');
+            } else {
+                alert('❌ Compaction failed. Database may be too large. Please delete old leads manually.');
+            }
+            
+            btn.textContent = '⚡ COMPACT DATABASE';
+            btn.disabled = false;
         }
         
         async function initCRM() { 
@@ -520,7 +557,7 @@
 
                 tr.innerHTML = `<td><input type="checkbox" onclick="event.stopPropagation()"></td>
                 <td><a href="#" class="client-link" onclick="event.preventDefault(); openProfile('${c.txId}')">${c.name}</a><div class="client-id">${c.txId}</div></td>
-                <td>${c.country} ${c.flag}</td>
+                <td>${c.country} ${c.flag || '🌎'}</td>
                 <td><span class="role-badge" style="background: rgba(255,255,255,0.1); color: var(--hud-muted); font-size: 0.65rem;">${c.source || 'Unknown'}</span></td>
                 <td style="font-family: var(--font-data); font-size: 0.8rem;">${c.lastLogin}</td>
                 <td style="font-weight: 700;">$${c.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
@@ -529,7 +566,7 @@
                 <td><select class="status-select status-depositor" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'status', this.value)" ${!canModifyDepositor ? 'disabled' : ''}><option selected>${c.status}</option></select></td>
                 <td><select class="status-select status-retention" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'retention', this.value)"><option selected>${c.retention}</option></select></td>
                 <td><select class="status-select status-sub" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'subStatus', this.value)"><option selected>${c.subStatus}</option></select></td>
-                <td><div class="comment-preview">${c.comment}</div></td>
+                <td><div class="comment-preview">${c.comment || ''}</div></td>
                 ${actionCell}`; 
                 tbody.appendChild(tr); 
             }); 
