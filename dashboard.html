@@ -157,25 +157,10 @@
         .ip-display { background: rgba(14,165,233,0.05); border: 1px solid rgba(14,165,233,0.2); padding: 8px 12px; border-radius: 4px; font-family: var(--font-data); font-size: 0.8rem; color: var(--hud-glow); margin-top: 12px; display: inline-block; }
         .lead-counter { background: rgba(14,165,233,0.1); border: 1px solid var(--hud-glow); padding: 12px 20px; border-radius: 8px; font-family: var(--font-data); font-size: 0.9rem; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .lead-counter .count { color: var(--hud-glow); font-weight: 700; font-size: 1.2rem; }
-        .markets-layout { display: flex; height: 100%; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-        .watchlist-panel { width: 320px; background: var(--hud-card); display: flex; flex-direction: column; overflow: hidden; }
-        .watchlist-header { padding: 16px; border-bottom: 1px solid var(--hud-border); font-weight: 600; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
-        .watchlist-content { flex: 1; overflow-y: auto; }
-        .wl-category { border-bottom: 1px solid var(--hud-border); }
-        .wl-cat-header { padding: 12px 16px; font-family: var(--font-data); font-size: 0.75rem; color: var(--hud-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); }
-        .wl-cat-header:hover { background: rgba(14,165,233,0.05); color: var(--hud-glow); }
-        .wl-cat-content { display: none; background: var(--hud-card); }
-        .wl-cat-content.show { display: block; }
-        .watchlist-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; cursor: pointer; transition: all 0.2s; border-bottom: 1px solid rgba(255,255,255,0.02); }
-        .watchlist-item:hover { background: rgba(14,165,233,0.05); }
-        .watchlist-item.active { background: rgba(14,165,233,0.1); border-left: 3px solid var(--hud-glow); }
-        .wl-symbol { font-weight: 600; font-size: 0.9rem; }
-        .wl-price { font-family: var(--font-data); font-size: 0.85rem; font-weight: 600; text-align: right; }
-        .wl-change { font-family: var(--font-data); font-size: 0.75rem; text-align: right; margin-top: 2px; }
-        .wl-change.up { color: var(--hud-green); }
-        .wl-change.down { color: var(--hud-red); }
-        .chart-panel { flex: 1; background: var(--hud-bg); position: relative; }
-        .chart-container { width: 100%; height: 100%; }
+        .save-status { position: fixed; top: 80px; right: 32px; padding: 12px 20px; border-radius: 8px; font-family: var(--font-data); font-size: 0.85rem; font-weight: 600; z-index: 1000; display: none; animation: slideIn 0.3s ease-out; }
+        .save-status.success { background: rgba(16,185,129,0.2); border: 1px solid var(--hud-green); color: var(--hud-green); display: block; }
+        .save-status.error { background: rgba(239,68,68,0.2); border: 1px solid var(--hud-red); color: var(--hud-red); display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
     </style>
 </head>
 <body>
@@ -186,7 +171,6 @@
         </div>
         <div class="nav-item active" onclick="switchMainView('leads', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>LEAD TELEMETRY</div>
         <div class="nav-item" id="nav-analytics" onclick="switchMainView('analytics', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>ANALYTICS</div>
-        <div class="nav-item" id="nav-markets" onclick="switchMainView('markets', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>LIVE MARKETS</div>
         <div class="nav-item" id="nav-config" onclick="switchMainView('config', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>SYSTEM CONFIG</div>
         <div class="user-card"><div class="user-name" id="user-name-display">Loading...</div><div class="user-role" id="user-role-display">[ACCESSING]</div></div>
     </div>
@@ -245,38 +229,6 @@
                 </div>
             </div>
 
-            <div id="view-markets" class="view-section" style="padding: 0; height: 100%;">
-                <div class="markets-layout">
-                    <div class="watchlist-panel">
-                        <div class="watchlist-header"><span>Live Markets</span></div>
-                        <div class="watchlist-content">
-                            <div class="wl-category">
-                                <div class="wl-cat-header" onclick="toggleWlCategory(this)">FOREX MAJORS <span>▼</span></div>
-                                <div class="wl-cat-content show">
-                                    <div class="watchlist-item" onclick="changeChart('FX:EURUSD', this)"><div class="wl-symbol">EURUSD</div><div><div class="wl-price">1.0842</div><div class="wl-change up">+0.15%</div></div></div>
-                                    <div class="watchlist-item" onclick="changeChart('FX:USDJPY', this)"><div class="wl-symbol">USDJPY</div><div><div class="wl-price">154.32</div><div class="wl-change down">-0.08%</div></div></div>
-                                    <div class="watchlist-item" onclick="changeChart('FX:GBPUSD', this)"><div class="wl-symbol">GBPUSD</div><div><div class="wl-price">1.2654</div><div class="wl-change up">+0.22%</div></div></div>
-                                </div>
-                            </div>
-                            <div class="wl-category">
-                                <div class="wl-cat-header" onclick="toggleWlCategory(this)">COMMODITIES <span>▼</span></div>
-                                <div class="wl-cat-content show">
-                                    <div class="watchlist-item active" onclick="changeChart('TVC:GOLD', this)"><div class="wl-symbol">XAUUSD</div><div><div class="wl-price">2,342.50</div><div class="wl-change up">+1.24%</div></div></div>
-                                    <div class="watchlist-item" onclick="changeChart('TVC:USOIL', this)"><div class="wl-symbol">WTI OIL</div><div><div class="wl-price">78.45</div><div class="wl-change down">-0.52%</div></div></div>
-                                </div>
-                            </div>
-                            <div class="wl-category">
-                                <div class="wl-cat-header" onclick="toggleWlCategory(this)">CRYPTO <span>▼</span></div>
-                                <div class="wl-cat-content show">
-                                    <div class="watchlist-item" onclick="changeChart('BINANCE:BTCUSDT', this)"><div class="wl-symbol">BTCUSD</div><div><div class="wl-price">68,420.00</div><div class="wl-change up">+1.84%</div></div></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="chart-panel"><div class="chart-container" id="tv_chart"></div></div>
-                </div>
-            </div>
-
             <div id="view-config" class="view-section">
                 <div class="config-grid">
                     <div class="hud-card">
@@ -301,7 +253,6 @@
                             <button class="btn-hud" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="alert('System backup initiated.')">BACKUP DATABASE</button>
                             <button class="btn-hud orange" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="alert('Audit log exported.')">EXPORT AUDIT LOG</button>
                             <button class="btn-hud red" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="clearTestLeads()">CLEAR TEST LEADS</button>
-                            <button class="btn-hud green" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="compactDatabase()">⚡ COMPACT DATABASE</button>
                             <button class="btn-hud red" style="width: 100%; justify-content: center;" onclick="alert('Cache cleared successfully.')">CLEAR SYSTEM CACHE</button>
                         </div>
                         <div class="system-log" style="margin-top: 20px;">
@@ -392,6 +343,8 @@
             </div>
         </div>
     </div>
+
+    <div id="save-status" class="save-status"></div>
     
     <div class="modal-overlay" id="modal-injectLead">
         <div class="modal-content">
@@ -410,7 +363,6 @@
 
     <div class="modal-overlay" id="modal-addUser"><div class="modal-content"><button class="modal-close" onclick="closeModal('addUser')">✕</button><div class="modal-title">Add New System User</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Full Name</label><input type="text" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Email Address</label><input type="email" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Role</label><select class="fin-control-input"><option>CLOSER</option><option>SUPERVISOR</option><option>ASST. MANAGER</option></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="closeModal('addUser'); alert('User account created.')">CREATE USER ACCOUNT</button></div></div>
 
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
         let db = { agents: ["ALL"], clients: {} };
         let currentFilter = 'ALL'; 
@@ -418,7 +370,6 @@
         let currentUserRole = 'MANAGER'; 
         let currentUserName = 'Roberto Palomino';
         let currentStatusFilter = 'ALL';
-        let tvWidget = null;
         
         const EMAIL_TO_AGENT = {
             's.jaeger@verum.invest': 'SANDRO', 'j.davis@verum.invest': 'JESSICA',
@@ -429,6 +380,15 @@
             'a.morales@verum.invest': 'ANDRES', 'f.brauer@verum.invest': 'FERNANDO',
             'a.medina@verum.invest': 'ADRIANO', 'm.gomez@verum.invest': 'MAURICIO'
         };
+
+        function showSaveStatus(message, isSuccess) {
+            const statusEl = document.getElementById('save-status');
+            statusEl.textContent = message;
+            statusEl.className = 'save-status ' + (isSuccess ? 'success' : 'error');
+            setTimeout(() => {
+                statusEl.className = 'save-status';
+            }, 3000);
+        }
 
         function getMyAgentCode() {
             const email = localStorage.getItem('verum_email');
@@ -449,61 +409,42 @@
         async function fetchDatabase() {
             try {
                 const response = await fetch('/api/db');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 db = await response.json();
                 if (!db.clients) db.clients = {};
                 if (!db.agents) db.agents = ["ALL"];
                 console.log('Database loaded:', Object.keys(db.clients).length, 'clients');
+                showSaveStatus(`Loaded ${Object.keys(db.clients).length} clients from Firebase`, true);
             } catch (error) { 
                 console.error('Failed to fetch database:', error);
                 db = { agents: ["ALL"], clients: {} };
+                showSaveStatus('Failed to load database', false);
             }
-        }
-
-        function compactDBData(data) {
-            const clean = JSON.parse(JSON.stringify(data));
-            if (clean.clients) {
-                for (let id in clean.clients) {
-                    let c = clean.clients[id];
-                    if (c.comments && c.comments.length === 0) delete c.comments;
-                    if (c.transactions && c.transactions.length === 0) delete c.transactions;
-                    if (c.withdrawals && c.withdrawals.length === 0) delete c.withdrawals;
-                    if (c.phone === '') delete c.phone;
-                    if (c.email === '') delete c.email;
-                }
-            }
-            return clean;
         }
 
         async function saveDatabase() {
             try { 
-                const payload = compactDBData(db);
-                const response = await fetch('/api/db/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                console.log('Saving database with', Object.keys(db.clients).length, 'clients');
+                const response = await fetch('/api/db/update', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(db) 
+                });
                 const result = await response.json();
+                console.log('Save response:', result);
                 if (result.status === 'error') {
-                    alert('⚠️ SAVE FAILED: ' + result.message);
+                    showSaveStatus('Save failed: ' + result.message, false);
                     return false;
                 }
+                showSaveStatus('Saved to Firebase successfully', true);
                 return true;
             } catch (error) { 
                 console.error('Failed to save database:', error);
-                alert('⚠️ Network error saving database.');
+                showSaveStatus('Network error saving database', false);
                 return false;
             }
-        }
-
-        async function compactDatabase() {
-            if (currentUserRole === 'CLOSER') { alert('Permission denied.'); return; }
-            const btn = event.target;
-            btn.textContent = '⚡ COMPACTING...';
-            btn.disabled = true;
-            const saved = await saveDatabase();
-            if (saved) {
-                alert('✅ Database compacted successfully!');
-            } else {
-                alert('❌ Compaction failed.');
-            }
-            btn.textContent = '⚡ COMPACT DATABASE';
-            btn.disabled = false;
         }
         
         async function initCRM() { 
@@ -528,7 +469,6 @@
             document.getElementById('user-role-display').textContent = `[${role.replace('_', ' ').toUpperCase()}]`;
 
             const analyticsNav = document.getElementById('nav-analytics'); 
-            const marketsNav = document.getElementById('nav-markets');
             const configNav = document.getElementById('nav-config'); 
             const finControls = document.getElementById('financial-controls');
             const injectBtn = document.getElementById('inject-lead-btn');
@@ -536,14 +476,12 @@
             
             if (role === 'CLOSER') { 
                 if(analyticsNav) analyticsNav.style.display = 'none'; 
-                if(marketsNav) marketsNav.style.display = 'none';
                 if(configNav) configNav.style.display = 'none'; 
                 if(finControls) finControls.style.display = 'none';
                 if(injectBtn) injectBtn.style.display = 'none';
                 if(saveProfileBtn) saveProfileBtn.style.display = 'none';
             } else { 
                 if(analyticsNav) analyticsNav.style.display = 'flex'; 
-                if(marketsNav) marketsNav.style.display = 'flex';
                 if(configNav) configNav.style.display = 'flex'; 
                 if(finControls) finControls.style.display = 'block';
                 if(injectBtn) injectBtn.style.display = 'inline-flex';
@@ -603,8 +541,7 @@
             const canDelete = currentUserRole !== 'CLOSER';
             
             clients.forEach((c) => { 
-                const tr = document.createElement('tr'); 
-                tr.onclick = () => openProfile(c.txId); 
+                const tr = document.createElement('tr'); tr.onclick = () => openProfile(c.txId); 
                 
                 let actionCell = '';
                 if (canDelete) {
@@ -654,7 +591,12 @@
             }
         }
         
-        function updateStatus(txId, field, value) { if (db.clients[txId]) { db.clients[txId][field] = value; saveDatabase(); } }
+        function updateStatus(txId, field, value) { 
+            if (db.clients[txId]) { 
+                db.clients[txId][field] = value; 
+                saveDatabase(); 
+            } 
+        }
         function filterTable(agent, el) { currentFilter = agent; renderAgentTabs(); renderTable(); }
         function addFilter() { const name = prompt("Enter Agent Name:").trim().toUpperCase(); if (name) { if(!db.agents.includes(name)) { db.agents.push(name); saveDatabase(); } currentFilter = name; renderAgentTabs(); renderTable(); } }
         
@@ -689,20 +631,8 @@
         function toggleNotifDropdown(e) { e.stopPropagation(); document.getElementById('notif-dropdown').classList.toggle('active'); }
         function routeToWithdrawal(txId) { document.getElementById('notif-dropdown').classList.remove('active'); switchMainView('leads', document.querySelector('.nav-item')); setTimeout(() => { openProfile(txId); }, 100); }
         document.addEventListener('click', function(e) { const dropdown = document.getElementById('notif-dropdown'); const bell = document.querySelector('.notif-bell'); if (!dropdown.contains(e.target) && !bell.contains(e.target)) { dropdown.classList.remove('active'); } });
-        function switchMainView(viewName, navEl) { 
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); 
-            if(navEl) navEl.classList.add('active'); 
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); 
-            document.getElementById(`view-${viewName}`).classList.add('active'); 
-            const titles = { 'leads': 'LEAD <span>TELEMETRY</span> OVERVIEW', 'analytics': 'PERFORMANCE <span>ANALYTICS</span>', 'markets': 'LIVE <span>MARKETS</span>', 'config': 'SYSTEM <span>CONFIGURATION</span>' }; 
-            document.getElementById('pageTitle').innerHTML = titles[viewName];
-            if (viewName === 'markets') initTradingView();
-        }
-        function showView(viewName) { 
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); 
-            document.getElementById(`view-${viewName}`).classList.add('active'); 
-            document.getElementById('pageTitle').innerHTML = viewName === 'leads' ? 'LEAD <span>TELEMETRY</span> OVERVIEW' : 'CLIENT <span>INTELLIGENCE</span> DOSSIER'; 
-        }
+        function switchMainView(viewName, navEl) { document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); if(navEl) navEl.classList.add('active'); document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewName}`).classList.add('active'); const titles = { 'leads': 'LEAD <span>TELEMETRY</span> OVERVIEW', 'analytics': 'PERFORMANCE <span>ANALYTICS</span>', 'config': 'SYSTEM <span>CONFIGURATION</span>' }; document.getElementById('pageTitle').innerHTML = titles[viewName]; }
+        function showView(viewName) { document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active')); document.getElementById(`view-${viewName}`).classList.add('active'); document.getElementById('pageTitle').innerHTML = viewName === 'leads' ? 'LEAD <span>TELEMETRY</span> OVERVIEW' : 'CLIENT <span>INTELLIGENCE</span> DOSSIER'; }
         
         function copyClientLink() {
             if (!currentClient) return;
@@ -818,7 +748,6 @@
             db.clients[currentClient.txId].source = document.getElementById('p-source').value;
             
             saveDatabase();
-            alert('✅ Profile data updated successfully.');
             renderTable();
         }
 
@@ -829,7 +758,6 @@
             db.clients[currentClient.txId].subStatus = document.getElementById('p-status-sub').value; 
             db.clients[currentClient.txId].agent = document.getElementById('p-agent-select').value; 
             saveDatabase(); 
-            alert('Status update transmitted and saved.'); 
             renderTable(); 
         }
         
@@ -847,7 +775,6 @@
             document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); 
             document.getElementById('profit-amount').value = ''; 
             document.getElementById('profit-asset').value = ''; 
-            alert(`Profit of $${amount} injected.`); 
             openProfile(currentClient.txId); 
         }
         
@@ -860,7 +787,6 @@
             currentClient.withdrawn = (currentClient.withdrawn || 0) + wd.amount; 
             saveDatabase(); 
             document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); 
-            alert(`Withdrawal ${wdId} approved.`); 
             openProfile(currentClient.txId); 
             checkWithdrawalAlerts(); 
         }
@@ -871,7 +797,6 @@
             if (!wd) return; 
             wd.status = 'REJECTED'; 
             saveDatabase(); 
-            alert(`Withdrawal ${wdId} rejected.`); 
             openProfile(currentClient.txId); 
             checkWithdrawalAlerts(); 
         }
@@ -889,7 +814,6 @@
                 openProfile(currentClient.txId);
             } else {
                 currentClient.comments.shift();
-                alert('Comment was not saved. Please try again.');
             }
         }
 
@@ -938,59 +862,12 @@
             document.getElementById('lead-deposit').value = ''; 
             document.getElementById('lead-email').value = '';
             document.getElementById('lead-source').value = '';
-            alert(`✅ Lead "${name}" injected successfully.`); 
             renderTable();
             updateLeadCounter();
         }
 
-        function toggleWlCategory(header) { 
-            const content = header.nextElementSibling; 
-            content.classList.toggle('show'); 
-            const arrow = header.querySelector('span');
-            arrow.textContent = content.classList.contains('show') ? '▼' : '▶';
-        }
-
-        function changeChart(symbol, el) { 
-            document.querySelectorAll('.watchlist-item').forEach(i => i.classList.remove('active')); 
-            el.classList.add('active'); 
-            initTradingView(symbol);
-        }
-
-        function initTradingView(symbol = 'TVC:GOLD') {
-            if (tvWidget) {
-                tvWidget.remove();
-                tvWidget = null;
-            }
-            const container = document.getElementById('tv_chart');
-            if (!container) return;
-            container.innerHTML = '';
-            try {
-                tvWidget = new TradingView.widget({
-                    "autosize": true,
-                    "symbol": symbol,
-                    "interval": "1",
-                    "timezone": "Etc/UTC",
-                    "theme": "dark",
-                    "style": "1",
-                    "locale": "en",
-                    "toolbar_bg": "#0b1120",
-                    "enable_publishing": false,
-                    "hide_top_toolbar": false,
-                    "container_id": "tv_chart"
-                });
-            } catch (e) {
-                console.error('TradingView init error:', e);
-                container.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--hud-muted);">Chart loading...</div>';
-            }
-        }
-
         function logout() { localStorage.clear(); window.location.href = '/login'; }
-        
-        if (document.readyState === 'loading') { 
-            document.addEventListener('DOMContentLoaded', initCRM); 
-        } else { 
-            initCRM(); 
-        }
+        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initCRM); } else { initCRM(); }
     </script>
 </body>
 </html>
