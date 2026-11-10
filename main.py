@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import uvicorn
 
-app = FastAPI(title="Verum Invest Tactical Mainframe", version="6.0.1")
+app = FastAPI(title="Verum Invest Tactical Mainframe", version="6.0.2")
 BASE_DIR = Path(__file__).resolve().parent
 
 # --- GOOGLE FIREBASE CONFIGURATION ---
@@ -26,18 +26,14 @@ app.add_middleware(
 def load_db():
     try:
         url = FIREBASE_URL + "verum_data.json"
-        print(f"Loading from: {url}")
         response = requests.get(url, timeout=10)
-        print(f"Load response status: {response.status_code}")
         response.raise_for_status()
         data = response.json()
         if data is None:
-            print("Database is empty, returning default structure")
             return {
                 "agents": ["ALL", "LUIS", "MARIA", "SANDRO", "JESSICA", "DAVID", "MARC", "NICOLAS", "PATRICIA", "JOE", "ANA", "JUAN", "FIORELLA", "ANDRES", "FERNANDO", "UNASSIGNED", "ADRIANO", "MAURICIO"],
                 "clients": {}
             }
-        print(f"Loaded {len(data.get('clients', {}))} clients")
         return data
     except Exception as e:
         print(f"Error loading DB from Firebase: {e}")
@@ -49,11 +45,7 @@ def load_db():
 def save_db(db):
     try:
         url = FIREBASE_URL + "verum_data.json"
-        print(f"Saving to: {url}")
-        print(f"Data size: {len(json.dumps(db))} bytes")
         response = requests.put(url, json=db, timeout=10)
-        print(f"Save response status: {response.status_code}")
-        print(f"Save response body: {response.text[:200]}")
         response.raise_for_status()
         return True
     except Exception as e:
@@ -95,16 +87,38 @@ def get_database():
 async def update_database(request: Request):
     try:
         data = await request.json()
-        print(f"Received update request with {len(data.get('clients', {}))} clients")
-        success = save_db(data)
+        incoming_clients = data.get('clients', {})
+        incoming_count = len(incoming_clients)
+        
+        # Load current state from Firebase
+        current_db = load_db()
+        current_clients = current_db.get('clients', {})
+        current_count = len(current_clients)
+        
+        # SAFETY MERGE: If the incoming save has fewer clients than the database,
+        # it's likely a stale save from a user who hasn't refreshed.
+        # We merge to prevent data loss (preserving new leads).
+        if incoming_count < current_count:
+            print(f"⚠️ Stale save detected: Incoming {incoming_count} < Current {current_count}. Merging to protect data...")
+            # Update existing clients with incoming data, keep new clients that are missing
+            current_clients.update(incoming_clients)
+            data['clients'] = current_clients
+            # Also update agents if provided
+            if 'agents' in data:
+                current_db['agents'] = data['agents']
+            success = save_db(current_db)
+        else:
+            # Fresh save (adding leads or intentional deletion), overwrite
+            success = save_db(data)
+            
         if success:
-            print("Save successful")
+            print(f"✅ Save successful. Database now has {len(data.get('clients', {}))} clients.")
             return JSONResponse(content={"status": "success"})
         else:
-            print("Save failed")
-            return JSONResponse(content={"status": "error", "message": "Firebase rejected the save. Check Render logs for details."}, status_code=500)
+            print("❌ Save failed.")
+            return JSONResponse(content={"status": "error", "message": "Firebase rejected the save."}, status_code=500)
     except Exception as e:
-        print(f"Update error: {e}")
+        print(f"❌ Update error: {e}")
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
 @app.post("/api/leads/submit")
