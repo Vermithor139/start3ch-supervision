@@ -374,7 +374,7 @@
     <div class="modal-overlay" id="modal-addUser"><div class="modal-content"><button class="modal-close" onclick="closeModal('addUser')">✕</button><div class="modal-title">Add New System User</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Full Name</label><input type="text" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Email Address</label><input type="email" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Role</label><select class="fin-control-input"><option>CLOSER</option><option>SUPERVISOR</option><option>ASST. MANAGER</option></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="closeModal('addUser'); alert('User account created.')">CREATE USER ACCOUNT</button></div></div>
 
     <script>
-        let db = { agents: ["ALL"], clients: {}, timestamp: 0 };
+        let db = { agents: ["ALL"], clients: {}, timestamp: 0, synced_at: 0 };
         let currentFilter = 'ALL'; 
         let currentClient = null;
         let currentUserRole = 'MANAGER'; 
@@ -429,13 +429,16 @@
                 
                 try {
                     showSaveIndicator(true);
-                    db.timestamp = Date.now();
-                    console.log(`[Save v${version}] Starting save with ${Object.keys(db.clients).length} clients`);
+                    // We do NOT update db.timestamp here. The server handles the new timestamp.
+                    // We send the time we last synced to let the server know if we are stale.
+                    const payload = { ...db, synced_at: db.synced_at };
+                    
+                    console.log(`[Save v${version}] Starting save with ${Object.keys(db.clients).length} clients (synced_at: ${db.synced_at})`);
                     
                     const response = await fetch('/api/db/update', { 
                         method: 'POST', 
                         headers: { 'Content-Type': 'application/json' }, 
-                        body: JSON.stringify(db) 
+                        body: JSON.stringify(payload) 
                     });
                     
                     const result = await response.json();
@@ -445,6 +448,8 @@
                         showSaveStatus('Save failed: ' + result.message, 'error');
                         reject(new Error(result.message));
                     } else {
+                        // Update our local sync time to the new server time (approximate)
+                        db.synced_at = Date.now(); 
                         showSaveStatus(`Saved ${Object.keys(db.clients).length} clients to Firebase`, 'success');
                         resolve(true);
                     }
@@ -478,11 +483,15 @@
                 if (!db.clients) db.clients = {};
                 if (!db.agents) db.agents = ["ALL"];
                 if (!db.timestamp) db.timestamp = 0;
-                console.log('Database loaded:', Object.keys(db.clients).length, 'clients');
+                
+                // CRITICAL: Record when we loaded this data
+                db.synced_at = db.timestamp || 0;
+                
+                console.log('Database loaded:', Object.keys(db.clients).length, 'clients. Synced at:', db.synced_at);
                 showSaveStatus(`Loaded ${Object.keys(db.clients).length} clients from Firebase`, 'success');
             } catch (error) { 
                 console.error('Failed to fetch database:', error);
-                db = { agents: ["ALL"], clients: {}, timestamp: 0 };
+                db = { agents: ["ALL"], clients: {}, timestamp: 0, synced_at: 0 };
                 showSaveStatus('Failed to load database', 'error');
             }
         }

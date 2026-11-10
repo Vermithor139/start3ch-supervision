@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import uvicorn
 
-app = FastAPI(title="Verum Invest Tactical Mainframe", version="6.0.3")
+app = FastAPI(title="Verum Invest Tactical Mainframe", version="6.0.4")
 BASE_DIR = Path(__file__).resolve().parent
 
 # --- GOOGLE FIREBASE CONFIGURATION ---
@@ -90,51 +90,43 @@ def get_database():
 async def update_database(request: Request):
     try:
         data = await request.json()
-        incoming_ts = data.get('timestamp', 0)
+        # The timestamp of when the frontend LAST SYNCED (loaded) the data
+        incoming_last_sync = data.get('synced_at', 0)
         incoming_clients = data.get('clients', {})
 
-        # Load current truth from Firebase
         current_db = load_db()
         current_ts = current_db.get('timestamp', 0)
         current_clients = current_db.get('clients', {})
 
-        print(f"🔍 Save Request: Incoming TS={incoming_ts}, Current TS={current_ts}")
+        print(f"🔍 Sync Check: Frontend last synced at {incoming_last_sync}, DB last updated at {current_ts}")
 
-        # TIMESTAMP MERGE STRATEGY
-        # If the incoming save is OLDER than the current database, it's a stale save (race condition).
-        # We must merge to prevent data loss.
-        if incoming_ts < current_ts:
-            print("⚠️ STALE SAVE DETECTED. Merging to protect new leads...")
-            
-            # Start with the current truth (newest data)
+        # If the frontend loaded the data BEFORE the database was last updated,
+        # it means the frontend has stale data (missing new leads from others).
+        if incoming_last_sync < current_ts:
+            print("⚠️ STALE DATA DETECTED. Merging to prevent data loss...")
             merged_clients = current_clients.copy()
             
-            # Apply updates from the incoming stale save
+            # Apply changes from the stale frontend
             for tx_id, client_data in incoming_clients.items():
-                # If the client exists in both, update it (e.g., status change, comment)
-                # If it only exists in incoming, add it (e.g., lead added by this user just now)
+                # If the client exists in current DB, update it (e.g. status change)
+                # If it doesn't exist, add it
                 merged_clients[tx_id] = client_data
-                
-            current_db['clients'] = merged_clients
-            # Update timestamp to now so we don't loop
-            current_db['timestamp'] = time.time() * 1000 
             
+            current_db['clients'] = merged_clients
+            current_db['timestamp'] = time.time() * 1000
             success = save_db(current_db)
             print(f"✅ Merge successful. Total clients: {len(merged_clients)}")
-            
         else:
-            # Fresh save (newer or equal timestamp). Safe to overwrite.
-            print("✅ FRESH SAVE. Overwriting database...")
-            data['timestamp'] = time.time() * 1000 # Ensure timestamp is set
+            print("✅ FRESH DATA. Overwriting...")
+            data['timestamp'] = time.time() * 1000
             success = save_db(data)
             print(f"✅ Save successful. Total clients: {len(data.get('clients', {}))}")
 
         if success:
             return JSONResponse(content={"status": "success"})
         else:
-            return JSONResponse(content={"status": "error", "message": "Firebase rejected the save."}, status_code=500)
+            return JSONResponse(content={"status": "error", "message": "Firebase rejected."}, status_code=500)
     except Exception as e:
-        print(f"❌ Update error: {e}")
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
 @app.post("/api/leads/submit")
@@ -160,7 +152,7 @@ async def submit_lead(request: Request):
         if success:
             return JSONResponse(content={"status": "success", "message": "Lead captured successfully."})
         else:
-            return JSONResponse(content={"status": "error", "message": "Failed to save lead to database."}, status_code=500)
+            return JSONResponse(content={"status": "error", "message": "Failed to save lead."}, status_code=500)
     except Exception as e:
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
