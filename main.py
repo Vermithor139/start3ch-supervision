@@ -2,13 +2,14 @@
 import json
 import random
 import requests
+import time
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import uvicorn
 
-app = FastAPI(title="Verum Invest Tactical Mainframe", version="6.0.2")
+app = FastAPI(title="Verum Invest Tactical Mainframe", version="6.0.3")
 BASE_DIR = Path(__file__).resolve().parent
 
 # --- GOOGLE FIREBASE CONFIGURATION ---
@@ -32,14 +33,16 @@ def load_db():
         if data is None:
             return {
                 "agents": ["ALL", "LUIS", "MARIA", "SANDRO", "JESSICA", "DAVID", "MARC", "NICOLAS", "PATRICIA", "JOE", "ANA", "JUAN", "FIORELLA", "ANDRES", "FERNANDO", "UNASSIGNED", "ADRIANO", "MAURICIO"],
-                "clients": {}
+                "clients": {},
+                "timestamp": 0
             }
         return data
     except Exception as e:
         print(f"Error loading DB from Firebase: {e}")
         return {
             "agents": ["ALL", "LUIS", "MARIA", "SANDRO", "JESSICA", "DAVID", "MARC", "NICOLAS", "PATRICIA", "JOE", "ANA", "JUAN", "FIORELLA", "ANDRES", "FERNANDO", "UNASSIGNED", "ADRIANO", "MAURICIO"],
-            "clients": {}
+            "clients": {},
+            "timestamp": 0
         }
 
 def save_db(db):
@@ -87,35 +90,48 @@ def get_database():
 async def update_database(request: Request):
     try:
         data = await request.json()
+        incoming_ts = data.get('timestamp', 0)
         incoming_clients = data.get('clients', {})
-        incoming_count = len(incoming_clients)
-        
-        # Load current state from Firebase
+
+        # Load current truth from Firebase
         current_db = load_db()
+        current_ts = current_db.get('timestamp', 0)
         current_clients = current_db.get('clients', {})
-        current_count = len(current_clients)
-        
-        # SAFETY MERGE: If the incoming save has fewer clients than the database,
-        # it's likely a stale save from a user who hasn't refreshed.
-        # We merge to prevent data loss (preserving new leads).
-        if incoming_count < current_count:
-            print(f"⚠️ Stale save detected: Incoming {incoming_count} < Current {current_count}. Merging to protect data...")
-            # Update existing clients with incoming data, keep new clients that are missing
-            current_clients.update(incoming_clients)
-            data['clients'] = current_clients
-            # Also update agents if provided
-            if 'agents' in data:
-                current_db['agents'] = data['agents']
-            success = save_db(current_db)
-        else:
-            # Fresh save (adding leads or intentional deletion), overwrite
-            success = save_db(data)
+
+        print(f"🔍 Save Request: Incoming TS={incoming_ts}, Current TS={current_ts}")
+
+        # TIMESTAMP MERGE STRATEGY
+        # If the incoming save is OLDER than the current database, it's a stale save (race condition).
+        # We must merge to prevent data loss.
+        if incoming_ts < current_ts:
+            print("⚠️ STALE SAVE DETECTED. Merging to protect new leads...")
             
+            # Start with the current truth (newest data)
+            merged_clients = current_clients.copy()
+            
+            # Apply updates from the incoming stale save
+            for tx_id, client_data in incoming_clients.items():
+                # If the client exists in both, update it (e.g., status change, comment)
+                # If it only exists in incoming, add it (e.g., lead added by this user just now)
+                merged_clients[tx_id] = client_data
+                
+            current_db['clients'] = merged_clients
+            # Update timestamp to now so we don't loop
+            current_db['timestamp'] = time.time() * 1000 
+            
+            success = save_db(current_db)
+            print(f"✅ Merge successful. Total clients: {len(merged_clients)}")
+            
+        else:
+            # Fresh save (newer or equal timestamp). Safe to overwrite.
+            print("✅ FRESH SAVE. Overwriting database...")
+            data['timestamp'] = time.time() * 1000 # Ensure timestamp is set
+            success = save_db(data)
+            print(f"✅ Save successful. Total clients: {len(data.get('clients', {}))}")
+
         if success:
-            print(f"✅ Save successful. Database now has {len(data.get('clients', {}))} clients.")
             return JSONResponse(content={"status": "success"})
         else:
-            print("❌ Save failed.")
             return JSONResponse(content={"status": "error", "message": "Firebase rejected the save."}, status_code=500)
     except Exception as e:
         print(f"❌ Update error: {e}")
@@ -139,6 +155,7 @@ async def submit_lead(request: Request):
             "comments": [], "transactions": [], "withdrawals": []
         }
         db['clients'][tx_id] = new_client
+        db['timestamp'] = time.time() * 1000
         success = save_db(db)
         if success:
             return JSONResponse(content={"status": "success", "message": "Lead captured successfully."})
