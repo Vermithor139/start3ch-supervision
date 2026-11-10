@@ -161,7 +161,12 @@
         .save-status { position: fixed; top: 80px; right: 32px; padding: 12px 20px; border-radius: 8px; font-family: var(--font-data); font-size: 0.85rem; font-weight: 600; z-index: 1000; display: none; animation: slideIn 0.3s ease-out; }
         .save-status.success { background: rgba(16,185,129,0.2); border: 1px solid var(--hud-green); color: var(--hud-green); display: block; }
         .save-status.error { background: rgba(239,68,68,0.2); border: 1px solid var(--hud-red); color: var(--hud-red); display: block; }
+        .save-status.saving { background: rgba(14,165,233,0.2); border: 1px solid var(--hud-glow); color: var(--hud-glow); display: block; }
         @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .save-indicator { position: fixed; bottom: 20px; right: 20px; background: var(--hud-card); border: 1px solid var(--hud-border); padding: 12px 20px; border-radius: 8px; font-family: var(--font-data); font-size: 0.8rem; display: none; align-items: center; gap: 8px; z-index: 1000; }
+        .save-indicator.active { display: flex; }
+        .save-indicator .spinner { width: 16px; height: 16px; border: 2px solid var(--hud-border); border-top-color: var(--hud-glow); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -346,6 +351,10 @@
     </div>
 
     <div id="save-status" class="save-status"></div>
+    <div id="save-indicator" class="save-indicator">
+        <div class="spinner"></div>
+        <span>Saving to Firebase...</span>
+    </div>
     
     <div class="modal-overlay" id="modal-injectLead">
         <div class="modal-content">
@@ -371,7 +380,11 @@
         let currentUserRole = 'MANAGER'; 
         let currentUserName = 'Roberto Palomino';
         let currentStatusFilter = 'ALL';
-        let isSaving = false;
+        
+        // Save queue to prevent race conditions
+        let saveQueue = [];
+        let isProcessingQueue = false;
+        let saveVersion = 0;
         
         const EMAIL_TO_AGENT = {
             's.jaeger@verum.invest': 'SANDRO', 'j.davis@verum.invest': 'JESSICA',
@@ -383,13 +396,81 @@
             'a.medina@verum.invest': 'ADRIANO', 'm.gomez@verum.invest': 'MAURICIO'
         };
 
-        function showSaveStatus(message, isSuccess) {
+        function showSaveStatus(message, type) {
             const statusEl = document.getElementById('save-status');
             statusEl.textContent = message;
-            statusEl.className = 'save-status ' + (isSuccess ? 'success' : 'error');
+            statusEl.className = 'save-status ' + type;
             setTimeout(() => {
                 statusEl.className = 'save-status';
             }, 3000);
+        }
+
+        function showSaveIndicator(show) {
+            const indicator = document.getElementById('save-indicator');
+            if (show) {
+                indicator.classList.add('active');
+            } else {
+                indicator.classList.remove('active');
+            }
+        }
+
+        // Queue-based save system to prevent race conditions
+        function queueSave() {
+            saveVersion++;
+            const version = saveVersion;
+            
+            return new Promise((resolve, reject) => {
+                saveQueue.push({ version, resolve, reject });
+                processSaveQueue();
+            });
+        }
+
+        async function processSaveQueue() {
+            if (isProcessingQueue) return;
+            isProcessingQueue = true;
+            
+            while (saveQueue.length > 0) {
+                const { version, resolve, reject } = saveQueue.shift();
+                
+                // Only process the latest version
+                if (version < saveVersion) {
+                    resolve(false);
+                    continue;
+                }
+                
+                try {
+                    showSaveIndicator(true);
+                    console.log(`[Save v${version}] Starting save with ${Object.keys(db.clients).length} clients`);
+                    
+                    const response = await fetch('/api/db/update', { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' }, 
+                        body: JSON.stringify(db) 
+                    });
+                    
+                    const result = await response.json();
+                    console.log(`[Save v${version}] Response:`, result);
+                    
+                    if (result.status === 'error') {
+                        showSaveStatus('Save failed: ' + result.message, 'error');
+                        reject(new Error(result.message));
+                    } else {
+                        showSaveStatus(`Saved ${Object.keys(db.clients).length} clients to Firebase`, 'success');
+                        resolve(true);
+                    }
+                } catch (error) {
+                    console.error(`[Save v${version}] Error:`, error);
+                    showSaveStatus('Network error', 'error');
+                    reject(error);
+                } finally {
+                    showSaveIndicator(false);
+                }
+                
+                // Small delay to prevent overwhelming Firebase
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            isProcessingQueue = false;
         }
 
         function getMyAgentCode() {
@@ -416,41 +497,11 @@
                 if (!db.clients) db.clients = {};
                 if (!db.agents) db.agents = ["ALL"];
                 console.log('Database loaded:', Object.keys(db.clients).length, 'clients');
-                showSaveStatus(`Loaded ${Object.keys(db.clients).length} clients from Firebase`, true);
+                showSaveStatus(`Loaded ${Object.keys(db.clients).length} clients from Firebase`, 'success');
             } catch (error) { 
                 console.error('Failed to fetch database:', error);
                 db = { agents: ["ALL"], clients: {} };
-                showSaveStatus('Failed to load database', false);
-            }
-        }
-
-        async function saveDatabase() {
-            if (isSaving) {
-                console.log('Save already in progress, waiting...');
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-            isSaving = true;
-            try { 
-                console.log('Saving database with', Object.keys(db.clients).length, 'clients');
-                const response = await fetch('/api/db/update', { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify(db) 
-                });
-                const result = await response.json();
-                console.log('Save response:', result);
-                if (result.status === 'error') {
-                    showSaveStatus('Save failed: ' + result.message, false);
-                    return false;
-                }
-                showSaveStatus('Saved to Firebase successfully', true);
-                return true;
-            } catch (error) { 
-                console.error('Failed to save database:', error);
-                showSaveStatus('Network error saving database', false);
-                return false;
-            } finally {
-                isSaving = false;
+                showSaveStatus('Failed to load database', 'error');
             }
         }
         
@@ -532,7 +583,7 @@
             const removed = db.agents[index]; 
             if (confirm(`Remove agent "${removed}"?`)) { 
                 db.agents.splice(index, 1); 
-                await saveDatabase(); 
+                await queueSave(); 
                 if (currentFilter === removed) currentFilter = 'ALL'; 
                 renderAgentTabs(); 
                 renderTable(); 
@@ -589,7 +640,7 @@
             if (currentUserRole === 'CLOSER') return;
             if (confirm('Are you sure you want to permanently delete this lead? This cannot be undone.')) {
                 delete db.clients[txId];
-                await saveDatabase();
+                await queueSave();
                 renderTable();
                 updateLeadCounter();
                 showView('leads');
@@ -601,7 +652,7 @@
             if (confirm('⚠️ This will delete ALL leads with "Test" in their name. Continue?')) {
                 const testLeads = Object.keys(db.clients).filter(id => db.clients[id].name && db.clients[id].name.toLowerCase().includes('test'));
                 testLeads.forEach(id => delete db.clients[id]);
-                await saveDatabase();
+                await queueSave();
                 renderTable();
                 updateLeadCounter();
                 alert(`✅ Cleared ${testLeads.length} test leads.`);
@@ -611,7 +662,7 @@
         async function updateStatus(txId, field, value) { 
             if (db.clients[txId]) { 
                 db.clients[txId][field] = value; 
-                await saveDatabase(); 
+                await queueSave(); 
             } 
         }
         function filterTable(agent, el) { currentFilter = agent; renderAgentTabs(); renderTable(); }
@@ -620,7 +671,7 @@
             if (name) { 
                 if(!db.agents.includes(name)) { 
                     db.agents.push(name); 
-                    await saveDatabase(); 
+                    await queueSave(); 
                 } 
                 currentFilter = name; 
                 renderAgentTabs(); 
@@ -760,7 +811,7 @@
             tx.profit = newProfit;
             currentClient.balance = (currentClient.balance || 0) + profitChange;
             db.clients[currentClient.txId] = currentClient;
-            await saveDatabase();
+            await queueSave();
             alert(`✅ Transaction updated!\nOld: $${oldProfit.toFixed(2)}\nNew: $${newProfit.toFixed(2)}\nBalance adjusted by: $${profitChange.toFixed(2)}`);
             renderTransactionsForManager();
             openProfile(currentClient.txId);
@@ -775,7 +826,7 @@
             db.clients[currentClient.txId].email = document.getElementById('p-email').value;
             db.clients[currentClient.txId].source = document.getElementById('p-source').value;
             
-            await saveDatabase();
+            await queueSave();
             renderTable();
         }
 
@@ -785,7 +836,7 @@
             db.clients[currentClient.txId].retention = document.getElementById('p-status-retention').value; 
             db.clients[currentClient.txId].subStatus = document.getElementById('p-status-sub').value; 
             db.clients[currentClient.txId].agent = document.getElementById('p-agent-select').value; 
-            await saveDatabase(); 
+            await queueSave(); 
             renderTable(); 
         }
         
@@ -799,7 +850,7 @@
             if (!currentClient.transactions) currentClient.transactions = [];
             currentClient.transactions.push({ id: txId, date: today, type: 'PROFIT', asset: asset, amount: 0, profit: amount, status: 'COMPLETED' }); 
             currentClient.balance = (currentClient.balance || 0) + amount; 
-            await saveDatabase(); 
+            await queueSave(); 
             document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); 
             document.getElementById('profit-amount').value = ''; 
             document.getElementById('profit-asset').value = ''; 
@@ -813,7 +864,7 @@
             wd.status = 'APPROVED'; 
             currentClient.balance = (currentClient.balance || 0) - wd.amount; 
             currentClient.withdrawn = (currentClient.withdrawn || 0) + wd.amount; 
-            await saveDatabase(); 
+            await queueSave(); 
             document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); 
             openProfile(currentClient.txId); 
             checkWithdrawalAlerts(); 
@@ -824,7 +875,7 @@
             const wd = currentClient.withdrawals.find(w => w.id === wdId); 
             if (!wd) return; 
             wd.status = 'REJECTED'; 
-            await saveDatabase(); 
+            await queueSave(); 
             openProfile(currentClient.txId); 
             checkWithdrawalAlerts(); 
         }
@@ -840,7 +891,8 @@
             const now = new Date().toLocaleString(); 
             if (!currentClient.comments) currentClient.comments = [];
             currentClient.comments.unshift({agent: localStorage.getItem('verum_user') || "Manager", time: now, text: text}); 
-            const saved = await saveDatabase();
+            
+            const saved = await queueSave();
             
             btn.disabled = false;
             btn.textContent = 'TRANSMIT';
@@ -890,7 +942,7 @@
                 withdrawals: [] 
             }; 
             
-            await saveDatabase(); 
+            await queueSave(); 
             closeModal('injectLead'); 
             document.getElementById('lead-name').value = ''; 
             document.getElementById('lead-country').value = ''; 
