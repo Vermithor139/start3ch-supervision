@@ -9,12 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import uvicorn
 
-app = FastAPI(title="Verum Invest Tactical Mainframe", version="6.0.5")
+app = FastAPI(title="Verum Invest Tactical Mainframe", version="6.0.6")
 BASE_DIR = Path(__file__).resolve().parent
 
-# --- GOOGLE FIREBASE CONFIGURATION ---
 FIREBASE_URL = "https://verumcrm-default-rtdb.firebaseio.com/"
-# -------------------------------------
 
 app.add_middleware(
     CORSMiddleware,
@@ -57,7 +55,6 @@ def save_db(db):
 
 @app.middleware("http")
 async def strict_ip_firewall(request: Request, call_next):
-    # Added your IP to the allowed list
     ALLOWED_IPS = ["191.96.215.107", "41.81.195.117", "105.164.4.146", "127.0.0.1", "localhost"]
     path = request.url.path
     
@@ -102,26 +99,54 @@ async def update_database(request: Request):
         print(f"🔍 Incoming clients: {len(incoming_clients)}, Current DB clients: {len(current_clients)}")
 
         if incoming_last_sync < current_ts:
-            print("⚠️ STALE DATA DETECTED. Smart merging to protect status changes...")
+            print("⚠️ STALE DATA DETECTED. Smart merging...")
             merged_clients = current_clients.copy()
             new_leads_added = 0
+            comments_merged = 0
             
-            # ONLY add new clients that don't exist in current DB
-            # NEVER overwrite existing clients (this preserves status changes)
             for tx_id, client_data in incoming_clients.items():
                 if tx_id not in merged_clients:
+                    # New lead - add it
                     merged_clients[tx_id] = client_data
                     new_leads_added += 1
-                    print(f"  + Added new lead: {tx_id} ({client_data.get('name', 'Unknown')})")
+                    print(f"  + Added new lead: {tx_id}")
                 else:
-                    # Client exists in both - keep the CURRENT DB version (newer)
-                    # This preserves status changes made by advisors
-                    print(f"  = Keeping current version for: {tx_id} ({client_data.get('name', 'Unknown')})")
+                    # Client exists in both - MERGE comments and preserve status changes
+                    existing = merged_clients[tx_id]
+                    incoming_comments = client_data.get('comments', [])
+                    existing_comments = existing.get('comments', [])
+                    
+                    # Merge comments: add incoming comments that don't exist in current
+                    existing_comment_texts = {c.get('text', '') + c.get('time', '') for c in existing_comments}
+                    for inc_comment in incoming_comments:
+                        key = inc_comment.get('text', '') + inc_comment.get('time', '')
+                        if key not in existing_comment_texts:
+                            existing_comments.append(inc_comment)
+                            comments_merged += 1
+                    
+                    # Sort comments by time (newest first)
+                    existing_comments.sort(key=lambda x: x.get('time', ''), reverse=True)
+                    existing['comments'] = existing_comments
+                    
+                    # Update lastActivity if incoming is newer
+                    incoming_activity = client_data.get('lastActivity', 0)
+                    existing_activity = existing.get('lastActivity', 0)
+                    if incoming_activity > existing_activity:
+                        existing['lastActivity'] = incoming_activity
+                    
+                    # Preserve any status changes from incoming if they're different
+                    # (This handles the case where advisor changed status but save was stale)
+                    if client_data.get('status') and client_data.get('status') != existing.get('status'):
+                        # Keep the newer status - compare by checking if incoming has a more recent activity
+                        if incoming_activity > existing_activity:
+                            existing['status'] = client_data.get('status')
+                            existing['retention'] = client_data.get('retention', existing.get('retention'))
+                            existing['subStatus'] = client_data.get('subStatus', existing.get('subStatus'))
             
             current_db['clients'] = merged_clients
             current_db['timestamp'] = time.time() * 1000
             success = save_db(current_db)
-            print(f"✅ Merge successful. Added {new_leads_added} new leads. Total clients: {len(merged_clients)}")
+            print(f"✅ Merge successful. Added {new_leads_added} leads, merged {comments_merged} comments. Total: {len(merged_clients)}")
         else:
             print("✅ FRESH DATA. Overwriting...")
             data['timestamp'] = time.time() * 1000
@@ -142,6 +167,7 @@ async def submit_lead(request: Request):
         data = await request.json()
         db = load_db()
         tx_id = 'TX-' + str(random.randint(100000, 999999))
+        now = time.time() * 1000
         
         new_client = {
             "txId": tx_id, "agent": "UNASSIGNED", "name": data.get('name', 'Unknown'),
@@ -150,11 +176,13 @@ async def submit_lead(request: Request):
             "lastLogin": "Just now", "balance": 0, "withdrawn": 0, "deposit": 0,
             "status": "NEW LEAD", "retention": "NEW", "subStatus": "POTENTIAL",
             "source": data.get('source', 'Website Landing Page'),
-            "comment": "Lead captured via Landing Page.",
-            "comments": [], "transactions": [], "withdrawals": []
+            "comment": "New lead injected.", "comments": [],
+            "transactions": [{"id": tx_id, "date": "Just now", "type": "DEPOSIT", "asset": "Initial Capital", "amount": 0, "profit": 0, "status": "COMPLETED"}],
+            "withdrawals": [],
+            "lastActivity": now
         }
         db['clients'][tx_id] = new_client
-        db['timestamp'] = time.time() * 1000
+        db['timestamp'] = now
         success = save_db(db)
         if success:
             return JSONResponse(content={"status": "success", "message": "Lead captured successfully."})

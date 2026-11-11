@@ -161,7 +161,6 @@
         .save-status { position: fixed; top: 80px; right: 32px; padding: 12px 20px; border-radius: 8px; font-family: var(--font-data); font-size: 0.85rem; font-weight: 600; z-index: 1000; display: none; animation: slideIn 0.3s ease-out; }
         .save-status.success { background: rgba(16,185,129,0.2); border: 1px solid var(--hud-green); color: var(--hud-green); display: block; }
         .save-status.error { background: rgba(239,68,68,0.2); border: 1px solid var(--hud-red); color: var(--hud-red); display: block; }
-        .save-status.saving { background: rgba(14,165,233,0.2); border: 1px solid var(--hud-glow); color: var(--hud-glow); display: block; }
         @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         .save-indicator { position: fixed; bottom: 20px; right: 20px; background: var(--hud-card); border: 1px solid var(--hud-border); padding: 12px 20px; border-radius: 8px; font-family: var(--font-data); font-size: 0.8rem; display: none; align-items: center; gap: 8px; z-index: 1000; }
         .save-indicator.active { display: flex; }
@@ -209,7 +208,7 @@
                 <div class="filter-tabs" id="agent-tabs-container"></div>
                 <div class="data-table-container">
                     <table>
-                        <thead><tr><th style="width: 40px;"><input type="checkbox"></th><th>IDENTITY / CONTACT</th><th>ORIGIN</th><th>SOURCE</th><th>LAST SYNC</th><th>CURRENT BAL</th><th>WITHDRAWN / COMM</th><th>DEPOSIT / PROFIT</th><th>STATUS</th><th>RETENTION</th><th>SUB-STATUS</th><th>AGENT LOG</th><th>ACTIONS</th></tr></thead>
+                        <thead><tr><th style="width: 40px;"><input type="checkbox"></th><th>IDENTITY / CONTACT</th><th>ORIGIN</th><th>SOURCE</th><th>LAST ACTIVITY</th><th>CURRENT BAL</th><th>WITHDRAWN / COMM</th><th>DEPOSIT / PROFIT</th><th>STATUS</th><th>RETENTION</th><th>SUB-STATUS</th><th>AGENT LOG</th><th>ACTIONS</th></tr></thead>
                         <tbody id="lead-table-body"></tbody>
                     </table>
                 </div>
@@ -429,11 +428,8 @@
                 
                 try {
                     showSaveIndicator(true);
-                    // We do NOT update db.timestamp here. The server handles the new timestamp.
-                    // We send the time we last synced to let the server know if we are stale.
                     const payload = { ...db, synced_at: db.synced_at };
-                    
-                    console.log(`[Save v${version}] Starting save with ${Object.keys(db.clients).length} clients (synced_at: ${db.synced_at})`);
+                    console.log(`[Save v${version}] Starting save with ${Object.keys(db.clients).length} clients`);
                     
                     const response = await fetch('/api/db/update', { 
                         method: 'POST', 
@@ -448,8 +444,7 @@
                         showSaveStatus('Save failed: ' + result.message, 'error');
                         reject(new Error(result.message));
                     } else {
-                        // Update our local sync time to the new server time (approximate)
-                        db.synced_at = Date.now(); 
+                        db.synced_at = Date.now();
                         showSaveStatus(`Saved ${Object.keys(db.clients).length} clients to Firebase`, 'success');
                         resolve(true);
                     }
@@ -483,11 +478,8 @@
                 if (!db.clients) db.clients = {};
                 if (!db.agents) db.agents = ["ALL"];
                 if (!db.timestamp) db.timestamp = 0;
-                
-                // CRITICAL: Record when we loaded this data
                 db.synced_at = db.timestamp || 0;
-                
-                console.log('Database loaded:', Object.keys(db.clients).length, 'clients. Synced at:', db.synced_at);
+                console.log('Database loaded:', Object.keys(db.clients).length, 'clients');
                 showSaveStatus(`Loaded ${Object.keys(db.clients).length} clients from Firebase`, 'success');
             } catch (error) { 
                 console.error('Failed to fetch database:', error);
@@ -550,6 +542,18 @@
         function renderTable() { 
             const tbody = document.getElementById('lead-table-body'); tbody.innerHTML = ''; 
             let clients = Object.values(db.clients); 
+            
+            // SORT: Most recent activity first (by lastActivity timestamp, then by most recent comment)
+            clients.sort((a, b) => {
+                const aActivity = a.lastActivity || 0;
+                const bActivity = b.lastActivity || 0;
+                if (aActivity !== bActivity) return bActivity - aActivity;
+                // Fallback: sort by most recent comment
+                const aComment = (a.comments && a.comments.length > 0) ? a.comments[0].time : '';
+                const bComment = (b.comments && b.comments.length > 0) ? b.comments[0].time : '';
+                return bComment.localeCompare(aComment);
+            });
+            
             if (currentUserRole === 'CLOSER') clients = clients.filter(c => c.agent === getMyAgentCode());
             if (currentStatusFilter !== 'ALL') clients = clients.filter(c => c.retention === currentStatusFilter || c.subStatus === currentStatusFilter || c.status === currentStatusFilter);
             if (currentUserRole !== 'CLOSER' && currentFilter !== 'ALL') clients = clients.filter(c => c.agent === currentFilter);
@@ -560,18 +564,23 @@
             clients.forEach((c) => { 
                 const tr = document.createElement('tr'); tr.onclick = () => openProfile(c.txId); 
                 let actionCell = canDelete ? `<td><button class="btn-hud red" style="padding: 4px 8px; font-size: 0.7rem;" onclick="event.stopPropagation(); deleteClient('${c.txId}')">DELETE</button></td>` : `<td></td>`;
+                
+                // Get most recent comment for display
+                const lastComment = (c.comments && c.comments.length > 0) ? c.comments[0].text : (c.comment || '');
+                const lastActivity = c.lastActivity ? new Date(c.lastActivity).toLocaleString() : (c.lastLogin || 'N/A');
+                
                 tr.innerHTML = `<td><input type="checkbox" onclick="event.stopPropagation()"></td>
                 <td><a href="#" class="client-link" onclick="event.preventDefault(); openProfile('${c.txId}')">${c.name || 'Unknown'}</a><div class="client-id">${c.txId}</div></td>
                 <td>${c.country || 'Unknown'} ${c.flag || '🌎'}</td>
                 <td><span class="role-badge" style="background: rgba(255,255,255,0.1); color: var(--hud-muted); font-size: 0.65rem;">${c.source || 'Unknown'}</span></td>
-                <td style="font-family: var(--font-data); font-size: 0.8rem;">${c.lastLogin || 'N/A'}</td>
+                <td style="font-family: var(--font-data); font-size: 0.75rem;">${lastActivity}</td>
                 <td style="font-weight: 700;">$${(c.balance || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
                 <td class="text-red">-$${(c.withdrawn || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
                 <td style="font-weight: 700;">$${(c.deposit || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
                 <td><select class="status-select status-depositor" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'status', this.value)" ${!canModifyDepositor ? 'disabled' : ''}><option selected>${c.status || 'NEW LEAD'}</option></select></td>
                 <td><select class="status-select status-retention" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'retention', this.value)"><option selected>${c.retention || 'NEW'}</option></select></td>
                 <td><select class="status-select status-sub" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'subStatus', this.value)"><option selected>${c.subStatus || 'POTENTIAL'}</option></select></td>
-                <td><div class="comment-preview">${c.comment || ''}</div></td>
+                <td><div class="comment-preview" title="${lastComment}">${lastComment}</div></td>
                 ${actionCell}`; 
                 tbody.appendChild(tr); 
             }); 
@@ -580,7 +589,13 @@
 
         async function deleteClient(txId) { if (currentUserRole === 'CLOSER') return; if (confirm('Are you sure?')) { delete db.clients[txId]; await queueSave(); renderTable(); updateLeadCounter(); showView('leads'); } }
         async function clearTestLeads() { if (currentUserRole === 'CLOSER') { alert('Permission denied.'); return; } if (confirm('⚠️ Delete ALL test leads?')) { const testLeads = Object.keys(db.clients).filter(id => db.clients[id].name && db.clients[id].name.toLowerCase().includes('test')); testLeads.forEach(id => delete db.clients[id]); await queueSave(); renderTable(); updateLeadCounter(); alert(`✅ Cleared ${testLeads.length} test leads.`); } }
-        async function updateStatus(txId, field, value) { if (db.clients[txId]) { db.clients[txId][field] = value; await queueSave(); } }
+        async function updateStatus(txId, field, value) { 
+            if (db.clients[txId]) { 
+                db.clients[txId][field] = value; 
+                db.clients[txId].lastActivity = Date.now();
+                await queueSave(); 
+            } 
+        }
         function filterTable(agent, el) { currentFilter = agent; renderAgentTabs(); renderTable(); }
         async function addFilter() { const name = prompt("Enter Agent Name:").trim().toUpperCase(); if (name) { if(!db.agents.includes(name)) { db.agents.push(name); await queueSave(); } currentFilter = name; renderAgentTabs(); renderTable(); } }
         
@@ -628,17 +643,38 @@
             editSelect.innerHTML = '<option value="">-- Select Transaction --</option>' + transactions.map(tx => `<option value="${tx.id}">${tx.id} - ${tx.asset} (${tx.profit > 0 ? '+' : ''}$${(tx.profit || 0).toFixed(2)})</option>`).join('');
         }
 
-        async function editTransactionProfit() { if (!currentClient) return; const txId = document.getElementById('edit-tx-select').value; const newProfit = parseFloat(document.getElementById('edit-tx-profit').value); if (!txId || isNaN(newProfit)) { alert('Please select a transaction and enter a value.'); return; } const tx = currentClient.transactions.find(t => t.id === txId); if (!tx) return; const oldProfit = tx.profit || 0; const profitChange = newProfit - oldProfit; tx.profit = newProfit; currentClient.balance = (currentClient.balance || 0) + profitChange; db.clients[currentClient.txId] = currentClient; await queueSave(); alert(`✅ Transaction updated!\nOld: $${oldProfit.toFixed(2)}\nNew: $${newProfit.toFixed(2)}\nBalance adjusted by: $${profitChange.toFixed(2)}`); renderTransactionsForManager(); openProfile(currentClient.txId); }
-        async function saveProfileData() { if (!currentClient) return; if (currentUserRole === 'CLOSER') { alert('Permission denied.'); return; } db.clients[currentClient.txId].phone = document.getElementById('p-phone').value; db.clients[currentClient.txId].country = document.getElementById('p-country').value; db.clients[currentClient.txId].email = document.getElementById('p-email').value; db.clients[currentClient.txId].source = document.getElementById('p-source').value; await queueSave(); renderTable(); }
-        async function transmitStatusUpdate() { if (!currentClient) return; db.clients[currentClient.txId].status = document.getElementById('p-status-depositor').value; db.clients[currentClient.txId].retention = document.getElementById('p-status-retention').value; db.clients[currentClient.txId].subStatus = document.getElementById('p-status-sub').value; db.clients[currentClient.txId].agent = document.getElementById('p-agent-select').value; await queueSave(); renderTable(); }
-        async function injectProfit() { if (!currentClient) return; const amount = parseFloat(document.getElementById('profit-amount').value); const asset = document.getElementById('profit-asset').value.trim(); if (!amount || !asset) { alert('Please enter both amount and asset.'); return; } const txId = 'TX-' + Math.floor(Math.random() * 90000 + 10000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); if (!currentClient.transactions) currentClient.transactions = []; currentClient.transactions.push({ id: txId, date: today, type: 'PROFIT', asset: asset, amount: 0, profit: amount, status: 'COMPLETED' }); currentClient.balance = (currentClient.balance || 0) + amount; await queueSave(); document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('profit-amount').value = ''; document.getElementById('profit-asset').value = ''; openProfile(currentClient.txId); }
-        async function approveWithdrawal(wdId) { if (!currentClient) return; const wd = currentClient.withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'APPROVED'; currentClient.balance = (currentClient.balance || 0) - wd.amount; currentClient.withdrawn = (currentClient.withdrawn || 0) + wd.amount; await queueSave(); document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
-        async function rejectWithdrawal(wdId) { if (!currentClient) return; const wd = currentClient.withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'REJECTED'; await queueSave(); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
-        async function addComment() { const input = document.getElementById('new-comment'); const text = input.value.trim(); if (!text || !currentClient) return; const btn = document.getElementById('btn-add-comment'); btn.disabled = true; btn.textContent = 'SAVING...'; const now = new Date().toLocaleString(); if (!currentClient.comments) currentClient.comments = []; currentClient.comments.unshift({agent: localStorage.getItem('verum_user') || "Manager", time: now, text: text}); const saved = await queueSave(); btn.disabled = false; btn.textContent = 'TRANSMIT'; if (saved) { input.value = ''; openProfile(currentClient.txId); } else { currentClient.comments.shift(); } }
+        async function editTransactionProfit() { if (!currentClient) return; const txId = document.getElementById('edit-tx-select').value; const newProfit = parseFloat(document.getElementById('edit-tx-profit').value); if (!txId || isNaN(newProfit)) { alert('Please select a transaction and enter a value.'); return; } const tx = currentClient.transactions.find(t => t.id === txId); if (!tx) return; const oldProfit = tx.profit || 0; const profitChange = newProfit - oldProfit; tx.profit = newProfit; currentClient.balance = (currentClient.balance || 0) + profitChange; db.clients[currentClient.txId] = currentClient; db.clients[currentClient.txId].lastActivity = Date.now(); await queueSave(); alert(`✅ Transaction updated!\nOld: $${oldProfit.toFixed(2)}\nNew: $${newProfit.toFixed(2)}\nBalance adjusted by: $${profitChange.toFixed(2)}`); renderTransactionsForManager(); openProfile(currentClient.txId); }
+        async function saveProfileData() { if (!currentClient) return; if (currentUserRole === 'CLOSER') { alert('Permission denied.'); return; } db.clients[currentClient.txId].phone = document.getElementById('p-phone').value; db.clients[currentClient.txId].country = document.getElementById('p-country').value; db.clients[currentClient.txId].email = document.getElementById('p-email').value; db.clients[currentClient.txId].source = document.getElementById('p-source').value; db.clients[currentClient.txId].lastActivity = Date.now(); await queueSave(); renderTable(); }
+        async function transmitStatusUpdate() { if (!currentClient) return; db.clients[currentClient.txId].status = document.getElementById('p-status-depositor').value; db.clients[currentClient.txId].retention = document.getElementById('p-status-retention').value; db.clients[currentClient.txId].subStatus = document.getElementById('p-status-sub').value; db.clients[currentClient.txId].agent = document.getElementById('p-agent-select').value; db.clients[currentClient.txId].lastActivity = Date.now(); await queueSave(); renderTable(); }
+        async function injectProfit() { if (!currentClient) return; const amount = parseFloat(document.getElementById('profit-amount').value); const asset = document.getElementById('profit-asset').value.trim(); if (!amount || !asset) { alert('Please enter both amount and asset.'); return; } const txId = 'TX-' + Math.floor(Math.random() * 90000 + 10000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); if (!currentClient.transactions) currentClient.transactions = []; currentClient.transactions.push({ id: txId, date: today, type: 'PROFIT', asset: asset, amount: 0, profit: amount, status: 'COMPLETED' }); currentClient.balance = (currentClient.balance || 0) + amount; db.clients[currentClient.txId].lastActivity = Date.now(); await queueSave(); document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); document.getElementById('profit-amount').value = ''; document.getElementById('profit-asset').value = ''; openProfile(currentClient.txId); }
+        async function approveWithdrawal(wdId) { if (!currentClient) return; const wd = currentClient.withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'APPROVED'; currentClient.balance = (currentClient.balance || 0) - wd.amount; currentClient.withdrawn = (currentClient.withdrawn || 0) + wd.amount; db.clients[currentClient.txId].lastActivity = Date.now(); await queueSave(); document.getElementById('p-balance').textContent = '$' + currentClient.balance.toLocaleString('en-US', {minimumFractionDigits: 2}); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
+        async function rejectWithdrawal(wdId) { if (!currentClient) return; const wd = currentClient.withdrawals.find(w => w.id === wdId); if (!wd) return; wd.status = 'REJECTED'; db.clients[currentClient.txId].lastActivity = Date.now(); await queueSave(); openProfile(currentClient.txId); checkWithdrawalAlerts(); }
+        async function addComment() { 
+            const input = document.getElementById('new-comment'); 
+            const text = input.value.trim(); 
+            if (!text || !currentClient) return; 
+            const btn = document.getElementById('btn-add-comment');
+            btn.disabled = true;
+            btn.textContent = 'SAVING...';
+            const now = new Date().toLocaleString(); 
+            if (!currentClient.comments) currentClient.comments = [];
+            currentClient.comments.unshift({agent: localStorage.getItem('verum_user') || "Manager", time: now, text: text});
+            currentClient.lastActivity = Date.now();
+            const saved = await queueSave();
+            btn.disabled = false;
+            btn.textContent = 'TRANSMIT';
+            if (saved) {
+                input.value = ''; 
+                openProfile(currentClient.txId);
+                renderTable();
+            } else {
+                currentClient.comments.shift();
+            }
+        }
         function switchTab(tabId, btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); btn.classList.add('active'); document.getElementById(`tab-${tabId}`).classList.add('active'); }
         function openModal(id) { document.getElementById(`modal-${id}`).classList.add('active'); }
         function closeModal(id) { document.getElementById(`modal-${id}`).classList.remove('active'); }
-        async function injectLead() { const name = document.getElementById('lead-name').value.trim(); const country = document.getElementById('lead-country').value.trim(); const phone = document.getElementById('lead-phone').value.trim(); const deposit = parseFloat(document.getElementById('lead-deposit').value); const email = document.getElementById('lead-email').value.trim(); const source = document.getElementById('lead-source').value.trim(); const agent = document.getElementById('lead-agent').value; if (!name || !country || !deposit) { alert('⚠️ Please fill Name, Country, and Deposit.'); return; } const txId = 'TX-' + Math.floor(Math.random() * 900000 + 100000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); db.clients[txId] = { txId, agent, name, country, flag: '🌎', phone: phone, email: email, lastLogin: today + ' 09:00', balance: deposit, withdrawn: 0, deposit, status: 'NEW LEAD', retention: 'NEW', subStatus: 'POTENTIAL', source: source || 'Manual Entry', comment: 'New lead injected.', comments: [], transactions: [{id: txId, date: today, type: 'DEPOSIT', asset: 'Initial Capital', amount: deposit, profit: 0, status: 'COMPLETED'}], withdrawals: [] }; await queueSave(); closeModal('injectLead'); document.getElementById('lead-name').value = ''; document.getElementById('lead-country').value = ''; document.getElementById('lead-phone').value = ''; document.getElementById('lead-deposit').value = ''; document.getElementById('lead-email').value = ''; document.getElementById('lead-source').value = ''; renderTable(); updateLeadCounter(); }
+        async function injectLead() { const name = document.getElementById('lead-name').value.trim(); const country = document.getElementById('lead-country').value.trim(); const phone = document.getElementById('lead-phone').value.trim(); const deposit = parseFloat(document.getElementById('lead-deposit').value); const email = document.getElementById('lead-email').value.trim(); const source = document.getElementById('lead-source').value.trim(); const agent = document.getElementById('lead-agent').value; if (!name || !country || !deposit) { alert('⚠️ Please fill Name, Country, and Deposit.'); return; } const txId = 'TX-' + Math.floor(Math.random() * 900000 + 100000); const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.'); const now = Date.now(); db.clients[txId] = { txId, agent, name, country, flag: '🌎', phone: phone, email: email, lastLogin: today + ' 09:00', balance: deposit, withdrawn: 0, deposit, status: 'NEW LEAD', retention: 'NEW', subStatus: 'POTENTIAL', source: source || 'Manual Entry', comment: 'New lead injected.', comments: [], transactions: [{id: txId, date: today, type: 'DEPOSIT', asset: 'Initial Capital', amount: deposit, profit: 0, status: 'COMPLETED'}], withdrawals: [], lastActivity: now }; await queueSave(); closeModal('injectLead'); document.getElementById('lead-name').value = ''; document.getElementById('lead-country').value = ''; document.getElementById('lead-phone').value = ''; document.getElementById('lead-deposit').value = ''; document.getElementById('lead-email').value = ''; document.getElementById('lead-source').value = ''; renderTable(); updateLeadCounter(); }
         function logout() { localStorage.clear(); window.location.href = '/login'; }
         if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initCRM); } else { initCRM(); }
     </script>
