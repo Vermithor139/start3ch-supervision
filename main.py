@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import uvicorn
 
-app = FastAPI(title="Verum Invest Tactical Mainframe", version="6.0.4")
+app = FastAPI(title="Verum Invest Tactical Mainframe", version="6.0.5")
 BASE_DIR = Path(__file__).resolve().parent
 
 # --- GOOGLE FIREBASE CONFIGURATION ---
@@ -90,7 +90,6 @@ def get_database():
 async def update_database(request: Request):
     try:
         data = await request.json()
-        # The timestamp of when the frontend LAST SYNCED (loaded) the data
         incoming_last_sync = data.get('synced_at', 0)
         incoming_clients = data.get('clients', {})
 
@@ -99,23 +98,29 @@ async def update_database(request: Request):
         current_clients = current_db.get('clients', {})
 
         print(f"🔍 Sync Check: Frontend last synced at {incoming_last_sync}, DB last updated at {current_ts}")
+        print(f"🔍 Incoming clients: {len(incoming_clients)}, Current DB clients: {len(current_clients)}")
 
-        # If the frontend loaded the data BEFORE the database was last updated,
-        # it means the frontend has stale data (missing new leads from others).
         if incoming_last_sync < current_ts:
-            print("⚠️ STALE DATA DETECTED. Merging to prevent data loss...")
+            print("⚠️ STALE DATA DETECTED. Smart merging to protect status changes...")
             merged_clients = current_clients.copy()
+            new_leads_added = 0
             
-            # Apply changes from the stale frontend
+            # ONLY add new clients that don't exist in current DB
+            # NEVER overwrite existing clients (this preserves status changes)
             for tx_id, client_data in incoming_clients.items():
-                # If the client exists in current DB, update it (e.g. status change)
-                # If it doesn't exist, add it
-                merged_clients[tx_id] = client_data
+                if tx_id not in merged_clients:
+                    merged_clients[tx_id] = client_data
+                    new_leads_added += 1
+                    print(f"  + Added new lead: {tx_id} ({client_data.get('name', 'Unknown')})")
+                else:
+                    # Client exists in both - keep the CURRENT DB version (newer)
+                    # This preserves status changes made by advisors
+                    print(f"  = Keeping current version for: {tx_id} ({client_data.get('name', 'Unknown')})")
             
             current_db['clients'] = merged_clients
             current_db['timestamp'] = time.time() * 1000
             success = save_db(current_db)
-            print(f"✅ Merge successful. Total clients: {len(merged_clients)}")
+            print(f"✅ Merge successful. Added {new_leads_added} new leads. Total clients: {len(merged_clients)}")
         else:
             print("✅ FRESH DATA. Overwriting...")
             data['timestamp'] = time.time() * 1000
@@ -127,6 +132,7 @@ async def update_database(request: Request):
         else:
             return JSONResponse(content={"status": "error", "message": "Firebase rejected."}, status_code=500)
     except Exception as e:
+        print(f"❌ Update error: {e}")
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
 @app.post("/api/leads/submit")
