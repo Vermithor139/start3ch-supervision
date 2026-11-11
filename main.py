@@ -57,7 +57,8 @@ def save_db(db):
 
 @app.middleware("http")
 async def strict_ip_firewall(request: Request, call_next):
-    ALLOWED_IPS = ["191.96.215.107", "41.81.195.117", "127.0.0.1", "localhost"]
+    # Added your IP to the allowed list
+    ALLOWED_IPS = ["191.96.215.107", "41.81.195.117", "105.164.4.146", "127.0.0.1", "localhost"]
     path = request.url.path
     
     public_routes = ["/client", "/client-login", "/health", "/favicon.ico", "/static", "/docs", "/openapi.json", "/api/db", "/api/db/update", "/api/leads/submit", "/lead-capture"]
