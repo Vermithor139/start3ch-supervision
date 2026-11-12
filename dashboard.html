@@ -1,4 +1,402 @@
-﻿    <script>
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Verum Invest | Tactical CRM</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --hud-bg: #030712; --hud-panel: #0b1120; --hud-card: #111827; --hud-border: #1e293b; --hud-glow: #0ea5e9; --hud-text: #f8fafc; --hud-muted: #64748b; --hud-green: #10b981; --hud-red: #ef4444; --status-orange: #f97316; --status-blue: #3b82f6; --font-ui: 'Inter', sans-serif; --font-data: 'JetBrains Mono', monospace; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-ui); background: var(--hud-bg); color: var(--hud-text); height: 100vh; overflow: hidden; display: flex; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; } ::-webkit-scrollbar-track { background: var(--hud-bg); } ::-webkit-scrollbar-thumb { background: var(--hud-border); border-radius: 3px; }
+        .sidebar { width: 260px; background: var(--hud-panel); border-right: 1px solid var(--hud-border); display: flex; flex-direction: column; padding: 24px 0; z-index: 10; }
+        .brand-container { padding: 0 24px 24px; border-bottom: 1px solid var(--hud-border); display: flex; align-items: center; gap: 12px; }
+        .brand-logo { width: 40px; height: 40px; animation: pulse 3s infinite ease-in-out; }
+        @keyframes pulse { 0% { filter: drop-shadow(0 0 2px var(--hud-glow)); } 50% { filter: drop-shadow(0 0 10px var(--hud-glow)); } 100% { filter: drop-shadow(0 0 2px var(--hud-glow)); } }
+        .brand-text { display: flex; flex-direction: column; }
+        .brand-name { font-family: 'Inter', sans-serif; font-size: 1.2rem; font-weight: 700; color: #fff; letter-spacing: 2px; line-height: 1; }
+        .brand-sub { font-family: 'Inter', sans-serif; font-size: 0.65rem; font-weight: 600; color: var(--hud-glow); letter-spacing: 3px; margin-top: 4px; }
+        .nav-item { padding: 14px 24px; color: var(--hud-muted); cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 12px; border-left: 3px solid transparent; }
+        .nav-item:hover { color: var(--hud-text); background: rgba(14,165,233,0.05); border-left-color: rgba(14,165,233,0.3); transform: translateX(4px); }
+        .nav-item.active { color: var(--hud-glow); background: rgba(14,165,233,0.1); border-left-color: var(--hud-glow); box-shadow: inset 10px 0 20px -10px rgba(14,165,233,0.2); }
+        .nav-icon { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .user-card { margin: auto 24px 24px; padding: 16px; background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; transition: all 0.3s; }
+        .user-card:hover { border-color: var(--hud-glow); box-shadow: 0 0 15px rgba(14,165,233,0.1); }
+        .user-name { font-weight: 600; font-size: 0.95rem; }
+        .user-role { font-family: var(--font-data); font-size: 0.7rem; color: var(--status-orange); margin-top: 4px; letter-spacing: 1px; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .top-bar { height: 64px; background: var(--hud-panel); border-bottom: 1px solid var(--hud-border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; position: relative; }
+        .page-title { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.5px; }
+        .page-title span { color: var(--hud-glow); font-family: var(--font-data); text-shadow: 0 0 8px rgba(14,165,233,0.5); }
+        .top-actions { display: flex; gap: 12px; align-items: center; }
+        .btn-hud { background: rgba(14,165,233,0.05); border: 1px solid rgba(14,165,233,0.3); color: var(--hud-glow); padding: 8px 16px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); letter-spacing: 0.5px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-hud:hover { background: var(--hud-glow); color: #000; box-shadow: 0 0 20px rgba(14,165,233,0.4); transform: translateY(-2px); border-color: var(--hud-glow); }
+        .btn-hud.orange { border-color: rgba(249,115,22,0.3); color: var(--status-orange); }
+        .btn-hud.orange:hover { background: var(--status-orange); box-shadow: 0 0 20px rgba(249,115,22,0.4); }
+        .btn-hud.green { border-color: rgba(16,185,129,0.3); color: var(--hud-green); }
+        .btn-hud.green:hover { background: var(--hud-green); box-shadow: 0 0 20px rgba(16,185,129,0.4); }
+        .btn-hud.red { border-color: rgba(239,68,68,0.3); color: var(--hud-red); }
+        .btn-hud.red:hover { background: var(--hud-red); box-shadow: 0 0 20px rgba(239,68,68,0.4); }
+        .btn-hud:disabled { opacity: 0.5; cursor: not-allowed; }
+        .content-area { flex: 1; overflow-y: auto; padding: 32px; }
+        .view-section { display: none; animation: fadeIn 0.4s ease-out; } .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .filter-tabs { display: flex; gap: 12px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
+        .filter-tab { background: var(--hud-card); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 8px 16px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .filter-tab:hover { border-color: var(--hud-glow); box-shadow: 0 0 10px rgba(14,165,233,0.2); transform: translateY(-1px); }
+        .filter-tab.active { background: rgba(14,165,233,0.1); border-color: var(--hud-glow); color: var(--hud-glow); box-shadow: 0 0 15px rgba(14,165,233,0.2); }
+        .filter-tab.add-btn { color: var(--status-orange); border-color: rgba(249,115,22,0.3); }
+        .filter-tab.add-btn:hover { background: rgba(249,115,22,0.1); box-shadow: 0 0 10px rgba(249,115,22,0.2); }
+        .filter-section-label { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); text-transform: uppercase; letter-spacing: 1px; margin-right: 8px; }
+        .delete-agent { color: var(--hud-muted); font-size: 1rem; margin-left: 4px; transition: color 0.2s; }
+        .delete-agent:hover { color: var(--hud-red); text-shadow: 0 0 5px var(--hud-red); }
+        .data-table-container { background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: all 0.3s; }
+        .data-table-container:hover { border-color: rgba(14,165,233,0.3); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { background: #0f172a; color: var(--hud-muted); font-family: var(--font-data); font-size: 0.7rem; text-transform: uppercase; padding: 16px; text-align: left; letter-spacing: 0.5px; border-bottom: 1px solid var(--hud-border); }
+        td { padding: 16px; border-bottom: 1px solid var(--hud-border); vertical-align: middle; transition: background 0.2s; }
+        tbody tr { cursor: pointer; } tbody tr:hover { background: rgba(14,165,233,0.05); }
+        tbody tr.selected { background: rgba(14,165,233,0.1); }
+        .client-link { color: var(--hud-text); font-weight: 600; text-decoration: none; transition: color 0.2s; } .client-link:hover { color: var(--hud-glow); text-shadow: 0 0 5px rgba(14,165,233,0.5); }
+        .client-id { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); margin-top: 4px; }
+        .status-select { background: var(--hud-bg); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 6px 10px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; outline: none; cursor: pointer; font-weight: 600; transition: all 0.3s; min-width: 110px; }
+        .status-select:hover { border-color: var(--hud-glow); }
+        .status-select:disabled { opacity: 0.5; cursor: not-allowed; }
+        .status-depositor { border-color: var(--status-orange) !important; color: var(--status-orange) !important; }
+        .status-retention { border-color: var(--status-blue) !important; color: var(--status-blue) !important; }
+        .status-sub { border-color: var(--hud-green) !important; color: var(--hud-green) !important; }
+        .text-green { color: var(--hud-green); font-weight: 700; } .text-red { color: var(--hud-red); font-weight: 700; }
+        .comment-preview { font-size: 0.8rem; color: var(--hud-muted); max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .notif-container { position: relative; }
+        .notif-bell { position: relative; cursor: pointer; padding: 8px; border-radius: 4px; transition: all 0.3s; }
+        .notif-bell:hover { background: rgba(255,255,255,0.05); }
+        .notif-bell svg { width: 20px; height: 20px; stroke: var(--hud-muted); transition: stroke 0.3s; }
+        .notif-bell:hover svg { stroke: var(--hud-glow); filter: drop-shadow(0 0 5px var(--hud-glow)); }
+        .notif-badge { position: absolute; top: 2px; right: 2px; background: var(--hud-red); color: #fff; font-size: 0.6rem; font-weight: 700; padding: 2px 5px; border-radius: 10px; display: none; box-shadow: 0 0 10px var(--hud-red); animation: pulseRed 2s infinite; }
+        @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.7); } 70% { box-shadow: 0 0 0 6px rgba(239,68,68,0); } 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); } }
+        .notif-dropdown { position: absolute; top: 50px; right: 0; width: 320px; background: var(--hud-panel); border: 1px solid var(--hud-border); border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 100; display: none; overflow: hidden; }
+        .notif-dropdown.active { display: block; animation: slideDown 0.3s ease-out; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .notif-header { padding: 12px 16px; background: rgba(14,165,233,0.05); border-bottom: 1px solid var(--hud-border); font-family: var(--font-data); font-size: 0.75rem; color: var(--hud-glow); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; display: flex; justify-content: space-between; }
+        .notif-list { max-height: 300px; overflow-y: auto; }
+        .notif-item { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s; cursor: pointer; }
+        .notif-item:hover { background: rgba(14,165,233,0.05); }
+        .notif-item-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .notif-item-desc { font-size: 0.75rem; color: var(--hud-muted); margin-bottom: 8px; }
+        .notif-item-action { font-size: 0.7rem; color: var(--hud-glow); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .notif-empty { padding: 24px; text-align: center; color: var(--hud-muted); font-size: 0.85rem; }
+        .profile-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--hud-border); }
+        .profile-title h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+        .profile-title p { font-family: var(--font-data); color: var(--hud-muted); font-size: 0.85rem; }
+        .profile-metrics { display: flex; gap: 32px; align-items: center; }
+        .metric-box { text-align: right; }
+        .metric-label { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .metric-val { font-size: 1.5rem; font-weight: 700; margin-top: 4px; }
+        .profile-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+        .hud-card { background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; padding: 24px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hud-card:hover { border-color: rgba(14,165,233,0.3); box-shadow: 0 0 20px rgba(14,165,233,0.05); transform: translateY(-2px); }
+        .card-title { font-family: var(--font-data); font-size: 0.75rem; color: var(--hud-glow); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid var(--hud-border); padding-bottom: 10px; }
+        .info-row { display: flex; margin-bottom: 12px; font-size: 0.9rem; align-items: center; }
+        .info-label { width: 140px; color: var(--hud-muted); font-weight: 500; }
+        .info-val { flex: 1; font-weight: 600; }
+        .status-control-group { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--hud-border); }
+        .status-control-row { display: flex; gap: 16px; margin-bottom: 12px; align-items: center; }
+        .status-control-label { width: 130px; font-family: var(--font-data); font-size: 0.7rem; text-transform: uppercase; font-weight: 600; }
+        .status-control-label.orange { color: var(--status-orange); }
+        .status-control-label.blue { color: var(--status-blue); }
+        .status-control-label.green { color: var(--hud-green); }
+        .status-control-select { flex: 1; background: var(--hud-bg); padding: 10px 12px; border-radius: 4px; font-family: var(--font-data); font-size: 0.85rem; font-weight: 700; outline: none; cursor: pointer; transition: all 0.3s; }
+        .status-control-select:hover { background: rgba(255,255,255,0.05); }
+        .status-control-select:disabled { opacity: 0.5; cursor: not-allowed; }
+        .status-control-select.orange { border: 1px solid var(--status-orange); color: var(--status-orange); }
+        .status-control-select.blue { border: 1px solid var(--status-blue); color: var(--status-blue); }
+        .status-control-select.green { border: 1px solid var(--hud-green); color: var(--hud-green); }
+        .comment-stream-container { display: flex; flex-direction: column; height: 100%; min-height: 400px; }
+        .comment-list { flex: 1; overflow-y: auto; margin-bottom: 16px; padding-right: 8px; }
+        .comment-input-area { display: flex; gap: 12px; margin-top: auto; }
+        .comment-input { flex: 1; background: var(--hud-bg); border: 1px solid var(--hud-border); border-radius: 4px; padding: 12px; color: var(--hud-text); font-family: var(--font-ui); outline: none; transition: all 0.3s; }
+        .comment-input:focus { border-color: var(--hud-glow); box-shadow: 0 0 10px rgba(14,165,233,0.2); }
+        .comment-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .comment-meta { display: flex; justify-content: space-between; font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); margin-bottom: 6px; }
+        .comment-text { font-size: 0.9rem; line-height: 1.5; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px; border-left: 2px solid var(--status-orange); }
+        .tabs { display: flex; border-bottom: 1px solid var(--hud-border); margin-bottom: 24px; flex-wrap: wrap; }
+        .tab-btn { background: none; border: none; color: var(--hud-muted); padding: 12px 24px; font-family: var(--font-data); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.3s; }
+        .tab-btn:hover { color: var(--hud-text); } .tab-btn.active { color: var(--hud-glow); border-bottom-color: var(--hud-glow); text-shadow: 0 0 8px rgba(14,165,233,0.5); }
+        .tab-content { display: none; } .tab-content.active { display: block; }
+        .fin-control-row { display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-end; }
+        .fin-control-group { flex: 1; }
+        .fin-control-label { display: block; font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); text-transform: uppercase; margin-bottom: 6px; }
+        .fin-control-input { width: 100%; background: var(--hud-bg); border: 1px solid var(--hud-border); border-radius: 4px; padding: 10px; color: var(--hud-text); font-family: var(--font-data); font-size: 0.85rem; outline: none; transition: all 0.3s; }
+        .fin-control-input:focus { border-color: var(--hud-glow); box-shadow: 0 0 10px rgba(14,165,233,0.2); }
+        .fin-control-input:disabled { opacity: 0.7; cursor: not-allowed; color: var(--hud-muted); }
+        .role-badge { padding: 4px 10px; border-radius: 4px; font-family: var(--font-data); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .role-closer { background: rgba(16,185,129,0.2); color: var(--hud-green); }
+        .role-assistant { background: rgba(59,130,246,0.2); color: var(--status-blue); }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--hud-panel); border: 1px solid var(--hud-glow); border-radius: 8px; width: 100%; max-width: 500px; padding: 32px; max-height: 90vh; overflow-y: auto; box-shadow: 0 0 30px rgba(14,165,233,0.2); animation: modalPop 0.3s ease-out; }
+        @keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 24px; color: var(--hud-glow); }
+        .modal-close { float: right; background: none; border: none; color: var(--hud-muted); font-size: 1.5rem; cursor: pointer; transition: color 0.2s; }
+        .modal-close:hover { color: var(--hud-red); }
+        .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 32px; }
+        .analytics-card { background: var(--hud-card); border: 1px solid var(--hud-border); border-radius: 8px; padding: 24px; transition: all 0.3s; position: relative; overflow: hidden; }
+        .analytics-card:hover { border-color: var(--hud-glow); box-shadow: 0 0 20px rgba(14,165,233,0.1); transform: translateY(-2px); }
+        .analytics-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--hud-glow); opacity: 0.5; }
+        .analytics-card .label { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); text-transform: uppercase; margin-bottom: 8px; }
+        .analytics-card .value { font-size: 2rem; font-weight: 700; color: var(--hud-text); }
+        .analytics-card .sub { font-size: 0.8rem; color: var(--hud-green); margin-top: 4px; }
+        .progress-bar-bg { width: 100%; height: 6px; background: var(--hud-bg); border-radius: 3px; margin-top: 12px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--hud-glow), var(--hud-green)); border-radius: 3px; transition: width 1s ease-out; }
+        .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .user-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--hud-bg); border: 1px solid var(--hud-border); border-radius: 6px; margin-bottom: 8px; transition: all 0.3s; }
+        .user-list-item:hover { border-color: var(--hud-glow); transform: translateX(4px); }
+        .user-list-info { display: flex; flex-direction: column; }
+        .user-list-name { font-weight: 600; font-size: 0.9rem; }
+        .user-list-role { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); }
+        .system-log { font-family: var(--font-data); font-size: 0.75rem; color: var(--hud-muted); line-height: 1.8; }
+        .system-log span { color: var(--hud-green); }
+        .ip-display { background: rgba(14,165,233,0.05); border: 1px solid rgba(14,165,233,0.2); padding: 8px 12px; border-radius: 4px; font-family: var(--font-data); font-size: 0.8rem; color: var(--hud-glow); margin-top: 12px; display: inline-block; }
+        .lead-counter { background: rgba(14,165,233,0.1); border: 1px solid var(--hud-glow); padding: 12px 20px; border-radius: 8px; font-family: var(--font-data); font-size: 0.9rem; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .lead-counter .count { color: var(--hud-glow); font-weight: 700; font-size: 1.2rem; }
+        .save-status { position: fixed; top: 80px; right: 32px; padding: 12px 20px; border-radius: 8px; font-family: var(--font-data); font-size: 0.85rem; font-weight: 600; z-index: 1000; display: none; animation: slideIn 0.3s ease-out; }
+        .save-status.success { background: rgba(16,185,129,0.2); border: 1px solid var(--hud-green); color: var(--hud-green); display: block; }
+        .save-status.error { background: rgba(239,68,68,0.2); border: 1px solid var(--hud-red); color: var(--hud-red); display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .save-indicator { position: fixed; bottom: 20px; right: 20px; background: var(--hud-card); border: 1px solid var(--hud-border); padding: 12px 20px; border-radius: 8px; font-family: var(--font-data); font-size: 0.8rem; display: none; align-items: center; gap: 8px; z-index: 1000; }
+        .save-indicator.active { display: flex; }
+        .save-indicator .spinner { width: 16px; height: 16px; border: 2px solid var(--hud-border); border-top-color: var(--hud-glow); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .bulk-action-bar { display: none; background: rgba(14, 165, 233, 0.1); border: 1px solid var(--hud-glow); border-radius: 8px; padding: 12px 20px; margin-bottom: 20px; align-items: center; justify-content: space-between; animation: slideDown 0.3s ease-out; }
+        .bulk-action-bar.active { display: flex; }
+        .bulk-info { font-family: var(--font-data); font-size: 0.9rem; color: var(--hud-glow); font-weight: 600; }
+        .bulk-buttons { display: flex; gap: 12px; align-items: center; }
+        .bulk-select { background: var(--hud-bg); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 6px 10px; border-radius: 4px; font-family: var(--font-data); font-size: 0.8rem; outline: none; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand-container">
+            <svg class="brand-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 6 L20 34 L32 6 L26 6 L20 22 L14 6 Z" fill="#0ea5e9"/><path d="M14 6 L20 22 L26 6 L22 6 L20 14 L18 6 Z" fill="#38bdf8" opacity="0.6"/></svg>
+            <div class="brand-text"><span class="brand-name">VERUM</span><span class="brand-sub">INVEST</span></div>
+        </div>
+        <div class="nav-item active" onclick="switchMainView('leads', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>LEAD TELEMETRY</div>
+        <div class="nav-item" id="nav-analytics" onclick="switchMainView('analytics', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>ANALYTICS</div>
+        <div class="nav-item" id="nav-config" onclick="switchMainView('config', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>SYSTEM CONFIG</div>
+        <div class="user-card"><div class="user-name" id="user-name-display">Loading...</div><div class="user-role" id="user-role-display">[ACCESSING]</div></div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <div class="page-title" id="pageTitle">LEAD <span>TELEMETRY</span> OVERVIEW</div>
+            <div class="top-actions">
+                <div class="notif-container">
+                    <div class="notif-bell" onclick="toggleNotifDropdown(event)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        <span class="notif-badge" id="wd-badge">0</span>
+                    </div>
+                    <div class="notif-dropdown" id="notif-dropdown">
+                        <div class="notif-header"><span>Pending Withdrawals</span><span id="notif-count">0</span></div>
+                        <div class="notif-list" id="notif-list"></div>
+                    </div>
+                </div>
+                <button class="btn-hud orange" id="inject-lead-btn" onclick="openModal('injectLead')">+ INJECT LEAD</button>
+                <a href="/client" class="btn-hud"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>CLIENT PORTAL</a>
+                <button class="btn-hud red" onclick="logout()">LOG OUT</button>
+            </div>
+        </div>
+        <div class="content-area">
+            <div id="view-leads" class="view-section active">
+                <div class="lead-counter">
+                    <span>ACTIVE LEADS IN DATABASE:</span>
+                    <span class="count" id="lead-count-display">0</span>
+                </div>
+                
+                <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+                    <input type="text" id="search-input" placeholder="🔍 Search leads by name..." class="fin-control-input" style="width: 300px;" onkeyup="renderTable()">
+                </div>
+
+                <div id="bulk-action-bar" class="bulk-action-bar">
+                    <div class="bulk-info"><span id="selected-count">0</span> LEADS SELECTED</div>
+                    <div class="bulk-buttons">
+                        <select id="bulk-agent-select" class="bulk-select">
+                            <option value="">Assign to Agent...</option>
+                        </select>
+                        <button class="btn-hud green" onclick="bulkAssign()">ASSIGN SELECTED</button>
+                        <button class="btn-hud red" onclick="bulkDelete()">DELETE SELECTED</button>
+                        <button class="btn-hud" onclick="clearSelection()">CLEAR</button>
+                    </div>
+                </div>
+
+                <div class="filter-tabs" id="agent-tabs-container"></div>
+                <div class="data-table-container">
+                    <table>
+                        <thead><tr><th style="width: 40px;"><input type="checkbox" id="select-all" onchange="toggleSelectAll(this)"></th><th>IDENTITY / CONTACT</th><th>ORIGIN</th><th>SOURCE</th><th>ASSIGNED AGENT</th><th>LAST ACTIVITY</th><th>CURRENT BAL</th><th>WITHDRAWN / COMM</th><th>DEPOSIT / PROFIT</th><th>STATUS</th><th>RETENTION</th><th>SUB-STATUS</th><th>AGENT LOG</th><th>ACTIONS</th></tr></thead>
+                        <tbody id="lead-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="view-analytics" class="view-section">
+                <div class="analytics-grid">
+                    <div class="analytics-card"><div class="label">Total Revenue Generated</div><div class="value">$284,520</div><div class="sub">+12.4% vs last month</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 75%;"></div></div></div>
+                    <div class="analytics-card"><div class="label">Active Clients</div><div class="value">147</div><div class="sub">+8 new this week</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 60%;"></div></div></div>
+                    <div class="analytics-card"><div class="label">Conversion Rate</div><div class="value">34.2%</div><div class="sub">New → Depositor</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 34%;"></div></div></div>
+                    <div class="analytics-card"><div class="label">Pending Withdrawals</div><div class="value" style="color: var(--status-orange);" id="analytics-pending">0</div><div class="sub" style="color: var(--hud-muted);">Requires approval</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 12%; background: var(--status-orange);"></div></div></div>
+                </div>
+                <div class="hud-card">
+                    <div class="card-title">Agent Performance Leaderboard</div>
+                    <table style="width: 100%;">
+                        <thead><tr><th>Rank</th><th>Agent</th><th>Clients Managed</th><th>Revenue Generated</th><th>Conversion Rate</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td><span class="role-badge" style="background: var(--status-orange); color: #000;">1</span></td><td style="font-weight: 700;">Jessica Margaret Davis</td><td>24</td><td class="text-green">$89,420</td><td>42%</td><td><span class="role-badge role-closer">ACTIVE</span></td></tr>
+                            <tr><td><span class="role-badge" style="background: #94a3b8; color: #000;">2</span></td><td style="font-weight: 700;">Sandro Kevin Jaeger</td><td>21</td><td class="text-green">$76,180</td><td>38%</td><td><span class="role-badge role-closer">ACTIVE</span></td></tr>
+                            <tr><td><span class="role-badge" style="background: #b45309; color: #fff;">3</span></td><td style="font-weight: 700;">David James Balmer</td><td>19</td><td class="text-green">$64,920</td><td>35%</td><td><span class="role-badge role-closer">ACTIVE</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="view-config" class="view-section">
+                <div class="config-grid">
+                    <div class="hud-card">
+                        <div class="card-title">Staff Management</div>
+                        <button class="btn-hud green" style="width: 100%; margin-bottom: 16px; justify-content: center;" onclick="openModal('addUser')">+ ADD NEW USER</button>
+                        <div class="user-list-item"><div class="user-list-info"><span class="user-list-name">Roberto Palomino</span><span class="user-list-role">r.palomino@verum.invest</span></div><span class="role-badge" style="background: rgba(249,115,22,0.2); color: var(--status-orange);">MANAGER</span></div>
+                        <div class="user-list-item"><div class="user-list-info"><span class="user-list-name">Dominick Charles Costa</span><span class="user-list-role">d.costa@verum.invest</span></div><span class="role-badge role-assistant">ASST. MANAGER</span></div>
+                        <div class="user-list-item"><div class="user-list-info"><span class="user-list-name">Kenet James Dean</span><span class="user-list-role">k.dean@verum.invest</span></div><span class="role-badge role-assistant">ASST. MANAGER</span></div>
+                        <div class="user-list-item"><div class="user-list-info"><span class="user-list-name">Mauricio Gomez</span><span class="user-list-role">m.gomez@verum.invest</span></div><span class="role-badge role-assistant">ASST. MANAGER</span></div>
+                        <div class="user-list-item"><div class="user-list-info"><span class="user-list-name">Sandro Kevin Jaeger</span><span class="user-list-role">s.jaeger@verum.invest</span></div><span class="role-badge role-closer">CLOSER</span></div>
+                        <div class="user-list-item"><div class="user-list-info"><span class="user-list-name">Adriano Medina</span><span class="user-list-role">a.medina@verum.invest</span></div><span class="role-badge role-closer">CLOSER</span></div>
+                    </div>
+                    <div class="hud-card">
+                        <div class="card-title">System Parameters & Network</div>
+                        <div class="info-row"><div class="info-label">Platform Status</div><div class="info-val" style="color: var(--hud-green); text-shadow: 0 0 5px var(--hud-green);">● OPERATIONAL</div></div>
+                        <div class="info-row"><div class="info-label">Database Sync</div><div class="info-val">Last: 2 sec ago</div></div>
+                        <div class="info-row"><div class="info-label">Active Sessions</div><div class="info-val">14</div></div>
+                        <div class="info-row"><div class="info-label">API Endpoints</div><div class="info-val">8/8 Online</div></div>
+                        <div class="ip-display">Dedicated Node IP: 191.96.215.107 | Status: Unrestricted</div>
+                        <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--hud-border);">
+                            <div class="card-title" style="margin-bottom: 12px;">Quick Actions</div>
+                            <button class="btn-hud" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="alert('System backup initiated.')">BACKUP DATABASE</button>
+                            <button class="btn-hud orange" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="alert('Audit log exported.')">EXPORT AUDIT LOG</button>
+                            <button class="btn-hud red" style="width: 100%; margin-bottom: 8px; justify-content: center;" onclick="clearTestLeads()">CLEAR TEST LEADS</button>
+                            <button class="btn-hud red" style="width: 100%; justify-content: center;" onclick="alert('Cache cleared successfully.')">CLEAR SYSTEM CACHE</button>
+                        </div>
+                        <div class="system-log" style="margin-top: 20px;">
+                            > <span>System initialized...</span><br>
+                            > <span>Connected to Firebase cluster...</span><br>
+                            > <span>Local storage synced...</span><br>
+                            > <span>Waiting for operator input...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-profile" class="view-section">
+                <button class="btn-hud" onclick="showView('leads')" style="margin-bottom: 24px;">← RETURN TO TELEMETRY</button>
+                <div class="profile-header">
+                    <div class="profile-title">
+                        <h1 id="p-name">Client Name</h1>
+                        <p>ID: <span id="p-id">000000</span></p>
+                        <button class="btn-hud green" onclick="copyClientLink()" style="margin-top: 15px; padding: 10px 20px; font-size: 0.8rem;">🔗 COPY CLIENT PORTAL LINK</button>
+                    </div>
+                    <div class="profile-metrics">
+                        <div class="metric-box"><div class="metric-label">Current Balance</div><div class="metric-val text-green" id="p-balance">$0.00</div></div>
+                        <div class="metric-box"><div class="metric-label">Total Deposited</div><div class="metric-val" id="p-deposited">$0.00</div></div>
+                    </div>
+                </div>
+                <div class="profile-grid-2">
+                    <div class="hud-card">
+                        <div class="card-title">Client Intelligence & Status Control</div>
+                        <div class="info-row"><div class="info-label">Phone</div><div class="info-val"><input type="text" id="p-phone" class="fin-control-input" style="width: 100%;"></div></div>
+                        <div class="info-row"><div class="info-label">Country</div><div class="info-val"><input type="text" id="p-country" class="fin-control-input" style="width: 100%;"></div></div>
+                        <div class="info-row"><div class="info-label">Email</div><div class="info-val"><input type="email" id="p-email" class="fin-control-input" style="width: 100%;"></div></div>
+                        <div class="info-row"><div class="info-label">Lead Source</div><div class="info-val"><input type="text" id="p-source" class="fin-control-input" style="width: 100%;"></div></div>
+                        <div class="info-row"><div class="info-label">Assigned Agent</div><div class="info-val"><select id="p-agent-select" class="status-control-select blue" style="padding: 6px 10px; font-size: 0.8rem; width: 100%;"></select></div></div>
+                        <div class="status-control-group">
+                            <div class="status-control-row"><div class="status-control-label orange">Depositor Status</div><select class="status-control-select orange" id="p-status-depositor"><option>DEPOSITOR</option><option>NEW LEAD</option></select></div>
+                            <div class="status-control-row"><div class="status-control-label blue">Retention Phase</div><select class="status-control-select blue" id="p-status-retention"><option>NEW</option><option>ACTIVE</option><option>REASSIGN</option><option>RECOVERY</option></select></div>
+                            <div class="status-control-row"><div class="status-control-label green">Closer Sub-Status</div><select class="status-control-select green" id="p-status-sub"><option>NO POTENTIAL</option><option>POTENTIAL</option><option>NO INTEREST</option></select></div>
+                            <div style="display: flex; gap: 10px; margin-top: 16px;">
+                                <button class="btn-hud" style="flex: 1; justify-content: center;" onclick="transmitStatusUpdate()">TRANSMIT STATUS</button>
+                                <button class="btn-hud green" id="btn-save-profile" style="flex: 1; justify-content: center;" onclick="saveProfileData()">SAVE DATA</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hud-card" style="display: flex; flex-direction: column;">
+                        <div class="card-title">Agent Comment Stream</div>
+                        <div class="comment-stream-container"><div class="comment-list" id="p-comments"></div><div class="comment-input-area"><input type="text" class="comment-input" id="new-comment" placeholder="Log interaction..."><button class="btn-hud" id="btn-add-comment" onclick="addComment()">TRANSMIT</button></div></div>
+                    </div>
+                </div>
+                <div class="hud-card" id="financial-controls" style="margin-bottom: 24px;">
+                    <div class="card-title" style="color: var(--status-orange);">Financial Controls (Manager Only)</div>
+                    <div class="fin-control-row">
+                        <div class="fin-control-group"><label class="fin-control-label">Inject Profit Amount (USD)</label><input type="number" class="fin-control-input" id="profit-amount" placeholder="0.00"></div>
+                        <div class="fin-control-group"><label class="fin-control-label">Asset / Instrument</label><input type="text" class="fin-control-input" id="profit-asset" placeholder="e.g. Apple, Brent"></div>
+                        <button class="btn-hud green" onclick="injectProfit()" style="height: 42px; padding: 0 24px;">INJECT PROFIT</button>
+                    </div>
+                </div>
+                <div class="hud-card">
+                    <div class="tabs">
+                        <button class="tab-btn active" onclick="switchTab('activity', this)">Activity Timeline</button>
+                        <button class="tab-btn" onclick="switchTab('kyc', this)">KYC / Opener Intel</button>
+                        <button class="tab-btn" onclick="switchTab('transactions', this)">Transaction History</button>
+                        <button class="tab-btn" onclick="switchTab('withdrawals', this)">Withdrawal Requests</button>
+                    </div>
+                    <div id="tab-activity" class="tab-content active"><div style="color: var(--hud-muted); font-size: 0.85rem; padding: 20px;">Client portal login history and activity logs will appear here.</div></div>
+                    <div id="tab-kyc" class="tab-content"><div style="color: var(--hud-muted); font-size: 0.85rem; padding: 20px;">KYC documents and opener intelligence data.</div></div>
+                    
+                    <div id="tab-transactions" class="tab-content">
+                        <div id="manager-edit-controls" style="display: none; margin-bottom: 16px; padding: 16px; background: rgba(249,115,22,0.1); border: 1px solid var(--status-orange); border-radius: 8px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--status-orange)" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                <span style="color: var(--status-orange); font-weight: 600; font-family: var(--font-data);">MANAGER OVERRIDE MODE</span>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--hud-muted); margin-bottom: 12px;">Select a transaction to edit its outcome:</p>
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <select id="edit-tx-select" class="fin-control-input" style="flex: 1;"></select>
+                                <input type="number" id="edit-tx-profit" class="fin-control-input" placeholder="New Profit/Loss" style="width: 150px;">
+                                <button class="btn-hud orange" onclick="editTransactionProfit()">UPDATE RESULT</button>
+                            </div>
+                        </div>
+                        <table style="width: 100%;">
+                            <thead><tr><th>TX-ID</th><th>Date</th><th>Type</th><th>Asset</th><th>Amount</th><th>Profit/Loss</th><th>Status</th></tr></thead>
+                            <tbody id="transaction-history-body"></tbody>
+                        </table>
+                    </div>
+
+                    <div id="tab-withdrawals" class="tab-content"><table style="width: 100%;"><thead><tr><th>Request ID</th><th>Date</th><th>Method</th><th>Amount</th><th>Details</th><th>Status</th><th>Action</th></tr></thead><tbody id="withdrawal-requests-body"></tbody></table></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="save-status" class="save-status"></div>
+    <div id="save-indicator" class="save-indicator">
+        <div class="spinner"></div>
+        <span>Saving to Firebase...</span>
+    </div>
+    
+    <div class="modal-overlay" id="modal-injectLead">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('injectLead')">✕</button>
+            <div class="modal-title">Inject New Lead</div>
+            <div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Client Full Name</label><input type="text" class="fin-control-input" id="lead-name"></div>
+            <div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Country</label><input type="text" class="fin-control-input" id="lead-country"></div>
+            <div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Phone Number</label><input type="text" class="fin-control-input" id="lead-phone" placeholder="+1 234..."></div>
+            <div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Initial Deposit (USD)</label><input type="number" class="fin-control-input" id="lead-deposit"></div>
+            <div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Email Address</label><input type="email" class="fin-control-input" id="lead-email" placeholder="client@gmail.com"></div>
+            <div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Lead Source</label><input type="text" class="fin-control-input" id="lead-source" placeholder="e.g. Facebook, Evo App"></div>
+            <div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Assign To Agent</label><select class="fin-control-input" id="lead-agent"></select></div>
+            <button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="injectLead()">INJECT INTO DATABASE</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-addUser"><div class="modal-content"><button class="modal-close" onclick="closeModal('addUser')">✕</button><div class="modal-title">Add New System User</div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Full Name</label><input type="text" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 16px;"><label class="fin-control-label">Email Address</label><input type="email" class="fin-control-input"></div><div class="fin-control-group" style="margin-bottom: 24px;"><label class="fin-control-label">Role</label><select class="fin-control-input"><option>CLOSER</option><option>SUPERVISOR</option><option>ASST. MANAGER</option></select></div><button class="btn-hud green" style="width: 100%; justify-content: center;" onclick="closeModal('addUser'); alert('User account created.')">CREATE USER ACCOUNT</button></div></div>
+
+    <script>
         let db = { agents: ["ALL"], clients: {}, timestamp: 0, synced_at: 0 };
         let currentFilter = 'ALL'; 
         let currentClient = null;
@@ -115,23 +513,20 @@
             }
         }
 
-        // Helper to update all agent dropdowns
         function updateAllAgentDropdowns() {
             const agentsList = db.agents.filter(a => a !== 'ALL');
             const htmlOptions = agentsList.map(a => `<option value="${a}">${a}</option>`).join('');
             
-            // Update Bulk Assign Dropdown
             const bulkSelect = document.getElementById('bulk-agent-select');
             if(bulkSelect) bulkSelect.innerHTML = '<option value="">Assign to Agent...</option>' + htmlOptions;
             
-            // Update Inject Lead Modal Dropdown
             const injectSelect = document.getElementById('lead-agent');
             if(injectSelect) injectSelect.innerHTML = htmlOptions;
         }
         
         async function initCRM() { 
             await fetchDatabase();
-            updateAllAgentDropdowns(); // Initial population
+            updateAllAgentDropdowns();
             
             let role = localStorage.getItem('verum_role'); 
             let name = localStorage.getItem('verum_user');
@@ -177,14 +572,13 @@
         }
 
         async function filterByStatus(status, el) { currentStatusFilter = status; renderAgentTabs(); renderTable(); }
-        
         async function deleteAgent(index, event) { 
             event.stopPropagation(); 
             const removed = db.agents[index]; 
             if (confirm(`Remove agent "${removed}"?`)) { 
                 db.agents.splice(index, 1); 
                 await queueSave(); 
-                updateAllAgentDropdowns(); // FIX: Update dropdowns after deletion
+                updateAllAgentDropdowns();
                 if (currentFilter === removed) currentFilter = 'ALL'; 
                 renderAgentTabs(); 
                 renderTable(); 
@@ -361,7 +755,7 @@
                 if(!db.agents.includes(name)) { 
                     db.agents.push(name); 
                     await queueSave(); 
-                    updateAllAgentDropdowns(); // FIX: Update dropdowns immediately after adding
+                    updateAllAgentDropdowns();
                 } 
                 currentFilter = name; 
                 renderAgentTabs(); 
@@ -448,3 +842,5 @@
         function logout() { localStorage.clear(); window.location.href = '/login'; }
         if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initCRM); } else { initCRM(); }
     </script>
+</body>
+</html>
