@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import uvicorn
 
-app = FastAPI(title="Verum Invest Tactical Mainframe", version="6.0.8")
+app = FastAPI(title="Verum Invest Tactical Mainframe", version="6.0.9")
 BASE_DIR = Path(__file__).resolve().parent
 
 FIREBASE_URL = "https://verumcrm-default-rtdb.firebaseio.com/"
@@ -55,7 +55,8 @@ def save_db(db):
 
 @app.middleware("http")
 async def strict_ip_firewall(request: Request, call_next):
-    ALLOWED_IPS = ["191.96.215.107", "41.81.195.117", "105.164.4.146", "105.161.146.8", "127.0.0.1", "localhost"]
+    # Added your new IP to the allowed list
+    ALLOWED_IPS = ["191.96.215.107", "41.81.195.117", "105.164.4.146", "105.161.146.8", "196.96.27.82", "127.0.0.1", "localhost"]
     path = request.url.path
     
     public_routes = ["/client", "/client-login", "/health", "/favicon.ico", "/static", "/docs", "/openapi.json", "/api/db", "/api/db/update", "/api/leads/submit", "/lead-capture"]
@@ -97,32 +98,25 @@ async def update_database(request: Request):
         ignored_count = 0
 
         # CLIENT-LEVEL LAST-WRITE-WINS LOGIC
-        # We compare the 'lastActivity' timestamp of every single lead.
         for tx_id, incoming_data in incoming_clients.items():
             incoming_activity = incoming_data.get('lastActivity', 0)
             
             if tx_id not in current_clients:
-                # 1. New Lead: Add it
                 current_clients[tx_id] = incoming_data
                 updated_count += 1
             else:
                 existing_data = current_clients[tx_id]
                 existing_activity = existing_data.get('lastActivity', 0)
                 
-                # 2. If Incoming is NEWER than Database: Apply Changes
                 if incoming_activity > existing_activity:
-                    # Update Status fields
                     existing_data['status'] = incoming_data.get('status', existing_data['status'])
                     existing_data['retention'] = incoming_data.get('retention', existing_data['retention'])
                     existing_data['subStatus'] = incoming_data.get('subStatus', existing_data['subStatus'])
                     existing_data['agent'] = incoming_data.get('agent', existing_data['agent'])
                     existing_data['lastActivity'] = incoming_activity
                     
-                    # Merge Comments (Union)
                     inc_comments = incoming_data.get('comments', [])
                     exist_comments = existing_data.get('comments', [])
-                    
-                    # Create a set of existing comment keys to avoid duplicates
                     existing_keys = {c.get('text', '') + c.get('time', '') for c in exist_comments}
                     
                     for inc_c in inc_comments:
@@ -131,15 +125,12 @@ async def update_database(request: Request):
                             exist_comments.append(inc_c)
                             existing_keys.add(key)
                             
-                    # Sort comments by time (newest first)
                     exist_comments.sort(key=lambda x: x.get('time', ''), reverse=True)
                     existing_data['comments'] = exist_comments
                     
                     current_clients[tx_id] = existing_data
                     updated_count += 1
                 else:
-                    # 3. If Incoming is OLDER: Ignore Status Changes (Prevents Reversion)
-                    # We still merge comments just in case, but we don't overwrite status
                     ignored_count += 1
 
         current_db['clients'] = current_clients
