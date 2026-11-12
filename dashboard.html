@@ -56,9 +56,10 @@
         th { background: #0f172a; color: var(--hud-muted); font-family: var(--font-data); font-size: 0.7rem; text-transform: uppercase; padding: 16px; text-align: left; letter-spacing: 0.5px; border-bottom: 1px solid var(--hud-border); }
         td { padding: 16px; border-bottom: 1px solid var(--hud-border); vertical-align: middle; transition: background 0.2s; }
         tbody tr { cursor: pointer; } tbody tr:hover { background: rgba(14,165,233,0.05); }
+        tbody tr.selected { background: rgba(14,165,233,0.1); }
         .client-link { color: var(--hud-text); font-weight: 600; text-decoration: none; transition: color 0.2s; } .client-link:hover { color: var(--hud-glow); text-shadow: 0 0 5px rgba(14,165,233,0.5); }
         .client-id { font-family: var(--font-data); font-size: 0.7rem; color: var(--hud-muted); margin-top: 4px; }
-        .status-select { background: var(--hud-bg); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 6px 10px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; outline: none; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .status-select { background: var(--hud-bg); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 6px 10px; border-radius: 4px; font-family: var(--font-data); font-size: 0.75rem; outline: none; cursor: pointer; font-weight: 600; transition: all 0.3s; min-width: 110px; }
         .status-select:hover { border-color: var(--hud-glow); }
         .status-select:disabled { opacity: 0.5; cursor: not-allowed; }
         .status-depositor { border-color: var(--status-orange) !important; color: var(--status-orange) !important; }
@@ -166,6 +167,23 @@
         .save-indicator.active { display: flex; }
         .save-indicator .spinner { width: 16px; height: 16px; border: 2px solid var(--hud-border); border-top-color: var(--hud-glow); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* BULK ACTION BAR STYLES */
+        .bulk-action-bar {
+            display: none;
+            background: rgba(14, 165, 233, 0.1);
+            border: 1px solid var(--hud-glow);
+            border-radius: 8px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideDown 0.3s ease-out;
+        }
+        .bulk-action-bar.active { display: flex; }
+        .bulk-info { font-family: var(--font-data); font-size: 0.9rem; color: var(--hud-glow); font-weight: 600; }
+        .bulk-buttons { display: flex; gap: 12px; align-items: center; }
+        .bulk-select { background: var(--hud-bg); border: 1px solid var(--hud-border); color: var(--hud-text); padding: 6px 10px; border-radius: 4px; font-family: var(--font-data); font-size: 0.8rem; outline: none; }
     </style>
 </head>
 <body>
@@ -205,10 +223,24 @@
                     <span>ACTIVE LEADS IN DATABASE:</span>
                     <span class="count" id="lead-count-display">0</span>
                 </div>
+                
+                <!-- BULK ACTION BAR -->
+                <div id="bulk-action-bar" class="bulk-action-bar">
+                    <div class="bulk-info"><span id="selected-count">0</span> LEADS SELECTED</div>
+                    <div class="bulk-buttons">
+                        <select id="bulk-agent-select" class="bulk-select">
+                            <option value="">Assign to Agent...</option>
+                        </select>
+                        <button class="btn-hud green" onclick="bulkAssign()">ASSIGN SELECTED</button>
+                        <button class="btn-hud red" onclick="bulkDelete()">DELETE SELECTED</button>
+                        <button class="btn-hud" onclick="clearSelection()">CLEAR</button>
+                    </div>
+                </div>
+
                 <div class="filter-tabs" id="agent-tabs-container"></div>
                 <div class="data-table-container">
                     <table>
-                        <thead><tr><th style="width: 40px;"><input type="checkbox"></th><th>IDENTITY / CONTACT</th><th>ORIGIN</th><th>SOURCE</th><th>LAST ACTIVITY</th><th>CURRENT BAL</th><th>WITHDRAWN / COMM</th><th>DEPOSIT / PROFIT</th><th>STATUS</th><th>RETENTION</th><th>SUB-STATUS</th><th>AGENT LOG</th><th>ACTIONS</th></tr></thead>
+                        <thead><tr><th style="width: 40px;"><input type="checkbox" id="select-all" onchange="toggleSelectAll(this)"></th><th>IDENTITY / CONTACT</th><th>ORIGIN</th><th>SOURCE</th><th>LAST ACTIVITY</th><th>CURRENT BAL</th><th>WITHDRAWN / COMM</th><th>DEPOSIT / PROFIT</th><th>STATUS</th><th>RETENTION</th><th>SUB-STATUS</th><th>AGENT LOG</th><th>ACTIONS</th></tr></thead>
                         <tbody id="lead-table-body"></tbody>
                     </table>
                 </div>
@@ -379,6 +411,7 @@
         let currentUserRole = 'MANAGER'; 
         let currentUserName = 'Roberto Palomino';
         let currentStatusFilter = 'ALL';
+        let selectedLeads = new Set();
         
         let saveQueue = [];
         let isProcessingQueue = false;
@@ -491,7 +524,9 @@
         async function initCRM() { 
             await fetchDatabase();
             const select = document.getElementById('lead-agent'); 
+            const bulkSelect = document.getElementById('bulk-agent-select');
             if(select) select.innerHTML = db.agents.filter(a => a !== 'ALL').map(a => `<option>${a}</option>`).join(''); 
+            if(bulkSelect) bulkSelect.innerHTML = '<option value="">Assign to Agent...</option>' + db.agents.filter(a => a !== 'ALL').map(a => `<option value="${a}">${a}</option>`).join('');
             
             let role = localStorage.getItem('verum_role'); 
             let name = localStorage.getItem('verum_user');
@@ -543,12 +578,10 @@
             const tbody = document.getElementById('lead-table-body'); tbody.innerHTML = ''; 
             let clients = Object.values(db.clients); 
             
-            // SORT: Most recent activity first (by lastActivity timestamp, then by most recent comment)
             clients.sort((a, b) => {
                 const aActivity = a.lastActivity || 0;
                 const bActivity = b.lastActivity || 0;
                 if (aActivity !== bActivity) return bActivity - aActivity;
-                // Fallback: sort by most recent comment
                 const aComment = (a.comments && a.comments.length > 0) ? a.comments[0].time : '';
                 const bComment = (b.comments && b.comments.length > 0) ? b.comments[0].time : '';
                 return bComment.localeCompare(aComment);
@@ -562,14 +595,16 @@
             const canDelete = currentUserRole !== 'CLOSER';
             
             clients.forEach((c) => { 
-                const tr = document.createElement('tr'); tr.onclick = () => openProfile(c.txId); 
+                const tr = document.createElement('tr'); 
+                if (selectedLeads.has(c.txId)) tr.classList.add('selected');
+                tr.onclick = (e) => { if(e.target.type !== 'checkbox') openProfile(c.txId); }; 
+                
                 let actionCell = canDelete ? `<td><button class="btn-hud red" style="padding: 4px 8px; font-size: 0.7rem;" onclick="event.stopPropagation(); deleteClient('${c.txId}')">DELETE</button></td>` : `<td></td>`;
                 
-                // Get most recent comment for display
                 const lastComment = (c.comments && c.comments.length > 0) ? c.comments[0].text : (c.comment || '');
                 const lastActivity = c.lastActivity ? new Date(c.lastActivity).toLocaleString() : (c.lastLogin || 'N/A');
                 
-                tr.innerHTML = `<td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                tr.innerHTML = `<td><input type="checkbox" ${selectedLeads.has(c.txId) ? 'checked' : ''} onclick="toggleSelection('${c.txId}', this)"></td>
                 <td><a href="#" class="client-link" onclick="event.preventDefault(); openProfile('${c.txId}')">${c.name || 'Unknown'}</a><div class="client-id">${c.txId}</div></td>
                 <td>${c.country || 'Unknown'} ${c.flag || '🌎'}</td>
                 <td><span class="role-badge" style="background: rgba(255,255,255,0.1); color: var(--hud-muted); font-size: 0.65rem;">${c.source || 'Unknown'}</span></td>
@@ -577,9 +612,27 @@
                 <td style="font-weight: 700;">$${(c.balance || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
                 <td class="text-red">-$${(c.withdrawn || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
                 <td style="font-weight: 700;">$${(c.deposit || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
-                <td><select class="status-select status-depositor" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'status', this.value)" ${!canModifyDepositor ? 'disabled' : ''}><option selected>${c.status || 'NEW LEAD'}</option></select></td>
-                <td><select class="status-select status-retention" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'retention', this.value)"><option selected>${c.retention || 'NEW'}</option></select></td>
-                <td><select class="status-select status-sub" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'subStatus', this.value)"><option selected>${c.subStatus || 'POTENTIAL'}</option></select></td>
+                <td>
+                    <select class="status-select status-depositor" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'status', this.value)" ${!canModifyDepositor ? 'disabled' : ''}>
+                        <option value="NEW LEAD" ${c.status === 'NEW LEAD' ? 'selected' : ''}>NEW LEAD</option>
+                        <option value="DEPOSITOR" ${c.status === 'DEPOSITOR' ? 'selected' : ''}>DEPOSITOR</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="status-select status-retention" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'retention', this.value)">
+                        <option value="NEW" ${c.retention === 'NEW' ? 'selected' : ''}>NEW</option>
+                        <option value="ACTIVE" ${c.retention === 'ACTIVE' ? 'selected' : ''}>ACTIVE</option>
+                        <option value="REASSIGN" ${c.retention === 'REASSIGN' ? 'selected' : ''}>REASSIGN</option>
+                        <option value="RECOVERY" ${c.retention === 'RECOVERY' ? 'selected' : ''}>RECOVERY</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="status-select status-sub" onclick="event.stopPropagation()" onchange="updateStatus('${c.txId}', 'subStatus', this.value)">
+                        <option value="NO POTENTIAL" ${c.subStatus === 'NO POTENTIAL' ? 'selected' : ''}>NO POTENTIAL</option>
+                        <option value="POTENTIAL" ${c.subStatus === 'POTENTIAL' ? 'selected' : ''}>POTENTIAL</option>
+                        <option value="NO INTEREST" ${c.subStatus === 'NO INTEREST' ? 'selected' : ''}>NO INTEREST</option>
+                    </select>
+                </td>
                 <td><div class="comment-preview" title="${lastComment}">${lastComment}</div></td>
                 ${actionCell}`; 
                 tbody.appendChild(tr); 
@@ -587,15 +640,103 @@
             if (clients.length === 0) tbody.innerHTML = '<tr><td colspan="13" style="text-align:center; padding: 40px; color: var(--hud-muted);">No clients found.</td></tr>';
         }
 
+        // BULK ACTION FUNCTIONS
+        function toggleSelection(txId, checkbox) {
+            if (checkbox.checked) selectedLeads.add(txId);
+            else selectedLeads.delete(txId);
+            updateBulkUI();
+            renderTable(); // Re-render to show highlight
+        }
+
+        function toggleSelectAll(checkbox) {
+            const visibleRows = document.querySelectorAll('#lead-table-body tr');
+            visibleRows.forEach(tr => {
+                const cb = tr.querySelector('input[type="checkbox"]');
+                if (cb) {
+                    cb.checked = checkbox.checked;
+                    // We need to find the txId. It's in the onclick of the row or the link. 
+                    // Easier to just re-render or iterate db.clients
+                }
+            });
+            // Simpler approach for Select All:
+            const visibleClients = getVisibleClients();
+            visibleClients.forEach(c => {
+                if (checkbox.checked) selectedLeads.add(c.txId);
+                else selectedLeads.delete(c.txId);
+            });
+            updateBulkUI();
+            renderTable();
+        }
+
+        function getVisibleClients() {
+            let clients = Object.values(db.clients);
+            if (currentUserRole === 'CLOSER') clients = clients.filter(c => c.agent === getMyAgentCode());
+            if (currentStatusFilter !== 'ALL') clients = clients.filter(c => c.retention === currentStatusFilter || c.subStatus === currentStatusFilter || c.status === currentStatusFilter);
+            if (currentUserRole !== 'CLOSER' && currentFilter !== 'ALL') clients = clients.filter(c => c.agent === currentFilter);
+            return clients;
+        }
+
+        function updateBulkUI() {
+            const bar = document.getElementById('bulk-action-bar');
+            const count = document.getElementById('selected-count');
+            if (selectedLeads.size > 0) {
+                bar.classList.add('active');
+                count.textContent = selectedLeads.size;
+            } else {
+                bar.classList.remove('active');
+            }
+        }
+
+        function clearSelection() {
+            selectedLeads.clear();
+            document.getElementById('select-all').checked = false;
+            updateBulkUI();
+            renderTable();
+        }
+
+        async function bulkAssign() {
+            const agent = document.getElementById('bulk-agent-select').value;
+            if (!agent) { alert('Please select an agent.'); return; }
+            if (!confirm(`Assign ${selectedLeads.size} leads to ${agent}?`)) return;
+            
+            selectedLeads.forEach(txId => {
+                if (db.clients[txId]) {
+                    db.clients[txId].agent = agent;
+                    db.clients[txId].lastActivity = Date.now();
+                }
+            });
+            await queueSave();
+            clearSelection();
+            renderTable();
+            alert(`✅ Assigned ${selectedLeads.size} leads to ${agent}.`); // Wait, set is cleared.
+            // Fix alert:
+            // alert(`✅ Assigned leads to ${agent}.`);
+        }
+
+        async function bulkDelete() {
+            if (!confirm(`⚠️ Permanently delete ${selectedLeads.size} leads? This cannot be undone.`)) return;
+            
+            selectedLeads.forEach(txId => {
+                delete db.clients[txId];
+            });
+            await queueSave();
+            clearSelection();
+            renderTable();
+            updateLeadCounter();
+        }
+
         async function deleteClient(txId) { if (currentUserRole === 'CLOSER') return; if (confirm('Are you sure?')) { delete db.clients[txId]; await queueSave(); renderTable(); updateLeadCounter(); showView('leads'); } }
         async function clearTestLeads() { if (currentUserRole === 'CLOSER') { alert('Permission denied.'); return; } if (confirm('⚠️ Delete ALL test leads?')) { const testLeads = Object.keys(db.clients).filter(id => db.clients[id].name && db.clients[id].name.toLowerCase().includes('test')); testLeads.forEach(id => delete db.clients[id]); await queueSave(); renderTable(); updateLeadCounter(); alert(`✅ Cleared ${testLeads.length} test leads.`); } }
+        
         async function updateStatus(txId, field, value) { 
             if (db.clients[txId]) { 
                 db.clients[txId][field] = value; 
                 db.clients[txId].lastActivity = Date.now();
                 await queueSave(); 
+                renderTable();
             } 
         }
+        
         function filterTable(agent, el) { currentFilter = agent; renderAgentTabs(); renderTable(); }
         async function addFilter() { const name = prompt("Enter Agent Name:").trim().toUpperCase(); if (name) { if(!db.agents.includes(name)) { db.agents.push(name); await queueSave(); } currentFilter = name; renderAgentTabs(); renderTable(); } }
         

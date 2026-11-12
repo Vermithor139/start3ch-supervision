@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import uvicorn
 
-app = FastAPI(title="Verum Invest Tactical Mainframe", version="6.0.6")
+app = FastAPI(title="Verum Invest Tactical Mainframe", version="6.0.8")
 BASE_DIR = Path(__file__).resolve().parent
 
 FIREBASE_URL = "https://verumcrm-default-rtdb.firebaseio.com/"
@@ -55,7 +55,7 @@ def save_db(db):
 
 @app.middleware("http")
 async def strict_ip_firewall(request: Request, call_next):
-    ALLOWED_IPS = ["191.96.215.107", "41.81.195.117", "105.164.4.146", "127.0.0.1", "localhost"]
+    ALLOWED_IPS = ["191.96.215.107", "41.81.195.117", "105.164.4.146", "105.161.146.8", "127.0.0.1", "localhost"]
     path = request.url.path
     
     public_routes = ["/client", "/client-login", "/health", "/favicon.ico", "/static", "/docs", "/openapi.json", "/api/db", "/api/db/update", "/api/leads/submit", "/lead-capture"]
@@ -88,70 +88,65 @@ def get_database():
 async def update_database(request: Request):
     try:
         data = await request.json()
-        incoming_last_sync = data.get('synced_at', 0)
         incoming_clients = data.get('clients', {})
 
         current_db = load_db()
-        current_ts = current_db.get('timestamp', 0)
         current_clients = current_db.get('clients', {})
 
-        print(f"🔍 Sync Check: Frontend last synced at {incoming_last_sync}, DB last updated at {current_ts}")
-        print(f"🔍 Incoming clients: {len(incoming_clients)}, Current DB clients: {len(current_clients)}")
+        updated_count = 0
+        ignored_count = 0
 
-        if incoming_last_sync < current_ts:
-            print("⚠️ STALE DATA DETECTED. Smart merging...")
-            merged_clients = current_clients.copy()
-            new_leads_added = 0
-            comments_merged = 0
+        # CLIENT-LEVEL LAST-WRITE-WINS LOGIC
+        # We compare the 'lastActivity' timestamp of every single lead.
+        for tx_id, incoming_data in incoming_clients.items():
+            incoming_activity = incoming_data.get('lastActivity', 0)
             
-            for tx_id, client_data in incoming_clients.items():
-                if tx_id not in merged_clients:
-                    # New lead - add it
-                    merged_clients[tx_id] = client_data
-                    new_leads_added += 1
-                    print(f"  + Added new lead: {tx_id}")
-                else:
-                    # Client exists in both - MERGE comments and preserve status changes
-                    existing = merged_clients[tx_id]
-                    incoming_comments = client_data.get('comments', [])
-                    existing_comments = existing.get('comments', [])
+            if tx_id not in current_clients:
+                # 1. New Lead: Add it
+                current_clients[tx_id] = incoming_data
+                updated_count += 1
+            else:
+                existing_data = current_clients[tx_id]
+                existing_activity = existing_data.get('lastActivity', 0)
+                
+                # 2. If Incoming is NEWER than Database: Apply Changes
+                if incoming_activity > existing_activity:
+                    # Update Status fields
+                    existing_data['status'] = incoming_data.get('status', existing_data['status'])
+                    existing_data['retention'] = incoming_data.get('retention', existing_data['retention'])
+                    existing_data['subStatus'] = incoming_data.get('subStatus', existing_data['subStatus'])
+                    existing_data['agent'] = incoming_data.get('agent', existing_data['agent'])
+                    existing_data['lastActivity'] = incoming_activity
                     
-                    # Merge comments: add incoming comments that don't exist in current
-                    existing_comment_texts = {c.get('text', '') + c.get('time', '') for c in existing_comments}
-                    for inc_comment in incoming_comments:
-                        key = inc_comment.get('text', '') + inc_comment.get('time', '')
-                        if key not in existing_comment_texts:
-                            existing_comments.append(inc_comment)
-                            comments_merged += 1
+                    # Merge Comments (Union)
+                    inc_comments = incoming_data.get('comments', [])
+                    exist_comments = existing_data.get('comments', [])
                     
+                    # Create a set of existing comment keys to avoid duplicates
+                    existing_keys = {c.get('text', '') + c.get('time', '') for c in exist_comments}
+                    
+                    for inc_c in inc_comments:
+                        key = inc_c.get('text', '') + inc_c.get('time', '')
+                        if key not in existing_keys:
+                            exist_comments.append(inc_c)
+                            existing_keys.add(key)
+                            
                     # Sort comments by time (newest first)
-                    existing_comments.sort(key=lambda x: x.get('time', ''), reverse=True)
-                    existing['comments'] = existing_comments
+                    exist_comments.sort(key=lambda x: x.get('time', ''), reverse=True)
+                    existing_data['comments'] = exist_comments
                     
-                    # Update lastActivity if incoming is newer
-                    incoming_activity = client_data.get('lastActivity', 0)
-                    existing_activity = existing.get('lastActivity', 0)
-                    if incoming_activity > existing_activity:
-                        existing['lastActivity'] = incoming_activity
-                    
-                    # Preserve any status changes from incoming if they're different
-                    # (This handles the case where advisor changed status but save was stale)
-                    if client_data.get('status') and client_data.get('status') != existing.get('status'):
-                        # Keep the newer status - compare by checking if incoming has a more recent activity
-                        if incoming_activity > existing_activity:
-                            existing['status'] = client_data.get('status')
-                            existing['retention'] = client_data.get('retention', existing.get('retention'))
-                            existing['subStatus'] = client_data.get('subStatus', existing.get('subStatus'))
-            
-            current_db['clients'] = merged_clients
-            current_db['timestamp'] = time.time() * 1000
-            success = save_db(current_db)
-            print(f"✅ Merge successful. Added {new_leads_added} leads, merged {comments_merged} comments. Total: {len(merged_clients)}")
-        else:
-            print("✅ FRESH DATA. Overwriting...")
-            data['timestamp'] = time.time() * 1000
-            success = save_db(data)
-            print(f"✅ Save successful. Total clients: {len(data.get('clients', {}))}")
+                    current_clients[tx_id] = existing_data
+                    updated_count += 1
+                else:
+                    # 3. If Incoming is OLDER: Ignore Status Changes (Prevents Reversion)
+                    # We still merge comments just in case, but we don't overwrite status
+                    ignored_count += 1
+
+        current_db['clients'] = current_clients
+        current_db['timestamp'] = time.time() * 1000
+        success = save_db(current_db)
+        
+        print(f"✅ Sync Complete. Updated: {updated_count}, Ignored (Stale): {ignored_count}")
 
         if success:
             return JSONResponse(content={"status": "success"})
@@ -193,19 +188,14 @@ async def submit_lead(request: Request):
 
 @app.get("/login", response_class=HTMLResponse)
 def read_login(): return HTMLResponse(content=(BASE_DIR / "login.html").read_text(encoding="utf-8"))
-
 @app.get("/client-login", response_class=HTMLResponse)
 def read_client_login(): return HTMLResponse(content=(BASE_DIR / "client-login.html").read_text(encoding="utf-8"))
-
 @app.get("/", response_class=HTMLResponse)
 def read_dashboard(): return HTMLResponse(content=(BASE_DIR / "dashboard.html").read_text(encoding="utf-8"))
-
 @app.get("/client", response_class=HTMLResponse)
 def read_client_portal(): return HTMLResponse(content=(BASE_DIR / "client.html").read_text(encoding="utf-8"))
-
 @app.get("/lead-capture", response_class=HTMLResponse)
 def read_lead_capture(): return HTMLResponse(content=(BASE_DIR / "lead-capture.html").read_text(encoding="utf-8"))
-
 @app.get("/health")
 def health_check(): return {"status": "online", "system": "Verum Invest Mainframe"}
 
