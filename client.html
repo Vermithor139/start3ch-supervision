@@ -10,7 +10,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: var(--font-ui); background: radial-gradient(circle at 50% 50%, #0a1120 0%, #02040a 100%); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
         ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg-dark); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-        .sidebar { width: 240px; background: rgba(6, 11, 22, 0.8); backdrop-filter: blur(10px); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 0; }
+        .sidebar { width: 240px; background: rgba(6, 11, 22, 0.8); backdrop-filter: blur(10px); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 0; z-index: 50; }
         .brand-container { padding: 0 24px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
         .brand-logo { width: 40px; height: 40px; animation: pulse 3s infinite ease-in-out; }
         @keyframes pulse { 0% { filter: drop-shadow(0 0 2px var(--accent)); } 50% { filter: drop-shadow(0 0 10px var(--accent)); } 100% { filter: drop-shadow(0 0 2px var(--accent)); } }
@@ -25,7 +25,7 @@
         .btn-deposit { background: var(--green); color: #000; border: none; padding: 14px; border-radius: 6px; font-weight: 700; width: 100%; cursor: pointer; font-size: 0.95rem; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-deposit:hover { box-shadow: 0 0 25px rgba(16,185,129,0.5); transform: translateY(-2px); }
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-        .top-header { height: 64px; background: rgba(6, 11, 22, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+        .top-header { height: 64px; background: rgba(6, 11, 22, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; z-index: 40; }
         .menu-btn { background: none; border: none; color: var(--text-main); cursor: pointer; margin-right: 20px; padding: 4px; border-radius: 4px; display: flex; align-items: center; }
         .menu-btn:hover { background: rgba(255,255,255,0.1); }
         .page-title { font-size: 1.1rem; font-weight: 600; }
@@ -34,16 +34,19 @@
         .user-name { font-weight: 600; font-size: 0.9rem; }
         .user-id { font-family: var(--font-data); font-size: 0.7rem; color: var(--text-muted); }
         .avatar { width: 36px; height: 36px; background: var(--accent); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        
+        /* Fixed Nav Dropdown - Icons Removed */
         .nav-dropdown { position: absolute; top: 64px; left: 0; width: 260px; background: rgba(6, 11, 22, 0.98); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); display: none; flex-direction: column; padding: 16px 0; z-index: 40; }
         .nav-dropdown.active { display: flex; }
         .nav-dropdown a { padding: 12px 32px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 12px; }
         .nav-dropdown a:hover { color: var(--accent); background: rgba(14,165,233,0.05); }
         .nav-dropdown .divider { height: 1px; background: var(--border); margin: 8px 0; }
         .nav-dropdown .logout { color: var(--red); }
+
         .view-container { flex: 1; overflow-y: auto; padding: 32px; display: none; }
         .view-container.active { display: block; }
-        .welcome-banner { background: linear-gradient(135deg, rgba(14,165,233,0.1), rgba(16,185,129,0.05)); border: 1px solid var(--border); padding: 24px; border-radius: 12px; margin-bottom: 24px; }
-        .welcome-banner::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); }
+        .welcome-banner { background: linear-gradient(135deg, rgba(14,165,233,0.1), rgba(16,185,129,0.05)); border: 1px solid var(--border); padding: 24px; border-radius: 12px; margin-bottom: 24px; position: relative; }
+        .welcome-banner::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); border-radius: 12px 0 0 12px; }
         .welcome-banner h1 { font-size: 1.5rem; margin-bottom: 8px; }
         .welcome-banner p { color: var(--text-muted); font-size: 0.9rem; }
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 32px; }
@@ -52,9 +55,12 @@
         .metric-label { color: var(--text-muted); font-family: var(--font-data); font-size: 0.7rem; margin-bottom: 12px; text-transform: uppercase; }
         .metric-value { font-size: 2rem; font-weight: 700; }
         .metric-sub { font-size: 0.8rem; color: var(--green); font-family: var(--font-data); }
-        .markets-layout { display: flex; height: 100%; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-        .watchlist-panel { width: 320px; background: var(--bg-card); display: flex; flex-direction: column; overflow: hidden; }
-        .watchlist-header { padding: 16px; border-bottom: 1px solid var(--border); font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Markets Layout Fixes */
+        .markets-layout { display: flex; height: 100%; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; position: relative; }
+        .watchlist-panel { width: 320px; background: var(--bg-card); display: flex; flex-direction: column; overflow: hidden; transition: width 0.3s ease; flex-shrink: 0; }
+        .watchlist-panel.collapsed { width: 0; border: none; }
+        .watchlist-header { padding: 16px; border-bottom: 1px solid var(--border); font-weight: 600; display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); min-height: 50px; }
         .watchlist-content { flex: 1; overflow-y: auto; }
         .wl-category { border-bottom: 1px solid var(--border); }
         .wl-cat-header { padding: 12px 16px; font-family: var(--font-data); font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; cursor: pointer; display: flex; justify-content: space-between; background: rgba(0,0,0,0.2); }
@@ -69,14 +75,37 @@
         .wl-change { font-family: var(--font-data); font-size: 0.75rem; text-align: right; margin-top: 2px; }
         .wl-change.up { color: var(--green); }
         .wl-change.down { color: var(--red); }
-        .chart-panel { flex: 1; background: var(--bg-dark); position: relative; min-height: 500px; }
-        .chart-container { width: 100%; height: 100%; min-height: 500px; }
-        .chat-fab { position: fixed; bottom: 32px; right: 32px; width: 56px; height: 56px; background: var(--accent); color: #000; border: none; border-radius: 50%; cursor: pointer; box-shadow: 0 0 20px var(--accent-glow); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        
+        .chart-panel { flex: 1; background: var(--bg-dark); position: relative; min-height: 500px; display: flex; flex-direction: column; }
+        .chart-container { width: 100%; height: 100%; min-height: 500px; flex: 1; }
+        
+        /* Toggle Button for Markets */
+        .markets-toggle-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .markets-toggle-btn:hover { background: var(--accent); color: #000; }
+
+        .chat-fab { position: fixed; bottom: 32px; right: 32px; width: 56px; height: 56px; background: var(--accent); color: #000; border: none; border-radius: 50%; cursor: pointer; box-shadow: 0 0 20px var(--accent-glow); z-index: 1000; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
         .chat-fab:hover { transform: scale(1.1); }
         .chat-drawer { position: fixed; top: 0; right: -400px; width: 380px; height: 100%; background: var(--bg-panel); border-left: 1px solid var(--border); z-index: 1001; transition: right 0.4s; display: flex; flex-direction: column; }
         .chat-drawer.active { right: 0; }
         .chat-header { padding: 20px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
-        .chat-close { background: none; border: none; color: var(--text-muted); cursor: pointer; }
+        .chat-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; }
         .chat-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
         .chat-msg { max-width: 85%; padding: 12px 16px; border-radius: 12px; font-size: 0.9rem; }
         .chat-msg.client { background: var(--accent); color: #000; align-self: flex-end; }
@@ -124,16 +153,17 @@
     </div>
 
     <div class="main-content">
+        <!-- Fixed Nav Dropdown: Icons Removed -->
         <div class="nav-dropdown" id="mainMenu">
-            <a onclick="switchView('home'); toggleMenu()">🏠 Home Dashboard</a>
-            <a onclick="switchView('markets'); toggleMenu()">📈 Live Markets</a>
-            <a onclick="switchView('transactions'); toggleMenu()">📄 Transactions</a>
-            <a onclick="switchView('withdrawals'); toggleMenu()">💸 Withdrawals</a>
+            <a onclick="switchView('home'); toggleMenu()">Home Dashboard</a>
+            <a onclick="switchView('markets'); toggleMenu()">Live Markets</a>
+            <a onclick="switchView('transactions'); toggleMenu()">Transactions</a>
+            <a onclick="switchView('withdrawals'); toggleMenu()">Withdrawals</a>
             <div class="divider"></div>
-            <a onclick="switchView('settings'); toggleMenu()">⚙️ Settings</a>
-            <a onclick="toggleChat(); toggleMenu()">💬 Technical Support</a>
+            <a onclick="switchView('settings'); toggleMenu()">Settings</a>
+            <a onclick="toggleChat(); toggleMenu()">Technical Support</a>
             <div class="divider"></div>
-            <a class="logout" onclick="clientLogout()">🚪 Log Out</a>
+            <a class="logout" onclick="clientLogout()">Log Out</a>
         </div>
 
         <div class="top-header">
@@ -166,8 +196,14 @@
 
         <div id="view-markets" class="view-container" style="padding: 0;">
             <div class="markets-layout">
-                <div class="watchlist-panel">
-                    <div class="watchlist-header"><span>Live Markets</span><span onclick="toggleWatchlist()" style="cursor: pointer;">«</span></div>
+                <!-- Toggle Button for Markets (Always Visible) -->
+                <button class="markets-toggle-btn" id="markets-toggle-btn" onclick="toggleWatchlist()">«</button>
+                
+                <div class="watchlist-panel" id="watchlist-panel">
+                    <div class="watchlist-header">
+                        <span>Live Markets</span>
+                        <span onclick="toggleWatchlist()" style="cursor: pointer; font-size: 1.2rem;">«</span>
+                    </div>
                     <div class="watchlist-content">
                         <div class="wl-category">
                             <div class="wl-cat-header" onclick="toggleWlCategory(this)">FOREX MAJORS <span>▼</span></div>
@@ -279,6 +315,7 @@
         let currentClientId = "";
         let clientBalance = 0;
         let tvWidget = null;
+        let isWatchlistOpen = true;
 
         async function fetchServerDB() {
             try {
@@ -290,9 +327,21 @@
             }
         }
 
+        // Fixed Toggle Logic
         function toggleWatchlist() {
-            const panel = document.querySelector('.watchlist-panel');
-            panel.style.width = panel.style.width === '48px' ? '320px' : '48px';
+            const panel = document.getElementById('watchlist-panel');
+            const btn = document.getElementById('markets-toggle-btn');
+            isWatchlistOpen = !isWatchlistOpen;
+            
+            if (isWatchlistOpen) {
+                panel.classList.remove('collapsed');
+                btn.innerHTML = '«';
+                btn.style.left = '330px'; // Adjust based on panel width
+            } else {
+                panel.classList.add('collapsed');
+                btn.innerHTML = '»';
+                btn.style.left = '10px';
+            }
         }
 
         function toggleWlCategory(header) {
