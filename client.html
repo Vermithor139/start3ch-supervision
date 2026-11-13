@@ -80,6 +80,7 @@
         .live-dot { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-data); font-size: 0.7rem; color: var(--green); }
         .live-dot::before { content: ''; width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: pulseDot 1.5s infinite; }
         @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.6); } 70% { box-shadow: 0 0 0 6px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
+        .news-slot { min-height: 650px; }
         .chat-fab { position: fixed; bottom: 32px; right: 32px; width: 56px; height: 56px; background: var(--accent); color: #000; border: none; border-radius: 50%; cursor: pointer; box-shadow: 0 0 20px var(--accent-glow); z-index: 1000; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
         .chat-fab:hover { transform: scale(1.1); }
         .chat-drawer { position: fixed; top: 0; right: -400px; width: 380px; height: 100%; background: var(--bg-panel); border-left: 1px solid var(--border); z-index: 1001; transition: right 0.4s; display: flex; flex-direction: column; }
@@ -225,7 +226,6 @@
             </div>
         </div>
 
-        <!-- NEW: REAL-TIME MARKET NEWS VIEW -->
         <div id="view-news" class="view-container">
             <div class="news-wrap">
                 <div class="news-header">
@@ -260,19 +260,7 @@
                     <h3>REAL-TIME FINANCIAL NEWS</h3>
                     <span class="live-dot">LIVE FEED</span>
                 </div>
-                <div class="tradingview-widget-container">
-                    <div class="tradingview-widget-container__widget"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-news.js" async>
-                    {
-                    "feedMode": "all_symbols",
-                    "isTransparent": true,
-                    "colorTheme": "dark",
-                    "locale": "en",
-                    "width": "100%",
-                    "height": "650"
-                    }
-                    </script>
-                </div>
+                <div id="tv-news-slot" class="news-slot"></div>
             </div>
         </div>
 
@@ -346,15 +334,50 @@
         let clientBalance = 0;
         let tvWidget = null;
         let isWatchlistOpen = true;
+        let newsWidgetLoaded = false;
+
+        // NEWS WIDGET: injected only when the tab is visible (fixes blank feed)
+        function ensureNewsWidget() {
+            const slot = document.getElementById('tv-news-slot');
+            if (!slot || newsWidgetLoaded) return;
+            newsWidgetLoaded = true;
+            const wrap = document.createElement('div');
+            wrap.className = 'tradingview-widget-container';
+            wrap.style.height = '650px';
+            const inner = document.createElement('div');
+            inner.className = 'tradingview-widget-container__widget';
+            wrap.appendChild(inner);
+            const s = document.createElement('script');
+            s.type = 'text/javascript';
+            s.src = 'https://s3.tradingview.com/external-embedding/embed-widget-news.js';
+            s.async = true;
+            s.textContent = JSON.stringify({
+                "feedMode": "all_symbols",
+                "isTransparent": true,
+                "colorTheme": "dark",
+                "locale": "en",
+                "width": "100%",
+                "height": "650"
+            });
+            wrap.appendChild(s);
+            slot.appendChild(wrap);
+        }
 
         async function fetchServerDB() {
-            try {
-                const response = await fetch('/api/db');
-                serverDB = await response.json();
-                console.log('Client portal: Database fetched');
-            } catch (error) {
-                console.error('Failed to fetch database:', error);
+            for (let attempt = 1; attempt <= 3; attempt++) {
+                try {
+                    const response = await fetch('/api/db');
+                    if (response.ok) {
+                        serverDB = await response.json();
+                        if (serverDB) { console.log('Client portal: Database fetched'); return true; }
+                    }
+                } catch (error) {
+                    console.error('DB fetch attempt ' + attempt + ' failed:', error);
+                }
+                document.getElementById('header-name').textContent = 'Syncing... (' + attempt + '/3)';
+                await new Promise(r => setTimeout(r, 1500));
             }
+            return false;
         }
 
         function toggleWatchlist() {
@@ -427,13 +450,18 @@
         }
 
         window.onload = async function() {
-            await fetchServerDB();
+            const ok = await fetchServerDB();
+            if (!ok) {
+                document.getElementById('header-name').textContent = 'Connection Error';
+                document.getElementById('header-id').textContent = 'Refresh the page';
+                return;
+            }
             const urlParams = new URLSearchParams(window.location.search);
             const clientId = urlParams.get('id');
-            if (clientId && serverDB && serverDB.clients[clientId]) {
+            if (clientId && serverDB.clients && serverDB.clients[clientId]) {
                 currentClientId = clientId;
                 switchClientView(currentClientId);
-            } else if (serverDB && Object.keys(serverDB.clients).length > 0) {
+            } else if (serverDB.clients && Object.keys(serverDB.clients).length > 0) {
                 const firstId = Object.keys(serverDB.clients)[0];
                 currentClientId = firstId;
                 switchClientView(firstId);
@@ -494,6 +522,9 @@
             document.getElementById('page-title').textContent = titles[viewName] || 'Account Overview';
             if (viewName === 'markets') {
                 setTimeout(() => initTradingView('TVC:GOLD'), 200);
+            }
+            if (viewName === 'news') {
+                setTimeout(ensureNewsWidget, 150);
             }
         }
 
