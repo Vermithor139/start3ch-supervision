@@ -9,7 +9,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import uvicorn
 
-app = FastAPI(title="Verum Invest Tactical Mainframe", version="6.0.10")
+APP_VERSION = "6.0.12"
+
+app = FastAPI(title="Verum Invest Tactical Mainframe", version=APP_VERSION)
 BASE_DIR = Path(__file__).resolve().parent
 
 FIREBASE_URL = "https://verumcrm-default-rtdb.firebaseio.com/"
@@ -55,7 +57,6 @@ def save_db(db):
 
 @app.middleware("http")
 async def strict_ip_firewall(request: Request, call_next):
-    # Added your new IP to the allowed list
     ALLOWED_IPS = ["191.96.215.107", "41.81.195.117", "105.164.4.146", "105.161.146.8", "196.96.27.82", "196.96.15.82", "127.0.0.1", "localhost"]
     path = request.url.path
     
@@ -85,19 +86,52 @@ def get_database():
     db = load_db()
     return JSONResponse(content=db)
 
+# DEDICATED AGENT ENDPOINT - Atomic read-modify-write so agents can NEVER be lost
+@app.post("/api/agents/update")
+async def update_agents(request: Request):
+    try:
+        data = await request.json()
+        action = data.get('action', 'add')
+        name = (data.get('name') or '').strip().upper()
+        if not name:
+            return JSONResponse(content={"status": "error", "message": "No agent name provided"}, status_code=400)
+
+        db = load_db()
+        agents = db.get('agents', [])
+
+        if action == 'add':
+            if name not in agents:
+                agents.append(name)
+                print(f"➕ Agent added server-side: {name}")
+        elif action == 'remove':
+            if name in agents and name != 'ALL':
+                agents.remove(name)
+                print(f"➖ Agent removed server-side: {name}")
+
+        db['agents'] = agents
+        db['timestamp'] = time.time() * 1000
+
+        if save_db(db):
+            return JSONResponse(content={"status": "success", "agents": agents})
+        return JSONResponse(content={"status": "error", "message": "Firebase rejected the save"}, status_code=500)
+    except Exception as e:
+        print(f"❌ Agent update error: {e}")
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+
 @app.post("/api/db/update")
 async def update_database(request: Request):
     try:
         data = await request.json()
         incoming_clients = data.get('clients', {})
+        incoming_agents = data.get('agents', [])
 
         current_db = load_db()
         current_clients = current_db.get('clients', {})
+        current_agents = current_db.get('agents', [])
 
         updated_count = 0
         ignored_count = 0
 
-        # CLIENT-LEVEL LAST-WRITE-WINS LOGIC
         for tx_id, incoming_data in incoming_clients.items():
             incoming_activity = incoming_data.get('lastActivity', 0)
             
@@ -133,11 +167,15 @@ async def update_database(request: Request):
                 else:
                     ignored_count += 1
 
+        # SAFETY NET: Union of agents so no agent is ever deleted by a stale save
+        merged_agents = list(dict.fromkeys(current_agents + incoming_agents))
+        current_db['agents'] = merged_agents
         current_db['clients'] = current_clients
         current_db['timestamp'] = time.time() * 1000
+        
         success = save_db(current_db)
         
-        print(f"✅ Sync Complete. Updated: {updated_count}, Ignored (Stale): {ignored_count}")
+        print(f"✅ Sync Complete. v{APP_VERSION} | Agents saved: {len(merged_agents)} {merged_agents} | Clients updated: {updated_count}, ignored: {ignored_count}")
 
         if success:
             return JSONResponse(content={"status": "success"})
@@ -188,7 +226,7 @@ def read_client_portal(): return HTMLResponse(content=(BASE_DIR / "client.html")
 @app.get("/lead-capture", response_class=HTMLResponse)
 def read_lead_capture(): return HTMLResponse(content=(BASE_DIR / "lead-capture.html").read_text(encoding="utf-8"))
 @app.get("/health")
-def health_check(): return {"status": "online", "system": "Verum Invest Mainframe"}
+def health_check(): return {"status": "online", "system": "Verum Invest Mainframe", "version": APP_VERSION}
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
