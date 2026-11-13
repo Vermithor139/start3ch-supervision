@@ -1,20 +1,32 @@
 ﻿import os
 import json
 import random
+import re
+import html as htmllib
+import datetime
 import requests
 import time
+import xml.etree.ElementTree as ET
+from email.utils import parsedate_to_datetime
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import uvicorn
 
-APP_VERSION = "6.0.13"
+APP_VERSION = "6.0.14"
 
 app = FastAPI(title="Verum Invest Tactical Mainframe", version=APP_VERSION)
 BASE_DIR = Path(__file__).resolve().parent
 
 FIREBASE_URL = "https://verumcrm-default-rtdb.firebaseio.com/"
+
+NEWS_CACHE = {"ts": 0, "items": []}
+NEWS_FEEDS = [
+    ("MarketWatch", "https://feeds.content.dowjones.io/public/rss/mw_topstories"),
+    ("CNBC", "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114"),
+    ("CoinDesk", "https://www.coindesk.com/arc/outboundfeeds/rss/"),
+]
 
 app.add_middleware(
     CORSMiddleware,
@@ -55,12 +67,24 @@ def save_db(db):
         print(f"Error saving DB to Firebase: {e}")
         return False
 
+def _strip_tags(s):
+    return re.sub('<[^<]+>', '', s or '').strip()
+
+def _parse_dt(s):
+    try:
+        dt = parsedate_to_datetime(s)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=datetime.timezone.utc)
+        return dt
+    except Exception:
+        return datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+
 @app.middleware("http")
 async def strict_ip_firewall(request: Request, call_next):
     ALLOWED_IPS = ["191.96.215.107", "41.81.195.117", "105.164.4.146", "105.161.146.8", "196.96.27.82", "196.96.15.82", "127.0.0.1", "localhost"]
     path = request.url.path
     
-    public_routes = ["/client", "/client-login", "/health", "/favicon.ico", "/static", "/docs", "/openapi.json", "/api/db", "/api/db/update", "/api/leads/submit", "/lead-capture"]
+    public_routes = ["/client", "/client-login", "/health", "/favicon.ico", "/static", "/docs", "/openapi.json", "/api/db", "/api/db/update", "/api/leads/submit", "/lead-capture", "/api/news"]
     if any(path == route or path.startswith(route + "/") for route in public_routes):
         return await call_next(request)
     
@@ -81,12 +105,42 @@ async def strict_ip_firewall(request: Request, call_next):
         )
     return await call_next(request)
 
+@app.get("/api/news")
+def get_news():
+    now = time.time()
+    if NEWS_CACHE["items"] and (now - NEWS_CACHE["ts"]) < 300:
+        return JSONResponse(content={"status": "success", "items": NEWS_CACHE["items"], "cached": True})
+    items = []
+    for source, url in NEWS_FEEDS:
+        try:
+            r = requests.get(url, timeout=8, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+            root = ET.fromstring(r.content)
+            count = 0
+            for item in root.iter('item'):
+                if count >= 12:
+                    break
+                title = htmllib.escape(_strip_tags(item.findtext('title')))
+                link = (item.findtext('link') or '').strip()
+                pub = (item.findtext('pubDate') or '').strip()
+                desc = htmllib.escape(_strip_tags(item.findtext('description'))[:200])
+                if title:
+                    items.append({"source": source, "title": title, "link": link, "pubDate": pub, "description": desc})
+                    count += 1
+        except Exception as e:
+            print(f"News feed error ({source}): {e}")
+    items.sort(key=lambda x: _parse_dt(x["pubDate"]), reverse=True)
+    items = items[:40]
+    if items:
+        NEWS_CACHE["ts"] = now
+        NEWS_CACHE["items"] = items
+    print(f"📰 News refreshed: {len(items)} headlines")
+    return JSONResponse(content={"status": "success", "items": items, "cached": False})
+
 @app.get("/api/db")
 def get_database(): 
     db = load_db()
     return JSONResponse(content=db)
 
-# THE SINGLE WRITER FOR AGENTS - atomic read-modify-write on the server
 @app.post("/api/agents/update")
 async def update_agents(request: Request):
     try:
@@ -130,8 +184,6 @@ async def update_database(request: Request):
         updated_count = 0
         ignored_count = 0
 
-        # NOTE: agents are NOT touched here anymore.
-        # The agent list is managed ONLY by /api/agents/update.
         for tx_id, incoming_data in incoming_clients.items():
             incoming_activity = incoming_data.get('lastActivity', 0)
             
@@ -172,7 +224,7 @@ async def update_database(request: Request):
         
         success = save_db(current_db)
         
-        print(f"✅ Sync Complete. v{APP_VERSION} | Agents untouched: {len(current_db.get('agents', []))} | Clients updated: {updated_count}, ignored: {ignored_count}")
+        print(f"✅ Sync Complete. v{APP_VERSION} | Clients updated: {updated_count}, ignored: {ignored_count}")
 
         if success:
             return JSONResponse(content={"status": "success"})

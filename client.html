@@ -80,7 +80,15 @@
         .live-dot { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-data); font-size: 0.7rem; color: var(--green); }
         .live-dot::before { content: ''; width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: pulseDot 1.5s infinite; }
         @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.6); } 70% { box-shadow: 0 0 0 6px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
-        .news-slot { min-height: 650px; }
+        .news-slot { min-height: 300px; }
+        .news-item { padding: 18px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s; }
+        .news-item:hover { background: rgba(14,165,233,0.04); }
+        .news-item-head { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .news-src { font-family: var(--font-data); font-size: 0.7rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+        .news-time { font-family: var(--font-data); font-size: 0.7rem; color: var(--text-muted); }
+        .news-title { color: var(--text-main); font-weight: 600; font-size: 0.95rem; text-decoration: none; display: block; margin-bottom: 6px; line-height: 1.4; }
+        .news-title:hover { color: var(--accent); }
+        .news-desc { color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; }
         .chat-fab { position: fixed; bottom: 32px; right: 32px; width: 56px; height: 56px; background: var(--accent); color: #000; border: none; border-radius: 50%; cursor: pointer; box-shadow: 0 0 20px var(--accent-glow); z-index: 1000; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
         .chat-fab:hover { transform: scale(1.1); }
         .chat-drawer { position: fixed; top: 0; right: -400px; width: 380px; height: 100%; background: var(--bg-panel); border-left: 1px solid var(--border); z-index: 1001; transition: right 0.4s; display: flex; flex-direction: column; }
@@ -260,7 +268,9 @@
                     <h3>REAL-TIME FINANCIAL NEWS</h3>
                     <span class="live-dot">LIVE FEED</span>
                 </div>
-                <div id="tv-news-slot" class="news-slot"></div>
+                <div id="tv-news-slot" class="news-slot">
+                    <div style="padding:30px;color:var(--text-muted);text-align:center;">Loading headlines…</div>
+                </div>
             </div>
         </div>
 
@@ -334,33 +344,40 @@
         let clientBalance = 0;
         let tvWidget = null;
         let isWatchlistOpen = true;
-        let newsWidgetLoaded = false;
+        let newsTimer = null;
 
-        // NEWS WIDGET: injected only when the tab is visible (fixes blank feed)
-        function ensureNewsWidget() {
+        // OWN NEWS SERVICE: fetches from our backend (/api/news), no third-party iframe
+        async function loadNewsFeed() {
             const slot = document.getElementById('tv-news-slot');
-            if (!slot || newsWidgetLoaded) return;
-            newsWidgetLoaded = true;
-            const wrap = document.createElement('div');
-            wrap.className = 'tradingview-widget-container';
-            wrap.style.height = '650px';
-            const inner = document.createElement('div');
-            inner.className = 'tradingview-widget-container__widget';
-            wrap.appendChild(inner);
-            const s = document.createElement('script');
-            s.type = 'text/javascript';
-            s.src = 'https://s3.tradingview.com/external-embedding/embed-widget-news.js';
-            s.async = true;
-            s.textContent = JSON.stringify({
-                "feedMode": "all_symbols",
-                "isTransparent": true,
-                "colorTheme": "dark",
-                "locale": "en",
-                "width": "100%",
-                "height": "650"
-            });
-            wrap.appendChild(s);
-            slot.appendChild(wrap);
+            if (!slot) return;
+            try {
+                const res = await fetch('/api/news');
+                const data = await res.json();
+                if (data.status === 'success' && data.items && data.items.length) {
+                    slot.innerHTML = data.items.map(it => {
+                        let timeStr = '';
+                        if (it.pubDate) {
+                            const t = new Date(it.pubDate);
+                            if (!isNaN(t)) timeStr = t.toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                        }
+                        return `<div class="news-item">
+                            <div class="news-item-head"><span class="news-src">${it.source}</span><span class="news-time">${timeStr}</span></div>
+                            <a class="news-title" href="${it.link}" target="_blank" rel="noopener">${it.title}</a>
+                            ${it.description ? `<p class="news-desc">${it.description}</p>` : ''}
+                        </div>`;
+                    }).join('');
+                } else {
+                    slot.innerHTML = '<div style="padding:30px;color:var(--text-muted);text-align:center;">News feed temporarily unavailable. Retrying in 60s…</div>';
+                }
+            } catch (e) {
+                slot.innerHTML = '<div style="padding:30px;color:var(--text-muted);text-align:center;">Could not reach the news service. Retrying in 60s…</div>';
+            }
+        }
+
+        function startNewsFeed() {
+            loadNewsFeed();
+            if (newsTimer) clearInterval(newsTimer);
+            newsTimer = setInterval(loadNewsFeed, 60000);
         }
 
         async function fetchServerDB() {
@@ -524,7 +541,7 @@
                 setTimeout(() => initTradingView('TVC:GOLD'), 200);
             }
             if (viewName === 'news') {
-                setTimeout(ensureNewsWidget, 150);
+                setTimeout(startNewsFeed, 100);
             }
         }
 
