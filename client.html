@@ -34,15 +34,12 @@
         .user-name { font-weight: 600; font-size: 0.9rem; }
         .user-id { font-family: var(--font-data); font-size: 0.7rem; color: var(--text-muted); }
         .avatar { width: 36px; height: 36px; background: var(--accent); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
-        
-        /* Fixed Nav Dropdown - Icons Removed */
         .nav-dropdown { position: absolute; top: 64px; left: 0; width: 260px; background: rgba(6, 11, 22, 0.98); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); display: none; flex-direction: column; padding: 16px 0; z-index: 40; }
         .nav-dropdown.active { display: flex; }
         .nav-dropdown a { padding: 12px 32px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 12px; }
         .nav-dropdown a:hover { color: var(--accent); background: rgba(14,165,233,0.05); }
         .nav-dropdown .divider { height: 1px; background: var(--border); margin: 8px 0; }
         .nav-dropdown .logout { color: var(--red); }
-
         .view-container { flex: 1; overflow-y: auto; padding: 32px; display: none; }
         .view-container.active { display: block; }
         .welcome-banner { background: linear-gradient(135deg, rgba(14,165,233,0.1), rgba(16,185,129,0.05)); border: 1px solid var(--border); padding: 24px; border-radius: 12px; margin-bottom: 24px; position: relative; }
@@ -55,8 +52,6 @@
         .metric-label { color: var(--text-muted); font-family: var(--font-data); font-size: 0.7rem; margin-bottom: 12px; text-transform: uppercase; }
         .metric-value { font-size: 2rem; font-weight: 700; }
         .metric-sub { font-size: 0.8rem; color: var(--green); font-family: var(--font-data); }
-        
-        /* Markets Layout Fixes */
         .markets-layout { display: flex; height: 100%; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; position: relative; }
         .watchlist-panel { width: 320px; background: var(--bg-card); display: flex; flex-direction: column; overflow: hidden; transition: width 0.3s ease; flex-shrink: 0; }
         .watchlist-panel.collapsed { width: 0; border: none; }
@@ -75,31 +70,16 @@
         .wl-change { font-family: var(--font-data); font-size: 0.75rem; text-align: right; margin-top: 2px; }
         .wl-change.up { color: var(--green); }
         .wl-change.down { color: var(--red); }
-        
         .chart-panel { flex: 1; background: var(--bg-dark); position: relative; min-height: 500px; display: flex; flex-direction: column; }
         .chart-container { width: 100%; height: 100%; min-height: 500px; flex: 1; }
-        
-        /* Toggle Button for Markets */
-        .markets-toggle-btn {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 10;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            width: 32px;
-            height: 32px;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
+        .markets-toggle-btn { position: absolute; top: 10px; left: 10px; z-index: 10; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; }
         .markets-toggle-btn:hover { background: var(--accent); color: #000; }
-
+        .news-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
+        .news-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--bg-panel); }
+        .news-header h3 { font-size: 1rem; letter-spacing: 0.5px; }
+        .live-dot { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-data); font-size: 0.7rem; color: var(--green); }
+        .live-dot::before { content: ''; width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: pulseDot 1.5s infinite; }
+        @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.6); } 70% { box-shadow: 0 0 0 6px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
         .chat-fab { position: fixed; bottom: 32px; right: 32px; width: 56px; height: 56px; background: var(--accent); color: #000; border: none; border-radius: 50%; cursor: pointer; box-shadow: 0 0 20px var(--accent-glow); z-index: 1000; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
         .chat-fab:hover { transform: scale(1.1); }
         .chat-drawer { position: fixed; top: 0; right: -400px; width: 380px; height: 100%; background: var(--bg-panel); border-left: 1px solid var(--border); z-index: 1001; transition: right 0.4s; display: flex; flex-direction: column; }
@@ -146,6 +126,7 @@
         </div>
         <div class="nav-item active" onclick="switchView('home', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home Dashboard</div>
         <div class="nav-item" onclick="switchView('markets', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>Live Markets</div>
+        <div class="nav-item" onclick="switchView('news', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>Market News</div>
         <div class="nav-item" onclick="switchView('transactions', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>Transactions</div>
         <div class="nav-item" onclick="switchView('withdrawals', this)"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/></svg>Withdrawals</div>
         <div class="nav-item" onclick="switchView('settings', this)"><svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/></svg>Account Settings</div>
@@ -153,10 +134,10 @@
     </div>
 
     <div class="main-content">
-        <!-- Fixed Nav Dropdown: Icons Removed -->
         <div class="nav-dropdown" id="mainMenu">
             <a onclick="switchView('home'); toggleMenu()">Home Dashboard</a>
             <a onclick="switchView('markets'); toggleMenu()">Live Markets</a>
+            <a onclick="switchView('news'); toggleMenu()">Market News</a>
             <a onclick="switchView('transactions'); toggleMenu()">Transactions</a>
             <a onclick="switchView('withdrawals'); toggleMenu()">Withdrawals</a>
             <div class="divider"></div>
@@ -196,9 +177,7 @@
 
         <div id="view-markets" class="view-container" style="padding: 0;">
             <div class="markets-layout">
-                <!-- Toggle Button for Markets (Always Visible) -->
                 <button class="markets-toggle-btn" id="markets-toggle-btn" onclick="toggleWatchlist()">«</button>
-                
                 <div class="watchlist-panel" id="watchlist-panel">
                     <div class="watchlist-header">
                         <span>Live Markets</span>
@@ -243,6 +222,57 @@
                     </div>
                 </div>
                 <div class="chart-panel"><div class="chart-container" id="tv_chart"></div></div>
+            </div>
+        </div>
+
+        <!-- NEW: REAL-TIME MARKET NEWS VIEW -->
+        <div id="view-news" class="view-container">
+            <div class="news-wrap">
+                <div class="news-header">
+                    <h3>LIVE MARKET TICKER</h3>
+                    <span class="live-dot">REAL-TIME</span>
+                </div>
+                <div class="tradingview-widget-container">
+                    <div class="tradingview-widget-container__widget"></div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+                    {
+                    "symbols": [
+                      {"proName": "FX:EURUSD", "title": "EUR/USD"},
+                      {"proName": "FX:GBPUSD", "title": "GBP/USD"},
+                      {"proName": "TVC:GOLD", "title": "Gold"},
+                      {"proName": "TVC:USOIL", "title": "WTI Oil"},
+                      {"proName": "TVC:DJI", "title": "US30"},
+                      {"proName": "BINANCE:BTCUSDT", "title": "Bitcoin"},
+                      {"proName": "BINANCE:ETHUSDT", "title": "Ethereum"}
+                    ],
+                    "showSymbolLogo": true,
+                    "isTransparent": true,
+                    "displayMode": "adaptive",
+                    "colorTheme": "dark",
+                    "locale": "en"
+                    }
+                    </script>
+                </div>
+            </div>
+
+            <div class="news-wrap">
+                <div class="news-header">
+                    <h3>REAL-TIME FINANCIAL NEWS</h3>
+                    <span class="live-dot">LIVE FEED</span>
+                </div>
+                <div class="tradingview-widget-container">
+                    <div class="tradingview-widget-container__widget"></div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-news.js" async>
+                    {
+                    "feedMode": "all_symbols",
+                    "isTransparent": true,
+                    "colorTheme": "dark",
+                    "locale": "en",
+                    "width": "100%",
+                    "height": "650"
+                    }
+                    </script>
+                </div>
             </div>
         </div>
 
@@ -327,16 +357,14 @@
             }
         }
 
-        // Fixed Toggle Logic
         function toggleWatchlist() {
             const panel = document.getElementById('watchlist-panel');
             const btn = document.getElementById('markets-toggle-btn');
             isWatchlistOpen = !isWatchlistOpen;
-            
             if (isWatchlistOpen) {
                 panel.classList.remove('collapsed');
                 btn.innerHTML = '«';
-                btn.style.left = '330px'; // Adjust based on panel width
+                btn.style.left = '330px';
             } else {
                 panel.classList.add('collapsed');
                 btn.innerHTML = '»';
@@ -400,10 +428,8 @@
 
         window.onload = async function() {
             await fetchServerDB();
-            
             const urlParams = new URLSearchParams(window.location.search);
             const clientId = urlParams.get('id');
-            
             if (clientId && serverDB && serverDB.clients[clientId]) {
                 currentClientId = clientId;
                 switchClientView(currentClientId);
@@ -430,7 +456,6 @@
             const container = document.getElementById('tv_chart');
             if (!container) return;
             container.innerHTML = '';
-            
             setTimeout(() => {
                 try {
                     if (typeof TradingView !== 'undefined') {
@@ -465,9 +490,8 @@
             }
             document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
             document.getElementById(`view-${viewName}`).classList.add('active');
-            const titles = { 'home': 'Account Overview', 'markets': 'Live Markets', 'transactions': 'Transaction Ledger', 'settings': 'Account Settings', 'withdrawals': 'Withdrawal Center' };
+            const titles = { 'home': 'Account Overview', 'markets': 'Live Markets', 'news': 'Market Intelligence', 'transactions': 'Transaction Ledger', 'settings': 'Account Settings', 'withdrawals': 'Withdrawal Center' };
             document.getElementById('page-title').textContent = titles[viewName] || 'Account Overview';
-            
             if (viewName === 'markets') {
                 setTimeout(() => initTradingView('TVC:GOLD'), 200);
             }
@@ -504,7 +528,6 @@
             if (serverDB && serverDB.clients[currentClientId]) {
                 if (!serverDB.clients[currentClientId].withdrawals) serverDB.clients[currentClientId].withdrawals = [];
                 serverDB.clients[currentClientId].withdrawals.push({ id: wdId, date: today, method: method, amount: amount, details: '', status: 'PENDING' });
-                
                 try {
                     await fetch('/api/db/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(serverDB) });
                 } catch (error) { console.error('Failed to save:', error); }
