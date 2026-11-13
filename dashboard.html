@@ -167,7 +167,6 @@
         .save-indicator.active { display: flex; }
         .save-indicator .spinner { width: 16px; height: 16px; border: 2px solid var(--hud-border); border-top-color: var(--hud-glow); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
         .bulk-action-bar { display: none; background: rgba(14, 165, 233, 0.1); border: 1px solid var(--hud-glow); border-radius: 8px; padding: 12px 20px; margin-bottom: 20px; align-items: center; justify-content: space-between; animation: slideDown 0.3s ease-out; }
         .bulk-action-bar.active { display: flex; }
         .bulk-info { font-family: var(--font-data); font-size: 0.9rem; color: var(--hud-glow); font-weight: 600; }
@@ -572,17 +571,63 @@
         }
 
         async function filterByStatus(status, el) { currentStatusFilter = status; renderAgentTabs(); renderTable(); }
+        
+        // AGENT ADD - uses the atomic server endpoint so it can never be lost
+        async function addFilter() { 
+            const name = prompt("Enter Agent Name:").trim().toUpperCase(); 
+            if (!name) return;
+            try {
+                const res = await fetch('/api/agents/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'add', name: name })
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    db.agents = result.agents;
+                    updateAllAgentDropdowns();
+                    showSaveStatus('Agent ' + name + ' saved permanently', 'success');
+                } else {
+                    alert('Could not save agent: ' + (result.message || 'server error'));
+                    return;
+                }
+            } catch (e) {
+                alert('Network error while saving agent.');
+                return;
+            }
+            currentFilter = name; 
+            renderAgentTabs(); 
+            renderTable(); 
+        }
+        
+        // AGENT DELETE - uses the atomic server endpoint so it stays deleted
         async function deleteAgent(index, event) { 
             event.stopPropagation(); 
             const removed = db.agents[index]; 
-            if (confirm(`Remove agent "${removed}"?`)) { 
-                db.agents.splice(index, 1); 
-                await queueSave(); 
-                updateAllAgentDropdowns();
-                if (currentFilter === removed) currentFilter = 'ALL'; 
-                renderAgentTabs(); 
-                renderTable(); 
-            } 
+            if (!removed || removed === 'ALL') return;
+            if (!confirm('Remove agent "' + removed + '" permanently?')) return;
+            try {
+                const res = await fetch('/api/agents/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'remove', name: removed })
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    db.agents = result.agents;
+                    updateAllAgentDropdowns();
+                    showSaveStatus('Agent ' + removed + ' removed permanently', 'success');
+                } else {
+                    alert('Could not remove agent: ' + (result.message || 'server error'));
+                    return;
+                }
+            } catch (e) {
+                alert('Network error while removing agent.');
+                return;
+            }
+            if (currentFilter === removed) currentFilter = 'ALL'; 
+            renderAgentTabs(); 
+            renderTable(); 
         }
         
         function renderTable() { 
@@ -748,20 +793,6 @@
         }
         
         function filterTable(agent, el) { currentFilter = agent; renderAgentTabs(); renderTable(); }
-        
-        async function addFilter() { 
-            const name = prompt("Enter Agent Name:").trim().toUpperCase(); 
-            if (name) { 
-                if(!db.agents.includes(name)) { 
-                    db.agents.push(name); 
-                    await queueSave(); 
-                    updateAllAgentDropdowns();
-                } 
-                currentFilter = name; 
-                renderAgentTabs(); 
-                renderTable(); 
-            } 
-        }
         
         function checkWithdrawalAlerts() { 
             let pendingCount = 0; const pendingList = []; 

@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import uvicorn
 
-APP_VERSION = "6.0.12"
+APP_VERSION = "6.0.13"
 
 app = FastAPI(title="Verum Invest Tactical Mainframe", version=APP_VERSION)
 BASE_DIR = Path(__file__).resolve().parent
@@ -86,7 +86,7 @@ def get_database():
     db = load_db()
     return JSONResponse(content=db)
 
-# DEDICATED AGENT ENDPOINT - Atomic read-modify-write so agents can NEVER be lost
+# THE SINGLE WRITER FOR AGENTS - atomic read-modify-write on the server
 @app.post("/api/agents/update")
 async def update_agents(request: Request):
     try:
@@ -123,15 +123,15 @@ async def update_database(request: Request):
     try:
         data = await request.json()
         incoming_clients = data.get('clients', {})
-        incoming_agents = data.get('agents', [])
 
         current_db = load_db()
         current_clients = current_db.get('clients', {})
-        current_agents = current_db.get('agents', [])
 
         updated_count = 0
         ignored_count = 0
 
+        # NOTE: agents are NOT touched here anymore.
+        # The agent list is managed ONLY by /api/agents/update.
         for tx_id, incoming_data in incoming_clients.items():
             incoming_activity = incoming_data.get('lastActivity', 0)
             
@@ -167,15 +167,12 @@ async def update_database(request: Request):
                 else:
                     ignored_count += 1
 
-        # SAFETY NET: Union of agents so no agent is ever deleted by a stale save
-        merged_agents = list(dict.fromkeys(current_agents + incoming_agents))
-        current_db['agents'] = merged_agents
         current_db['clients'] = current_clients
         current_db['timestamp'] = time.time() * 1000
         
         success = save_db(current_db)
         
-        print(f"✅ Sync Complete. v{APP_VERSION} | Agents saved: {len(merged_agents)} {merged_agents} | Clients updated: {updated_count}, ignored: {ignored_count}")
+        print(f"✅ Sync Complete. v{APP_VERSION} | Agents untouched: {len(current_db.get('agents', []))} | Clients updated: {updated_count}, ignored: {ignored_count}")
 
         if success:
             return JSONResponse(content={"status": "success"})
