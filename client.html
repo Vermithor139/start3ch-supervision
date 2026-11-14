@@ -53,23 +53,28 @@
         .metric-value { font-size: 2rem; font-weight: 700; }
         .metric-sub { font-size: 0.8rem; color: var(--green); font-family: var(--font-data); }
         .markets-layout { display: flex; height: 100%; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; position: relative; }
-        .watchlist-panel { width: 320px; background: var(--bg-card); display: flex; flex-direction: column; overflow: hidden; transition: width 0.3s ease; flex-shrink: 0; }
+        .watchlist-panel { width: 340px; background: var(--bg-card); display: flex; flex-direction: column; overflow: hidden; transition: width 0.3s ease; flex-shrink: 0; }
         .watchlist-panel.collapsed { width: 0; border: none; }
-        .watchlist-header { padding: 16px; border-bottom: 1px solid var(--border); font-weight: 600; display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); min-height: 50px; }
+        .watchlist-header { padding: 14px 16px; border-bottom: 1px solid var(--border); font-weight: 600; display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); min-height: 50px; }
+        .wl-count { font-family: var(--font-data); font-size: 0.65rem; color: var(--accent); }
+        .watchlist-search { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+        .watchlist-search input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; color: var(--text-main); font-family: var(--font-data); font-size: 0.75rem; outline: none; }
+        .watchlist-search input:focus { border-color: var(--accent); }
         .watchlist-content { flex: 1; overflow-y: auto; }
         .wl-category { border-bottom: 1px solid var(--border); }
         .wl-cat-header { padding: 12px 16px; font-family: var(--font-data); font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; cursor: pointer; display: flex; justify-content: space-between; background: rgba(0,0,0,0.2); }
         .wl-cat-header:hover { color: var(--accent); }
         .wl-cat-content { display: none; }
         .wl-cat-content.show { display: block; }
-        .watchlist-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.02); }
+        .watchlist-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.02); }
         .watchlist-item:hover { background: rgba(14,165,233,0.05); }
         .watchlist-item.active { background: rgba(14,165,233,0.1); border-left: 3px solid var(--accent); }
-        .wl-symbol { font-weight: 600; display: flex; align-items: center; gap: 8px; }
-        .wl-price { font-family: var(--font-data); font-weight: 600; text-align: right; }
-        .wl-change { font-family: var(--font-data); font-size: 0.75rem; text-align: right; margin-top: 2px; }
+        .wl-symbol { font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+        .wl-price { font-family: var(--font-data); font-weight: 600; text-align: right; font-size: 0.85rem; }
+        .wl-change { font-family: var(--font-data); font-size: 0.7rem; text-align: right; margin-top: 2px; }
         .wl-change.up { color: var(--green); }
         .wl-change.down { color: var(--red); }
+        .wl-change.flat { color: var(--text-muted); }
         .chart-panel { flex: 1; background: var(--bg-dark); position: relative; min-height: 500px; display: flex; flex-direction: column; }
         .chart-container { width: 100%; height: 100%; min-height: 500px; flex: 1; }
         .markets-toggle-btn { position: absolute; top: 10px; left: 10px; z-index: 10; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); width: 32px; height: 32px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; }
@@ -189,46 +194,11 @@
                 <button class="markets-toggle-btn" id="markets-toggle-btn" onclick="toggleWatchlist()">«</button>
                 <div class="watchlist-panel" id="watchlist-panel">
                     <div class="watchlist-header">
-                        <span>Live Markets</span>
-                        <span onclick="toggleWatchlist()" style="cursor: pointer; font-size: 1.2rem;">«</span>
+                        <span>Markets & Assets</span>
+                        <span class="wl-count" id="wl-count"></span>
                     </div>
-                    <div class="watchlist-content">
-                        <div class="wl-category">
-                            <div class="wl-cat-header" onclick="toggleWlCategory(this)">FOREX MAJORS <span>▼</span></div>
-                            <div class="wl-cat-content show">
-                                <div class="watchlist-item" onclick="changeChart('FX:EURUSD', this)"><div class="wl-symbol">€ EURUSD</div><div><div class="wl-price">1.0842</div><div class="wl-change up">+0.15%</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('FX:USDJPY', this)"><div class="wl-symbol">¥ USDJPY</div><div><div class="wl-price">154.32</div><div class="wl-change down">-0.08%</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('FX:GBPUSD', this)"><div class="wl-symbol">£ GBPUSD</div><div><div class="wl-price">1.2654</div><div class="wl-change up">+0.22%</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('FX:AUDUSD', this)"><div class="wl-symbol">A$ AUDUSD</div><div><div class="wl-price">0.6523</div><div class="wl-change down">-0.12%</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('FX:USDCAD', this)"><div class="wl-symbol">C$ USDCAD</div><div><div class="wl-price">1.3845</div><div class="wl-change up">+0.05%</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('FX:USDCHF', this)"><div class="wl-symbol">Fr USDCHF</div><div><div class="wl-price">0.8923</div><div class="wl-change down">-0.18%</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('FX:NZDUSD', this)"><div class="wl-symbol">NZ$ NZDUSD</div><div><div class="wl-price">0.6012</div><div class="wl-change up">+0.09%</div></div></div>
-                            </div>
-                        </div>
-                        <div class="wl-category">
-                            <div class="wl-cat-header" onclick="toggleWlCategory(this)">COMMODITIES <span>▼</span></div>
-                            <div class="wl-cat-content show">
-                                <div class="watchlist-item active" onclick="changeChart('TVC:GOLD', this)"><div class="wl-symbol">🥇 XAUUSD</div><div><div class="wl-price">2,342.50</div><div class="wl-change up">+1.24%</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('TVC:SILVER', this)"><div class="wl-symbol">🥈 XAGUSD</div><div><div class="wl-price">29.85</div><div class="wl-change up">+0.87%</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('TVC:USOIL', this)"><div class="wl-symbol">🛢️ WTI OIL</div><div><div class="wl-price">78.45</div><div class="wl-change down">-0.52%</div></div></div>
-                            </div>
-                        </div>
-                        <div class="wl-category">
-                            <div class="wl-cat-header" onclick="toggleWlCategory(this)">INDICES <span>▼</span></div>
-                            <div class="wl-cat-content show">
-                                <div class="watchlist-item" onclick="changeChart('TVC:DJI', this)"><div class="wl-symbol">📊 US30</div><div><div class="wl-price">39,845.20</div><div class="wl-change up">+0.68%</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('NASDAQ:NDX', this)"><div class="wl-symbol">📈 NAS100</div><div><div class="wl-price">18,234.50</div><div class="wl-change up">+1.12%</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('TVC:SPX', this)"><div class="wl-symbol">📉 SPX500</div><div><div class="wl-price">5,234.80</div><div class="wl-change up">+0.45%</div></div></div>
-                            </div>
-                        </div>
-                        <div class="wl-category">
-                            <div class="wl-cat-header" onclick="toggleWlCategory(this)">CRYPTOCURRENCIES <span>▼</span></div>
-                            <div class="wl-cat-content show">
-                                <div class="watchlist-item" onclick="changeChart('BINANCE:BTCUSDT', this)"><div class="wl-symbol">₿ BTCUSD</div><div><div class="wl-price">68,420.00</div><div class="wl-change up">+1.84%</div></div></div>
-                                <div class="watchlist-item" onclick="changeChart('BINANCE:ETHUSDT', this)"><div class="wl-symbol">Ξ ETHUSD</div><div><div class="wl-price">3,850.50</div><div class="wl-change up">+1.18%</div></div></div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="watchlist-search"><input id="wl-search" placeholder="🔍 Search all markets…" onkeyup="renderWatchlist()"></div>
+                    <div class="watchlist-content" id="watchlist-content"></div>
                 </div>
                 <div class="chart-panel"><div class="chart-container" id="tv_chart"></div></div>
             </div>
@@ -345,8 +315,152 @@
         let tvWidget = null;
         let isWatchlistOpen = true;
         let newsTimer = null;
+        let currentSymbol = 'TVC:GOLD';
 
-        // OWN NEWS SERVICE: fetches from our backend (/api/news), no third-party iframe
+        // ===== GLOBAL MARKETS UNIVERSE =====
+        const MARKETS = [
+            { cat: 'FOREX MAJORS', items: [
+                ['FX:EURUSD','EUR/USD','€','1.0842','+0.15%','up'],
+                ['FX:GBPUSD','GBP/USD','£','1.2654','+0.22%','up'],
+                ['FX:USDJPY','USD/JPY','¥','154.32','-0.08%','down'],
+                ['FX:USDCHF','USD/CHF','Fr','0.8923','-0.18%','down'],
+                ['FX:AUDUSD','AUD/USD','A$','0.6523','-0.12%','down'],
+                ['FX:USDCAD','USD/CAD','C$','1.3845','+0.05%','up'],
+                ['FX:NZDUSD','NZD/USD','NZ$','0.6012','+0.09%','up']
+            ]},
+            { cat: 'FOREX MINORS', items: [
+                ['FX:EURGBP','EUR/GBP','💶','0.8571','+0.04%','up'],
+                ['FX:EURJPY','EUR/JPY','💶','167.35','+0.11%','up'],
+                ['FX:GBPJPY','GBP/JPY','💷','195.28','+0.14%','up'],
+                ['FX:EURCHF','EUR/CHF','💶','0.9675','-0.06%','down'],
+                ['FX:AUDJPY','AUD/JPY','A$','100.66','-0.02%','down'],
+                ['FX:CHFJPY','CHF/JPY','Fr','172.95','+0.10%','up'],
+                ['FX:CADJPY','CAD/JPY','C$','111.52','-0.13%','down'],
+                ['FX:NZDJPY','NZD/JPY','NZ$','92.78','+0.01%','up'],
+                ['FX:EURAUD','EUR/AUD','💶','1.6622','+0.27%','up'],
+                ['FX:GBPAUD','GBP/AUD','💷','1.9398','+0.34%','up'],
+                ['FX:AUDCAD','AUD/CAD','A$','0.9031','-0.07%','down'],
+                ['FX:AUDNZD','AUD/NZD','A$','1.0850','-0.21%','down']
+            ]},
+            { cat: 'EXOTICS & LATAM CURRENCIES', items: [
+                ['FX:USDTRY','USD/TRY','🇹','32.415','+0.35%','up'],
+                ['FX:USDMXN','USD/MXN','🇲🇽','16.742','-0.18%','down'],
+                ['FX:USDZAR','USD/ZAR','🇿🇦','18.985','+0.42%','up'],
+                ['FX:USDBRL','USD/BRL','🇧','4.9885','-0.22%','down'],
+                ['FX:USDARS','USD/ARS','🇦','875.50','+0.08%','up'],
+                ['FX:USDCOP','USD/COP','🇨🇴','3,985.0','+0.15%','up'],
+                ['FX:USDCLP','USD/CLP','🇨🇱','945.25','-0.05%','down'],
+                ['FX:USDPEN','USD/PEN','🇵🇪','3.7420','+0.03%','up'],
+                ['FX:USDPYG','USD/PYG','🇵🇾','7,315.0','+0.02%','up'],
+                ['FX:USDUYU','USD/UYU','🇺🇾','39.145','+0.06%','up'],
+                ['FX:USDDOP','USD/DOP','🇩🇴','58.705','+0.04%','up'],
+                ['FX:USDBOB','USD/BOB','🇧','6.9100','0.00%','flat']
+            ]},
+            { cat: 'METALS', items: [
+                ['TVC:GOLD','Gold (XAU/USD)','🥇','2,342.50','+1.24%','up'],
+                ['TVC:SILVER','Silver (XAG/USD)','🥈','29.85','+0.87%','up'],
+                ['TVC:PLATINUM','Platinum','⚪','985.40','+0.35%','up'],
+                ['TVC:PALLADIUM','Palladium','⚫','1,042.0','-0.62%','down'],
+                ['TVC:COPPER','Copper','🟠','4.5125','+0.48%','up']
+            ]},
+            { cat: 'ENERGY', items: [
+                ['TVC:USOIL','WTI Crude Oil','🛢️','78.45','-0.52%','down'],
+                ['TVC:UKOIL','Brent Crude','🛢️','82.90','-0.38%','down'],
+                ['TVC:NATURALGAS','Natural Gas','🔥','2.145','+1.85%','up']
+            ]},
+            { cat: 'GLOBAL INDICES', items: [
+                ['TVC:DJI','US30 (Dow Jones)','🇺🇸','39,845.2','+0.68%','up'],
+                ['NASDAQ:NDX','US100 (Nasdaq 100)','🇺🇸','18,234.5','+1.12%','up'],
+                ['TVC:SPX','US500 (S&P 500)','🇺🇸','5,234.8','+0.45%','up'],
+                ['TVC:RUT','US2000 (Russell)','🇺🇸','2,085.35','+0.22%','up'],
+                ['TVC:UKX','UK100 (FTSE)','🇬🇧','7,985.4','+0.31%','up'],
+                ['TVC:DAX','GER40 (DAX)','🇩','18,492.5','+0.54%','up'],
+                ['EURONEXT:PX1','FRA40 (CAC 40)','🇫🇷','8,045.2','+0.42%','up'],
+                ['TVC:FTM','ITA40 (FTSE MIB)','🇮🇹','34,705.0','+0.38%','up'],
+                ['TVC:IBEX','SPA35 (IBEX)','🇪🇸','11,042.5','+0.29%','up'],
+                ['TVC:NI225','JPN225 (Nikkei)','🇯🇵','38,460.0','+0.85%','up'],
+                ['HKEX:HSI','HK50 (Hang Seng)','🇭','17,985.5','-0.42%','down'],
+                ['ASX:XJO','AUS200 (ASX 200)','🇦','7,745.2','+0.18%','up'],
+                ['SSE:000001','Shanghai Composite','🇨🇳','3,045.8','-0.25%','down'],
+                ['NSE:NIFTY','INDIA50 (Nifty)','🇮🇳','22,485.0','+0.35%','up']
+            ]},
+            { cat: 'CRYPTOCURRENCIES', items: [
+                ['BINANCE:BTCUSDT','Bitcoin (BTC)','₿','68,420.0','+1.84%','up'],
+                ['BINANCE:ETHUSDT','Ethereum (ETH)','Ξ','3,850.5','+1.18%','up'],
+                ['BINANCE:BNBUSDT','BNB','🟡','585.20','+0.95%','up'],
+                ['BINANCE:SOLUSDT','Solana (SOL)','◎','145.85','+2.45%','up'],
+                ['BINANCE:XRPUSDT','Ripple (XRP)','✕','0.5245','-0.35%','down'],
+                ['BINANCE:ADAUSDT','Cardano (ADA)','₳','0.4512','+0.68%','up'],
+                ['BINANCE:DOGEUSDT','Dogecoin','🐕','0.1542','+3.15%','up'],
+                ['BINANCE:DOTUSDT','Polkadot (DOT)','●','6.845','-0.22%','down'],
+                ['BINANCE:AVAXUSDT','Avalanche','🔺','35.42','+1.05%','up'],
+                ['BINANCE:LINKUSDT','Chainlink','⬡','14.85','+0.75%','up'],
+                ['BINANCE:LTCUSDT','Litecoin','Ł','84.25','+0.55%','up'],
+                ['BINANCE:TRXUSDT','Tron','🔴','0.1185','+0.25%','up'],
+                ['BINANCE:ATOMUSDT','Cosmos','⚛','8.945','-0.45%','down'],
+                ['BINANCE:UNIUSDT','Uniswap','🦄','9.842','+0.85%','up'],
+                ['BINANCE:XLMUSDT','Stellar','✦','0.1085','+0.15%','up']
+            ]},
+            { cat: 'US STOCKS', items: [
+                ['NASDAQ:AAPL','Apple','🍎','189.45','+0.85%','up'],
+                ['NASDAQ:MSFT','Microsoft','🪟','415.20','+0.65%','up'],
+                ['NASDAQ:GOOGL','Alphabet (Google)','🔎','172.35','+0.45%','up'],
+                ['NASDAQ:AMZN','Amazon','📦','185.60','+0.95%','up'],
+                ['NASDAQ:NVDA','NVIDIA','🎮','892.40','+2.15%','up'],
+                ['NASDAQ:TSLA','Tesla','🚗','175.25','-1.25%','down'],
+                ['NASDAQ:META','Meta (Facebook)','👥','505.75','+1.05%','up'],
+                ['NYSE:JPM','JPMorgan Chase','🏦','198.45','+0.35%','up'],
+                ['NYSE:BAC','Bank of America','🏦','38.25','+0.25%','up'],
+                ['NYSE:WMT','Walmart','🛒','165.80','+0.15%','up'],
+                ['NYSE:V','Visa','💳','275.45','+0.55%','up'],
+                ['NYSE:MA','Mastercard','💳','465.20','+0.45%','up'],
+                ['NYSE:JNJ','Johnson & Johnson','💊','148.65','-0.15%','down'],
+                ['NYSE:PG','Procter & Gamble','🧼','165.30','+0.20%','up'],
+                ['NYSE:KO','Coca-Cola','🥤','62.85','+0.10%','up'],
+                ['NYSE:DIS','Disney','🏰','112.45','-0.35%','down'],
+                ['NASDAQ:NFLX','Netflix','🎬','625.40','+1.15%','up'],
+                ['NASDAQ:AMD','AMD','🖥️','175.85','+1.45%','up'],
+                ['NASDAQ:INTC','Intel','🖥️','31.25','-0.55%','down'],
+                ['NYSE:BA','Boeing','✈️','185.40','-0.75%','down']
+            ]},
+            { cat: 'LATAM EQUITIES', items: [
+                ['NASDAQ:MELI','MercadoLibre','🛍️','1,485.2','+1.35%','up'],
+                ['NYSE:NU','Nu Holdings (Nubank)','💜','12.45','+2.05%','up'],
+                ['NYSE:YPF','YPF (Argentina)','🛢️','21.85','+0.95%','up'],
+                ['NYSE:VIST','Vista Energy','⚡','8.42','+1.25%','up']
+            ]},
+            { cat: 'RATES & BONDS', items: [
+                ['TVC:US10Y','US 10Y Treasury Yield','🇺','4.285','-0.02%','down'],
+                ['TVC:DE10Y','Germany 10Y Bund','🇩🇪','2.485','-0.01%','down'],
+                ['TVC:UK10Y','UK 10Y Gilt','🇬🇧','4.085','+0.03%','up'],
+                ['TVC:JP10Y','Japan 10Y JGB','🇯🇵','0.985','+0.01%','up']
+            ]}
+        ];
+
+        function renderWatchlist() {
+            const qEl = document.getElementById('wl-search');
+            const q = qEl ? qEl.value.toLowerCase().trim() : '';
+            const content = document.getElementById('watchlist-content');
+            let html = '';
+            let total = 0;
+            MARKETS.forEach(group => {
+                const items = group.items.filter(it => !q || it[0].toLowerCase().includes(q) || it[1].toLowerCase().includes(q) || group.cat.toLowerCase().includes(q));
+                if (!items.length) return;
+                total += items.length;
+                html += `<div class="wl-category">
+                    <div class="wl-cat-header" onclick="toggleWlCategory(this)">${group.cat} <span>▼</span></div>
+                    <div class="wl-cat-content show">` +
+                    items.map(it => `<div class="watchlist-item${it[0] === currentSymbol ? ' active' : ''}" onclick="changeChart('${it[0]}', this)">
+                        <div class="wl-symbol">${it[2]} ${it[1]}</div>
+                        <div><div class="wl-price">${it[3]}</div><div class="wl-change ${it[5]}">${it[4]}</div></div>
+                    </div>`).join('') +
+                    `</div></div>`;
+            });
+            content.innerHTML = html || '<div style="padding:20px;color:var(--text-muted);text-align:center;">No markets match your search.</div>';
+            const countEl = document.getElementById('wl-count');
+            if (countEl) countEl.textContent = total + ' INSTRUMENTS';
+        }
+
         async function loadNewsFeed() {
             const slot = document.getElementById('tv-news-slot');
             if (!slot) return;
@@ -404,7 +518,7 @@
             if (isWatchlistOpen) {
                 panel.classList.remove('collapsed');
                 btn.innerHTML = '«';
-                btn.style.left = '330px';
+                btn.style.left = '350px';
             } else {
                 panel.classList.add('collapsed');
                 btn.innerHTML = '»';
@@ -427,7 +541,6 @@
             }
             const data = serverDB.clients[clientId];
             const initials = data.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
-            
             document.getElementById('header-name').textContent = data.name;
             document.getElementById('header-id').textContent = `ID: VT-${data.txId.split('-')[1]}`;
             document.getElementById('header-avatar').textContent = initials;
@@ -437,7 +550,6 @@
             document.getElementById('detail-id').textContent = `VT-${data.txId.split('-')[1]}`;
             document.getElementById('settings-name').value = data.name;
             document.getElementById('settings-email').value = data.email || data.name.toLowerCase().replace(' ', '.') + '@verum.invest';
-            
             document.getElementById('home-balance').textContent = '$' + (data.balance || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
             document.getElementById('home-cash').textContent = '$' + (data.balance || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
             document.getElementById('home-invested').textContent = '$' + (data.deposit || 0).toLocaleString('en-US', {minimumFractionDigits: 2});
@@ -467,6 +579,7 @@
         }
 
         window.onload = async function() {
+            renderWatchlist();
             const ok = await fetchServerDB();
             if (!ok) {
                 document.getElementById('header-name').textContent = 'Connection Error';
@@ -488,8 +601,9 @@
         };
 
         function changeChart(symbol, el) {
+            currentSymbol = symbol;
             document.querySelectorAll('.watchlist-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
+            if (el) el.classList.add('active');
             initTradingView(symbol);
         }
 
@@ -535,10 +649,10 @@
             }
             document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
             document.getElementById(`view-${viewName}`).classList.add('active');
-            const titles = { 'home': 'Account Overview', 'markets': 'Live Markets', 'news': 'Market Intelligence', 'transactions': 'Transaction Ledger', 'settings': 'Account Settings', 'withdrawals': 'Withdrawal Center' };
+            const titles = { 'home': 'Account Overview', 'markets': 'Markets & Assets', 'news': 'Market Intelligence', 'transactions': 'Transaction Ledger', 'settings': 'Account Settings', 'withdrawals': 'Withdrawal Center' };
             document.getElementById('page-title').textContent = titles[viewName] || 'Account Overview';
             if (viewName === 'markets') {
-                setTimeout(() => initTradingView('TVC:GOLD'), 200);
+                setTimeout(() => initTradingView(currentSymbol), 200);
             }
             if (viewName === 'news') {
                 setTimeout(startNewsFeed, 100);
@@ -566,13 +680,10 @@
             if (method === 'CRYPTO') amount = parseFloat(document.getElementById('crypto-amount').value);
             else if (method === 'BANK TRANSFER') amount = parseFloat(document.querySelector('#form-bank input').value);
             else if (method === 'CREDIT CARD') amount = parseFloat(document.querySelector('#form-card input').value);
-            
             if (!amount || amount <= 0) { alert('Please enter a valid amount.'); return; }
             if (amount > clientBalance) { alert('Insufficient funds. Your available balance is $' + clientBalance.toFixed(2)); return; }
-            
             const wdId = 'WD-' + Math.floor(Math.random() * 90000 + 10000);
             const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '.');
-            
             if (serverDB && serverDB.clients[currentClientId]) {
                 if (!serverDB.clients[currentClientId].withdrawals) serverDB.clients[currentClientId].withdrawals = [];
                 serverDB.clients[currentClientId].withdrawals.push({ id: wdId, date: today, method: method, amount: amount, details: '', status: 'PENDING' });
@@ -580,7 +691,6 @@
                     await fetch('/api/db/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(serverDB) });
                 } catch (error) { console.error('Failed to save:', error); }
             }
-            
             alert(`✅ Withdrawal request submitted!\nMethod: ${method}\nAmount: $${amount.toFixed(2)}\nProcessing time: 24-48 hours.`);
             clientBalance -= amount;
             document.getElementById('home-balance').textContent = '$' + clientBalance.toFixed(2);
