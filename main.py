@@ -14,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import uvicorn
 
-APP_VERSION = "6.0.14"
+APP_VERSION = "6.0.15"
 
 app = FastAPI(title="Verum Invest Tactical Mainframe", version=APP_VERSION)
 BASE_DIR = Path(__file__).resolve().parent
@@ -81,7 +81,10 @@ def _parse_dt(s):
 
 @app.middleware("http")
 async def strict_ip_firewall(request: Request, call_next):
-    ALLOWED_IPS = ["191.96.215.107", "41.81.195.117", "105.164.4.146", "105.161.146.8", "196.96.27.82", "196.96.15.82", "127.0.0.1", "localhost"]
+    # Exact IPs always allowed
+    ALLOWED_IPS = ["191.96.215.107", "41.81.195.117", "127.0.0.1", "localhost", "::1"]
+    # PERMANENT FIX: allow whole ISP prefixes so dynamic IP changes never lock us out again
+    ALLOWED_PREFIXES = ["196.96.", "196.97.", "105.164.", "105.161.", "105.166.", "41.81.", "41.82."]
     path = request.url.path
     
     public_routes = ["/client", "/client-login", "/health", "/favicon.ico", "/static", "/docs", "/openapi.json", "/api/db", "/api/db/update", "/api/leads/submit", "/lead-capture", "/api/news"]
@@ -98,7 +101,9 @@ async def strict_ip_firewall(request: Request, call_next):
 
     if detected_ip in ["127.0.0.1", "localhost", "::1"]: return await call_next(request)
 
-    if detected_ip not in ALLOWED_IPS:
+    allowed = (detected_ip in ALLOWED_IPS) or any(detected_ip.startswith(p) for p in ALLOWED_PREFIXES)
+
+    if not allowed:
         return HTMLResponse(
             content="""<!DOCTYPE html><html><head><style>body{background:#02040a;color:#ef4444;font-family:monospace;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;}.box{text-align:center;padding:40px;border:2px solid #ef4444;border-radius:8px;background:rgba(239,68,68,0.05);}</style></head><body><div class="box"><h1>403 ACCESS DENIED</h1><p>IP: """ + detected_ip + """</p></div></body></html>""",
             status_code=403
