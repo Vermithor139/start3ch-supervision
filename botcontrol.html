@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>JARVIS // Mission Control</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg:#030712; --panel:#0b1120; --card:#111827; --border:#1e293b; --glow:#0ea5e9; --text:#f8fafc; --muted:#64748b; --green:#10b981; --red:#ef4444; --orange:#f97316; --mono:'JetBrains Mono',monospace; --ui:'Inter',sans-serif; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--ui);padding:32px;min-height:100vh}
+h1{font-family:var(--mono);font-size:1.4rem;letter-spacing:2px;margin-bottom:6px}
+h1 span{color:var(--glow)}
+.sub{color:var(--muted);font-family:var(--mono);font-size:.75rem;margin-bottom:28px;display:flex;align-items:center;gap:8px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:p 1.6s infinite}
+.dot.dead{background:var(--red);box-shadow:0 0 10px var(--red);animation:none}
+@keyframes p{0%{opacity:1}50%{opacity:.4}100%{opacity:1}}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:28px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;position:relative;overflow:hidden}
+.stat::before{content:'';position:absolute;left:0;top:0;width:4px;height:100%;background:var(--glow);opacity:.6}
+.stat .l{font-family:var(--mono);font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.stat .v{font-size:1.8rem;font-weight:700}
+.stat.green .v{color:var(--green)} .stat.orange .v{color:var(--orange)}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.panel h2{font-family:var(--mono);font-size:.75rem;letter-spacing:1px;color:var(--glow);padding:14px 18px;border-bottom:1px solid var(--border);text-transform:uppercase}
+.log{max-height:520px;overflow-y:auto}
+.row{display:flex;gap:12px;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.85rem;align-items:flex-start}
+.row .t{font-family:var(--mono);font-size:.68rem;color:var(--muted);min-width:110px;padding-top:2px}
+.badge{font-family:var(--mono);font-size:.62rem;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px;min-width:86px;text-align:center}
+.b-intake{background:rgba(16,185,129,.15);color:var(--green)}
+.b-followup{background:rgba(14,165,233,.15);color:var(--glow)}
+.b-content{background:rgba(249,115,22,.15);color:var(--orange)}
+.b-system{background:rgba(100,116,139,.2);color:var(--muted)}
+.b-conversation{background:rgba(59,130,246,.15);color:#3b82f6}
+.b-approval{background:rgba(251,191,36,.15);color:#fbbf24}
+.msg{flex:1;line-height:1.45}
+.qitem{padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.05)}
+.qtype{font-family:var(--mono);font-size:.68rem;color:var(--orange);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.qtext{font-size:.85rem;line-height:1.5;color:var(--text);white-space:pre-wrap;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;max-height:180px;overflow-y:auto}
+.qbtns{display:flex;gap:10px}
+button{font-family:var(--mono);font-size:.72rem;font-weight:700;padding:8px 14px;border-radius:6px;cursor:pointer;border:1px solid var(--border);background:rgba(14,165,233,.08);color:var(--glow);transition:.2s}
+button:hover{background:var(--glow);color:#000}
+button.done{background:rgba(16,185,129,.08);color:var(--green);border-color:rgba(16,185,129,.4)}
+button.done:hover{background:var(--green);color:#000}
+.empty{padding:26px;text-align:center;color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+<h1>JARVIS // <span>OUTREACH MISSION CONTROL</span></h1>
+<div class="sub"><span class="dot" id="hb"></span><span id="hbtext">Connecting…</span> · auto-refresh 5s</div>
+
+<div class="stats">
+  <div class="stat green"><div class="l">Total Leads</div><div class="v" id="s-total">–</div></div>
+  <div class="stat green"><div class="l">Leads Today</div><div class="v" id="s-today">–</div></div>
+  <div class="stat"><div class="l">TG Conversations</div><div class="v" id="s-conv">–</div></div>
+  <div class="stat"><div class="l">Follow-ups Sent</div><div class="v" id="s-follow">–</div></div>
+  <div class="stat orange"><div class="l">Posts Published</div><div class="v" id="s-posts">–</div></div>
+  <div class="stat orange"><div class="l">Awaiting Approval</div><div class="v" id="s-pend">–</div></div>
+</div>
+
+<div class="grid">
+  <div class="panel">
+    <h2>Live Activity Log</h2>
+    <div class="log" id="log"></div>
+  </div>
+  <div class="panel">
+    <h2>Approval Queue (you decide)</h2>
+    <div id="queue"></div>
+  </div>
+</div>
+
+<script>
+async function refresh(){
+  try{
+    const r = await fetch('/api/bot/log');
+    const d = await r.json();
+    const s = d.stats || {};
+    document.getElementById('s-total').textContent = s.total_leads ?? 0;
+    document.getElementById('s-today').textContent = s.leads_today ?? 0;
+    document.getElementById('s-conv').textContent = s.conversations ?? 0;
+    document.getElementById('s-follow').textContent = s.followups_sent ?? 0;
+    document.getElementById('s-posts').textContent = s.posts_published ?? 0;
+    document.getElementById('s-pend').textContent = s.pending_approvals ?? 0;
+    const hb = document.getElementById('hb'), hbt = document.getElementById('hbtext');
+    const age = s.last_heartbeat ? (Date.now() - s.last_heartbeat)/1000 : 99999;
+    if(age < 700){ hb.classList.remove('dead'); hbt.textContent = 'JARVIS ONLINE — engines nominal'; }
+    else { hb.classList.add('dead'); hbt.textContent = 'NO HEARTBEAT — check Render / bot token'; }
+    const log = document.getElementById('log');
+    log.innerHTML = (d.log||[]).map(e=>{
+      const t = new Date(e.ts);
+      const ts = t.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' '+t.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      return `<div class="row"><span class="t">${ts}</span><span class="badge b-${e.type}">${e.type}</span><span class="msg">${e.message}${e.status==='error'?' ⚠️':''}</span></div>`;
+    }).join('') || '<div class="empty">No activity yet.</div>';
+    const q = document.getElementById('queue');
+    q.innerHTML = (d.queue||[]).map((it,i)=>`
+      <div class="qitem">
+        <div class="qtype">${it.type} · ${new Date(it.ts).toLocaleString('en-GB')}</div>
+        <div class="qtext" id="qt-${i}">${it.text}</div>
+        <div class="qbtns">
+          <button onclick="copyText(${i})">📋 COPY TEXT</button>
+          <button class="done" onclick="markDone(${i})">✅ MARK DONE</button>
+        </div>
+      </div>`).join('') || '<div class="empty">Queue empty. JARVIS drafts appear here for your one-click approval.</div>';
+  }catch(e){ console.error(e); }
+}
+function copyText(i){
+  const el = document.getElementById('qt-'+i);
+  navigator.clipboard.writeText(el.innerText).then(()=>alert('Copied — paste it into X and post.'));
+}
+async function markDone(i){
+  await fetch('/api/bot/queue/done',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({index:i})});
+  refresh();
+}
+refresh();
+setInterval(refresh, 5000);
+</script>
+</body>
+</html>
