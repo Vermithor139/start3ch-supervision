@@ -207,7 +207,7 @@
         </div>
         <div class="content-area">
             <div id="view-leads" class="view-section active">
-                <div class="lead-counter">
+                <div class="lead-counter" id="manager-counter">
                     <span>ACTIVE LEADS IN DATABASE:</span>
                     <span class="count" id="lead-count-display">0</span>
                 </div>
@@ -541,6 +541,7 @@
                 document.getElementById('financial-controls').style.display = 'none';
                 document.getElementById('inject-lead-btn').style.display = 'none';
                 document.getElementById('btn-save-profile').style.display = 'none';
+                document.getElementById('manager-counter').style.display = 'none';
             } else { 
                 document.getElementById('nav-analytics').style.display = 'flex'; 
                 document.getElementById('nav-config').style.display = 'flex'; 
@@ -572,7 +573,6 @@
 
         async function filterByStatus(status, el) { currentStatusFilter = status; renderAgentTabs(); renderTable(); }
         
-        // AGENT ADD - uses the atomic server endpoint so it can never be lost
         async function addFilter() { 
             const name = prompt("Enter Agent Name:").trim().toUpperCase(); 
             if (!name) return;
@@ -600,7 +600,6 @@
             renderTable(); 
         }
         
-        // AGENT DELETE - uses the atomic server endpoint so it stays deleted
         async function deleteAgent(index, event) { 
             event.stopPropagation(); 
             const removed = db.agents[index]; 
