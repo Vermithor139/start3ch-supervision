@@ -13,42 +13,48 @@ h1 span{color:var(--glow)}
 .sub{color:var(--muted);font-family:var(--mono);font-size:.75rem;margin-bottom:28px;display:flex;align-items:center;gap:8px}
 .dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:p 1.6s infinite}
 .dot.dead{background:var(--red);box-shadow:0 0 10px var(--red);animation:none}
-@keyframes p{0%{opacity:1}50%{opacity:.4}100%{opacity:1}}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:28px}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.4}}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:28px}
 .stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;position:relative;overflow:hidden}
 .stat::before{content:'';position:absolute;left:0;top:0;width:4px;height:100%;background:var(--glow);opacity:.6}
-.stat .l{font-family:var(--mono);font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
-.stat .v{font-size:1.8rem;font-weight:700}
+.stat .l{font-family:var(--mono);font-size:.62rem;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+.stat .v{font-size:1.7rem;font-weight:700}
 .stat.green .v{color:var(--green)} .stat.orange .v{color:var(--orange)}
 .grid{display:grid;grid-template-columns:2fr 1fr;gap:20px}
 @media(max-width:900px){.grid{grid-template-columns:1fr}}
 .panel{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.panel h2{font-family:var(--mono);font-size:.75rem;letter-spacing:1px;color:var(--glow);padding:14px 18px;border-bottom:1px solid var(--border);text-transform:uppercase}
-.log{max-height:520px;overflow-y:auto}
+.panel h2{font-family:var(--mono);font-size:.72rem;letter-spacing:1px;color:var(--glow);padding:14px 18px;border-bottom:1px solid var(--border);text-transform:uppercase}
+.panel h2 .sp{float:right;color:var(--muted);font-size:.62rem}
+.log{max-height:480px;overflow-y:auto}
 .row{display:flex;gap:12px;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.85rem;align-items:flex-start}
-.row .t{font-family:var(--mono);font-size:.68rem;color:var(--muted);min-width:110px;padding-top:2px}
-.badge{font-family:var(--mono);font-size:.62rem;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px;min-width:86px;text-align:center}
+.row .t{font-family:var(--mono);font-size:.66rem;color:var(--muted);min-width:110px;padding-top:2px}
+.badge{font-family:var(--mono);font-size:.6rem;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px;min-width:86px;text-align:center}
 .b-intake{background:rgba(16,185,129,.15);color:var(--green)}
 .b-followup{background:rgba(14,165,233,.15);color:var(--glow)}
 .b-content{background:rgba(249,115,22,.15);color:var(--orange)}
 .b-system{background:rgba(100,116,139,.2);color:var(--muted)}
 .b-conversation{background:rgba(59,130,246,.15);color:#3b82f6}
 .b-approval{background:rgba(251,191,36,.15);color:#fbbf24}
+.b-radar{background:rgba(232,121,249,.15);color:#e879f9}
 .msg{flex:1;line-height:1.45}
 .qitem{padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.05)}
-.qtype{font-family:var(--mono);font-size:.68rem;color:var(--orange);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
-.qtext{font-size:.85rem;line-height:1.5;color:var(--text);white-space:pre-wrap;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;max-height:180px;overflow-y:auto}
+.qtype{font-family:var(--mono);font-size:.66rem;color:var(--orange);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.qtext{font-size:.85rem;line-height:1.5;white-space:pre-wrap;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;max-height:180px;overflow-y:auto}
 .qbtns{display:flex;gap:10px}
-button{font-family:var(--mono);font-size:.72rem;font-weight:700;padding:8px 14px;border-radius:6px;cursor:pointer;border:1px solid var(--border);background:rgba(14,165,233,.08);color:var(--glow);transition:.2s}
+button{font-family:var(--mono);font-size:.7rem;font-weight:700;padding:8px 14px;border-radius:6px;cursor:pointer;border:1px solid var(--border);background:rgba(14,165,233,.08);color:var(--glow);transition:.2s}
 button:hover{background:var(--glow);color:#000}
 button.done{background:rgba(16,185,129,.08);color:var(--green);border-color:rgba(16,185,129,.4)}
 button.done:hover{background:var(--green);color:#000}
 .empty{padding:26px;text-align:center;color:var(--muted);font-size:.85rem}
+.forge{margin-top:20px}
+.forge textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--ui);font-size:.88rem;padding:12px;outline:none;resize:vertical}
+.forge textarea:focus{border-color:var(--glow)}
+.forge .pbody{padding:18px;display:flex;flex-direction:column;gap:12px}
 </style>
 </head>
 <body>
 <h1>JARVIS // <span>OUTREACH MISSION CONTROL</span></h1>
-<div class="sub"><span class="dot" id="hb"></span><span id="hbtext">Connecting…</span> · auto-refresh 5s</div>
+<div class="sub"><span class="dot" id="hb"></span><span id="hbtext">Connecting…</span> · auto-refresh 60s</div>
 
 <div class="stats">
   <div class="stat green"><div class="l">Total Leads</div><div class="v" id="s-total">–</div></div>
@@ -57,6 +63,7 @@ button.done:hover{background:var(--green);color:#000}
   <div class="stat"><div class="l">Follow-ups Sent</div><div class="v" id="s-follow">–</div></div>
   <div class="stat orange"><div class="l">Posts Published</div><div class="v" id="s-posts">–</div></div>
   <div class="stat orange"><div class="l">Awaiting Approval</div><div class="v" id="s-pend">–</div></div>
+  <div class="stat"><div class="l">Groups Armed</div><div class="v" id="s-groups">0</div></div>
 </div>
 
 <div class="grid">
@@ -67,6 +74,21 @@ button.done:hover{background:var(--green);color:#000}
   <div class="panel">
     <h2>Approval Queue (you decide)</h2>
     <div id="queue"></div>
+  </div>
+</div>
+
+<div class="panel forge">
+  <h2>Reply Forge (X) <span class="sp">paste their post → bot writes reply + DM → you click Send</span></h2>
+  <div class="pbody">
+    <textarea id="forgeIn" rows="3" placeholder="Paste the stranger's post text here…"></textarea>
+    <div><button id="forgeBtn">⚒ FORGE REPLY</button></div>
+    <div id="forgeOut" style="display:none">
+      <div class="qtype" id="forgeKind"></div>
+      <div class="qtext" id="forgeReply"></div>
+      <div class="qbtns"><button id="copyReply">📋 COPY REPLY</button></div>
+      <div class="qtext" id="forgeDm" style="margin-top:10px"></div>
+      <div class="qbtns"><button id="copyDm">📋 COPY DM</button></div>
+    </div>
   </div>
 </div>
 
@@ -82,18 +104,17 @@ async function refresh(){
     document.getElementById('s-follow').textContent = s.followups_sent ?? 0;
     document.getElementById('s-posts').textContent = s.posts_published ?? 0;
     document.getElementById('s-pend').textContent = s.pending_approvals ?? 0;
+    document.getElementById('s-groups').textContent = (d.groups||[]).length;
     const hb = document.getElementById('hb'), hbt = document.getElementById('hbtext');
     const age = s.last_heartbeat ? (Date.now() - s.last_heartbeat)/1000 : 99999;
     if(age < 700){ hb.classList.remove('dead'); hbt.textContent = 'JARVIS ONLINE — engines nominal'; }
     else { hb.classList.add('dead'); hbt.textContent = 'NO HEARTBEAT — check Render / bot token'; }
-    const log = document.getElementById('log');
-    log.innerHTML = (d.log||[]).map(e=>{
+    document.getElementById('log').innerHTML = (d.log||[]).map(e=>{
       const t = new Date(e.ts);
       const ts = t.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' '+t.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
       return `<div class="row"><span class="t">${ts}</span><span class="badge b-${e.type}">${e.type}</span><span class="msg">${e.message}${e.status==='error'?' ⚠️':''}</span></div>`;
     }).join('') || '<div class="empty">No activity yet.</div>';
-    const q = document.getElementById('queue');
-    q.innerHTML = (d.queue||[]).map((it,i)=>`
+    document.getElementById('queue').innerHTML = (d.queue||[]).map((it,i)=>`
       <div class="qitem">
         <div class="qtype">${it.type} · ${new Date(it.ts).toLocaleString('en-GB')}</div>
         <div class="qtext" id="qt-${i}">${it.text}</div>
@@ -112,8 +133,22 @@ async function markDone(i){
   await fetch('/api/bot/queue/done',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({index:i})});
   refresh();
 }
+document.getElementById('forgeBtn').onclick = async () => {
+  const text = document.getElementById('forgeIn').value.trim();
+  if(!text){ alert('Paste the post text first.'); return; }
+  const r = await fetch('/api/bot/forge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
+  const d = await r.json();
+  if(d.status==='success'){
+    document.getElementById('forgeOut').style.display='block';
+    document.getElementById('forgeKind').textContent = 'Detected intent: '+d.kind;
+    document.getElementById('forgeReply').textContent = d.reply;
+    document.getElementById('forgeDm').textContent = d.dm;
+  }
+};
+document.getElementById('copyReply').onclick = ()=>navigator.clipboard.writeText(document.getElementById('forgeReply').innerText).then(()=>alert('Reply copied — paste under their post.'));
+document.getElementById('copyDm').onclick = ()=>navigator.clipboard.writeText(document.getElementById('forgeDm').innerText).then(()=>alert('DM copied — send when they engage.'));
 refresh();
-setInterval(refresh, 5000);
+setInterval(refresh, 60000);
 </script>
 </body>
 </html>
