@@ -12,10 +12,11 @@ from email.utils import parsedate_to_datetime
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 from pathlib import Path
 import uvicorn
 
-APP_VERSION = "6.0.17"
+APP_VERSION = "6.1.0"
 
 app = FastAPI(title="Verum Invest Tactical Mainframe", version=APP_VERSION)
 BASE_DIR = Path(__file__).resolve().parent
@@ -41,6 +42,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # ===== JARVIS MEMORY (log + approval queue, persisted in Firebase) =====
 def _node_load(node, default):
@@ -298,7 +300,7 @@ async def bot_heartbeat_loop():
 
 def compute_stats():
     now = time.time() * 1000
-    if STATS_CACHE["data"] and (now - STATS_CACHE["ts"]) < 60000:
+    if STATS_CACHE["data"] and (now - STATS_CACHE["ts"]) < 600000:
         return STATS_CACHE["data"]
     db = load_db()
     clients = list((db.get("clients") or {}).values())
@@ -332,7 +334,7 @@ async def startup_event():
 # ===== JARVIS API =====
 @app.get("/api/bot/log")
 def bot_log_get():
-    return JSONResponse(content={"status": "success", "log": list(reversed(BOT_LOG)), "queue": BOT_QUEUE, "stats": compute_stats()})
+    return JSONResponse(content={"status": "success", "log": list(reversed(BOT_LOG))[:50], "queue": BOT_QUEUE, "stats": compute_stats()})
 
 @app.post("/api/bot/queue/done")
 async def bot_queue_done(request: Request):
@@ -355,8 +357,7 @@ async def strict_ip_firewall(request: Request, call_next):
     ALLOWED_PREFIXES = ["196.96.", "196.97.", "105.164.", "105.161.", "105.166.", "41.81.", "41.82."]
     path = request.url.path
 
-    # FIX: the CRM pages and the bot console are now reachable from ANY laptop.
-    # The real lock is the email + access-key login, not the IP gate.
+    # CRM pages + bot console reachable from ANY laptop; the email+key login is the real gate.
     public_routes = ["/", "/login", "/bot-control", "/client", "/client-login", "/health", "/favicon.ico", "/static", "/docs", "/openapi.json", "/api/db", "/api/db/update", "/api/leads/submit", "/lead-capture", "/api/news"]
     if any(path == route or path.startswith(route + "/") for route in public_routes):
         return await call_next(request)
@@ -384,7 +385,7 @@ async def strict_ip_firewall(request: Request, call_next):
 @app.get("/api/news")
 def get_news():
     now = time.time()
-    if NEWS_CACHE["items"] and (now - NEWS_CACHE["ts"]) < 300:
+    if NEWS_CACHE["items"] and (now - NEWS_CACHE["ts"]) < 1800:
         return JSONResponse(content={"status": "success", "items": NEWS_CACHE["items"], "cached": True})
     items = []
     for source, url in NEWS_FEEDS:
@@ -467,15 +468,13 @@ async def update_database(request: Request):
                     existing_data['subStatus'] = incoming_data.get('subStatus', existing_data['subStatus'])
                     existing_data['agent'] = incoming_data.get('agent', existing_data['agent'])
                     existing_data['lastActivity'] = incoming_activity
-                    # FIX: carry the financial state so manager edits (injected profit,
-                    # deposits, approved withdrawals) actually persist to Firebase.
+                    # Carry financial state so manager edits (profits, deposits, approvals) persist.
                     existing_data['balance'] = incoming_data.get('balance', existing_data.get('balance', 0))
                     existing_data['deposit'] = incoming_data.get('deposit', existing_data.get('deposit', 0))
                     existing_data['withdrawn'] = incoming_data.get('withdrawn', existing_data.get('withdrawn', 0))
                     if 'transactions' in incoming_data:
                         existing_data['transactions'] = incoming_data['transactions']
-                    # FIX: merge withdrawals by id so client requests land and
-                    # manager approve/deny updates stick.
+                    # Merge withdrawals by id so client requests land and approvals stick.
                     inc_wd = incoming_data.get('withdrawals', [])
                     exist_wd = existing_data.get('withdrawals', [])
                     wd_map = {w.get('id'): w for w in exist_wd if w.get('id')}
