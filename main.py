@@ -354,15 +354,17 @@ async def strict_ip_firewall(request: Request, call_next):
     ALLOWED_IPS = ["191.96.215.107", "41.81.195.117", "127.0.0.1", "localhost", "::1"]
     ALLOWED_PREFIXES = ["196.96.", "196.97.", "105.164.", "105.161.", "105.166.", "41.81.", "41.82."]
     path = request.url.path
-    
-    public_routes = ["/client", "/client-login", "/health", "/favicon.ico", "/static", "/docs", "/openapi.json", "/api/db", "/api/db/update", "/api/leads/submit", "/lead-capture", "/api/news"]
+
+    # FIX: the CRM pages and the bot console are now reachable from ANY laptop.
+    # The real lock is the email + access-key login, not the IP gate.
+    public_routes = ["/", "/login", "/bot-control", "/client", "/client-login", "/health", "/favicon.ico", "/static", "/docs", "/openapi.json", "/api/db", "/api/db/update", "/api/leads/submit", "/lead-capture", "/api/news"]
     if any(path == route or path.startswith(route + "/") for route in public_routes):
         return await call_next(request)
-    
+
     forwarded_for = request.headers.get("X-Forwarded-For", "")
     real_ip_header = request.headers.get("X-Real-IP", "")
     client_host = request.client.host if request.client else "unknown"
-    
+
     if forwarded_for: detected_ip = forwarded_for.split(",")[0].strip()
     elif real_ip_header: detected_ip = real_ip_header.strip()
     else: detected_ip = client_host
@@ -465,6 +467,23 @@ async def update_database(request: Request):
                     existing_data['subStatus'] = incoming_data.get('subStatus', existing_data['subStatus'])
                     existing_data['agent'] = incoming_data.get('agent', existing_data['agent'])
                     existing_data['lastActivity'] = incoming_activity
+                    # FIX: carry the financial state so manager edits (injected profit,
+                    # deposits, approved withdrawals) actually persist to Firebase.
+                    existing_data['balance'] = incoming_data.get('balance', existing_data.get('balance', 0))
+                    existing_data['deposit'] = incoming_data.get('deposit', existing_data.get('deposit', 0))
+                    existing_data['withdrawn'] = incoming_data.get('withdrawn', existing_data.get('withdrawn', 0))
+                    if 'transactions' in incoming_data:
+                        existing_data['transactions'] = incoming_data['transactions']
+                    # FIX: merge withdrawals by id so client requests land and
+                    # manager approve/deny updates stick.
+                    inc_wd = incoming_data.get('withdrawals', [])
+                    exist_wd = existing_data.get('withdrawals', [])
+                    wd_map = {w.get('id'): w for w in exist_wd if w.get('id')}
+                    for w in inc_wd:
+                        wid = w.get('id')
+                        if wid:
+                            wd_map[wid] = w
+                    existing_data['withdrawals'] = list(wd_map.values())
                     inc_comments = incoming_data.get('comments', [])
                     exist_comments = existing_data.get('comments', [])
                     existing_keys = {c.get('text', '') + c.get('time', '') for c in exist_comments}
@@ -476,7 +495,6 @@ async def update_database(request: Request):
                     exist_comments.sort(key=lambda x: x.get('time', ''), reverse=True)
                     existing_data['comments'] = exist_comments
                     current_clients[tx_id] = existing_data
-                    updated_count += 1
                 else:
                     ignored_count += 1
         current_db['clients'] = current_clients

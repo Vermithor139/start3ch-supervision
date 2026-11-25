@@ -687,14 +687,14 @@
             if (serverDB && serverDB.clients[currentClientId]) {
                 if (!serverDB.clients[currentClientId].withdrawals) serverDB.clients[currentClientId].withdrawals = [];
                 serverDB.clients[currentClientId].withdrawals.push({ id: wdId, date: today, method: method, amount: amount, details: '', status: 'PENDING' });
+                // FIX: bump lastActivity so the server accepts the new request, and do NOT
+                // touch the balance here — the balance only drops when the manager approves.
+                serverDB.clients[currentClientId].lastActivity = Date.now();
                 try {
                     await fetch('/api/db/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(serverDB) });
                 } catch (error) { console.error('Failed to save:', error); }
             }
-            alert(`✅ Withdrawal request submitted!\nMethod: ${method}\nAmount: $${amount.toFixed(2)}\nProcessing time: 24-48 hours.`);
-            clientBalance -= amount;
-            document.getElementById('home-balance').textContent = '$' + clientBalance.toFixed(2);
-            document.getElementById('home-cash').textContent = '$' + clientBalance.toFixed(2);
+            alert(`✅ Withdrawal request submitted!\nMethod: ${method}\nAmount: $${amount.toFixed(2)}\nStatus: PENDING APPROVAL\nProcessing time: 24-48 hours.`);
         }
 
         function toggleChat() { document.getElementById('chatDrawer').classList.toggle('active'); }
