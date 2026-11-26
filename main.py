@@ -16,7 +16,7 @@ from starlette.middleware.gzip import GZipMiddleware
 from pathlib import Path
 import uvicorn
 
-APP_VERSION = "6.1.0"
+APP_VERSION = "6.1.1"
 
 app = FastAPI(title="Verum Invest Tactical Mainframe", version=APP_VERSION)
 BASE_DIR = Path(__file__).resolve().parent
@@ -170,7 +170,7 @@ async def handle_telegram_update(upd):
                 ok, tx_id = save_telegram_lead(st.get("name", "Unknown"), st.get("country", "Unknown"), st.get("phone", ""), dep, uname, chat_id)
                 TG_STATE.pop(chat_id, None)
                 if ok:
-                    await tg_call("sendMessage", chat_id=chat_id, text="🎉 You're in! Your tester account is being prepared.\nA human advisor will contact you within 24 hours.\n\nMeanwhile, explore the live dashboard:\nhttps://start3ch-supervision.onrender.com/client")
+                    await tg_call("sendMessage", chat_id=chat_id, text="🎉 You're in! Your tester account is being prepared.\nA human advisor will contact you within 24 hours.\n\nMeanwhile, explore the live dashboard:\nhttps://start3ch-supervision-asx9.onrender.com/client")
                     if MANAGER_CHAT_ID:
                         await tg_call("sendMessage", chat_id=MANAGER_CHAT_ID, text=f"🚀 NEW TELEGRAM LEAD\nName: {st.get('name')}\nCountry: {st.get('country')}\nPhone: {st.get('phone') or '—'}\nDeposit: ${dep:,.0f}\nTG: @{uname or '—'}\nID: {tx_id}")
                 else:
@@ -264,8 +264,8 @@ def build_briefing():
     news = get_news()
     items = (news.get("items") or [])[:5]
     lines = "\n".join(f"• {it['title']}" for it in items)
-    tg_text = f"🌅 VERUM MARKET BRIEFING\n\n{lines}\n\n📊 Live charts, signals & advisor support:\nhttps://start3ch-supervision.onrender.com/client\n\n🤖 Free tester spots open — message this bot: /start"
-    x_text = f"Morning market brief 🧵\n\n{lines}\n\nWe pair live algo signals with a human advisor reviewing every trade. 5 free tester spots open — reply TEST.\n\nhttps://start3ch-supervision.onrender.com/lead-capture"
+    tg_text = f"🌅 VERUM MARKET BRIEFING\n\n{lines}\n\n📊 Live charts, signals & advisor support:\nhttps://start3ch-supervision-asx9.onrender.com/client\n\n🤖 Free tester spots open — message this bot: /start"
+    x_text = f"Morning market brief 🧵\n\n{lines}\n\nWe pair live algo signals with a human advisor reviewing every trade. 5 free tester spots open — reply TEST.\n\nhttps://start3ch-supervision-asx9.onrender.com/lead-capture"
     return tg_text, x_text
 
 async def bot_content_loop():

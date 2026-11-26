@@ -1,8 +1,11 @@
-$null
-/git
-/main
-/workspace
 __pycache__/
-.venv/
+*.pyc
+*.pyo
 .env
+.venv/
+venv/
+verum_radar.session*
+radar.py
+verum-console.html
 database.json
+*.png
